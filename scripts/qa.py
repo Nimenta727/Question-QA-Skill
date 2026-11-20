@@ -19,11 +19,14 @@ CONFIDENCES = {"sure", "unsure", "guess", "none"}
 SPACING_DAYS = (1, 3, 7, 14, 30)
 SCHEMA = 1
 try:
-    from . import diagnosis, feedback, assessment_engine
+    from . import diagnosis, feedback, assessment_engine, evidence_engine, prediction_engine, adaptive_engine
 except ImportError:
     import diagnosis
     import feedback
     import assessment_engine
+    import evidence_engine
+    import prediction_engine
+    import adaptive_engine
 
 
 def utc_now():
@@ -250,17 +253,20 @@ def handle_next(args):
                               "session": diagnosis.session_summary(state["history"], session)},
                              ensure_ascii=False))
             return
-        q = select_item(bank["items"], state["history"], session["mode"],
-                        session_history=part, focus=session.get("focus"))
+        q, selection = adaptive_engine.choose(bank["items"], state["history"], session["mode"],
+                                              session_history=part, focus=session.get("focus"))
         if q is None:
             write_state(args.state, state)
             print(json.dumps({"complete": True, "reason": "item_bank_exhausted",
                               "session": diagnosis.session_summary(state["history"], session)},
                              ensure_ascii=False))
             return
-        state["pending"] = {"id": q["id"], "bank_digest": digest}
+        state["pending"] = {"id": q["id"], "bank_digest": digest,
+                            "selection": selection}
         write_state(args.state, state)
     result = safe_prompt(q)
+    if state.get("pending", {}).get("selection"):
+        result["selection"] = state["pending"]["selection"]
     result["session"] = diagnosis.session_summary(state["history"], session)
     print(json.dumps(result, ensure_ascii=False))
 
@@ -352,6 +358,8 @@ def handle_answer(args):
         "score": score, "method": method, "expected": answer_key(q),
         "explanation": q["explanation"], "concept": q["concept"],
         "level": q["level"], "status": estimate(c_events),
+        "evidence_profile": evidence_engine.profile(c_events),
+        "prediction_baseline": prediction_engine.history_baseline(c_events),
         "level_status": estimate(evidence(state["history"])[(q["concept"], q["level"])]),
         "next_review": due_date(evidence(state["history"])[(q["concept"], q["level"])]),
         "session": diagnosis.session_summary(state["history"], session)
@@ -376,6 +384,8 @@ def handle_report(args):
     state = read_state(args.state)
     groups = evidence(state["history"])
     rows = [{"concept": c, "level": l, **estimate(events),
+             "evidence_profile": evidence_engine.profile(events),
+             "prediction_baseline": prediction_engine.history_baseline(events),
              "next_review": due_date(events)}
             for (c, l), events in sorted(groups.items())]
     by_concept = defaultdict(list)
@@ -386,6 +396,8 @@ def handle_report(args):
         for q in bank["items"]:
             by_concept[q["concept"]]
     concepts = [{"concept": concept, **estimate(events),
+                 "evidence_profile": evidence_engine.profile(events),
+                 "prediction_baseline": prediction_engine.history_baseline(events),
                  "misconceptions": sorted({e["misconception"] for e in events
                                          if e.get("misconception")})}
                 for concept, events in sorted(by_concept.items())]
