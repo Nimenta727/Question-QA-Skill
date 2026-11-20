@@ -125,6 +125,24 @@ class ExplainableSelectionTests(unittest.TestCase):
             stored=state.read_text()
             self.assertIn("selection",stored)
 
+    def test_cli_json_survives_legacy_windows_code_page(self):
+        # Emulate a Windows shell that cannot encode Chinese glyphs.
+        import os
+        with tempfile.TemporaryDirectory() as tmp:
+            state=Path(tmp)/"state.json"
+            env=os.environ.copy()
+            env["PYTHONIOENCODING"]="cp1252:strict"
+            env["PYTHONUTF8"]="0"
+            child=subprocess.run([sys.executable,str(CLI),"next",str(BANK),
+                                  "--state",str(state)],capture_output=True,
+                                 text=True,encoding="ascii",env=env)
+            self.assertEqual(0,child.returncode,child.stderr)
+            data=json.loads(child.stdout)
+            self.assertIn("question",data)
+            self.assertIn("selection",data)
+            self.assertTrue(data["question"])
+            self.assertTrue(any(ord(c)>127 for c in data["question"]))
+
     def test_cli_report_keeps_backcompat_but_separates_engines(self):
         with tempfile.TemporaryDirectory() as tmp:
             state=Path(tmp)/"state.json"

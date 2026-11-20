@@ -163,6 +163,19 @@ class DualReviewCLITests(unittest.TestCase):
             self.assertEqual(2,rejected.returncode)
             self.assertTrue(json.loads(state.read_text())["pending"])
 
+    def test_shipped_synthetic_reviews_require_and_complete_arbitration(self):
+        from scripts.qa import read_bank
+        bank,_=read_bank(BANK)
+        manual=next(q for q in bank["items"] if q["id"]=="ALG-004")
+        sentence=(ROOT/"examples"/"sample_student_answer.txt").read_text(encoding="utf-8")
+        review="@"+str(ROOT/"examples"/"sample_dual_review.json")
+        arbitration="@"+str(ROOT/"examples"/"sample_adjudication.json")
+        with self.assertRaisesRegex(ValueError,"review_disagreement"):
+            assessment_engine.resolve(manual["rubric"],sentence,review)
+        complete=assessment_engine.resolve(manual["rubric"],sentence,review,arbitration)
+        self.assertEqual(1,complete["score"])
+        self.assertEqual(1,len(complete["agreement"]["disputed_indices"]))
+
     def test_old_manual_score_compatible(self):
         with tempfile.TemporaryDirectory() as tmp:
             bank,state=self.prepare(tmp)
