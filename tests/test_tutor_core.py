@@ -54,7 +54,7 @@ class CorePedagogyTests(unittest.TestCase):
         p=tutor_core.plan(self.items,[wrong],{"id":"s","limit":6})
         self.assertEqual("clarify_reasoning",p["move"])
         self.assertEqual("error_cause_unverified",p["evidence_status"])
-        self.assertNotIn("misconception",p["instruction"].lower())
+        self.assertIn("Do not declare",p["instruction"])
 
     def test_explicit_reviewer_tag_remains_self_report_not_truth(self):
         wrong=event(self.item("ALG-002"),score=0,misconception="distributive_property")
