@@ -160,7 +160,20 @@ def examine(quiz, exam, users, global_prior, by_skill, min_history):
     return preds
 
 
-def bootstrap_delta(rows, model_a, model_b, n_boot=250, seed=2026):
+
+def macro_auc_by_concept(rows, key):
+    """Within-concept ranking averaged equally across skills with both classes."""
+    by_concept = defaultdict(list)
+    for row in rows:
+        by_concept[row["concept"]].append((row[key], row["target"]))
+    results = [auc(pairs) for pairs in by_concept.values()]
+    valid = [a for a in results if a is not None]
+    return sum(valid) / len(valid) if valid else None
+
+
+
+def bootstrap_delta(rows, model_a, model_b, n_boot=250, seed=2026,
+                    within_concept=False):
     groups = defaultdict(list)
     for row in rows:
         groups[row["learner"]].append(row)
@@ -171,8 +184,10 @@ def bootstrap_delta(rows, model_a, model_b, n_boot=250, seed=2026):
     values = []
     for _ in range(n_boot):
         sample = [r for u in rng.choices(users, k=len(users)) for r in groups[u]]
-        a = auc([(r[model_a], r["target"]) for r in sample])
-        b = auc([(r[model_b], r["target"]) for r in sample])
+        a = (macro_auc_by_concept(sample, model_a) if within_concept
+             else auc([(r[model_a], r["target"]) for r in sample]))
+        b = (macro_auc_by_concept(sample, model_b) if within_concept
+             else auc([(r[model_b], r["target"]) for r in sample]))
         if a is not None and b is not None:
             values.append(a-b)
     if len(values) < 5:
@@ -200,6 +215,11 @@ def summarize(predictions, bootstraps, seed):
         "n": len(predictions),
         "learners": len({r["learner"] for r in predictions}),
         "models": metrics, "diagnostic_labels": labels,
+        "within_concept_macro_auc": {
+            name: macro_auc_by_concept(predictions, name) for name in models},
+        "within_concept_index_minus_quiz_average_auc_95ci":
+            bootstrap_delta(predictions, "diagnostic_index", "quiz_average",
+                            bootstraps, seed+2, within_concept=True),
         "index_minus_quiz_average_auc_95ci":
             bootstrap_delta(predictions, "diagnostic_index", "quiz_average",
                             bootstraps, seed),

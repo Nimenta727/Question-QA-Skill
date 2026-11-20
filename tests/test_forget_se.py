@@ -4,7 +4,8 @@ import tempfile
 import unittest
 from pathlib import Path
 from scripts.evaluate_forget_se import (evaluate, examine, load,
-                                        split_learners, baseline_priors)
+                                        split_learners, baseline_priors,
+                                        macro_auc_by_concept)
 
 
 def example():
@@ -70,6 +71,19 @@ class ExternalCriterionTests(unittest.TestCase):
         self.assertTrue(all(k in r["test"]["models"] for k in (
             "global","concept_prior","quiz_average","quiz_recent3","diagnostic_index")))
         self.assertNotIn("brier", r["test"]["models"]["diagnostic_index"])
+
+    def test_within_concept_auc_separates_skill_difficulty(self):
+        observations = [
+            {"concept":"A","target":0,"p":0.1}, {"concept":"A","target":1,"p":0.9},
+            {"concept":"B","target":0,"p":0.3}, {"concept":"B","target":1,"p":0.8}]
+        self.assertEqual(1.0, macro_auc_by_concept(observations, "p"))
+        self.assertEqual(None, macro_auc_by_concept([], "p"))
+
+    def test_within_concept_report_reproducible(self):
+        quiz, exam, audit = example()
+        a = evaluate(quiz, exam, audit, bootstraps=10)
+        self.assertIn("within_concept_macro_auc", a["test"])
+        self.assertIn("within_concept_index_minus_quiz_average_auc_95ci", a["test"])
 
     def test_minimum_history_prevents_unobserved_predictions(self):
         quiz, exam, _ = example()

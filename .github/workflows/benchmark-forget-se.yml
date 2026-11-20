@@ -66,6 +66,8 @@ jobs:
               print(part, 'n=',sample['n'],'learners=',sample['learners'])
               for name, scores in sample['models'].items():
                   print(name, 'AUC=',scores['auc'] if scores else None)
+          print('Within-concept macro AUC:',sample['within_concept_macro_auc'])
+          print('Within-concept index-minus-mean CI:',sample['within_concept_index_minus_quiz_average_auc_95ci'])
               print('AUC difference index-minus-mean CI:',
                     sample['index_minus_quiz_average_auc_95ci'])
               print('Strong-label observations:',
