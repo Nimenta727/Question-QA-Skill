@@ -207,6 +207,77 @@ class AuditContractTests(unittest.TestCase):
             self.assertEqual(2,checked.returncode)
             self.assertEqual("blocked",json.loads(checked.stdout)["gate"])
 
+    def test_qa_strict_next_blocks_without_review_and_does_not_create_state(self):
+        qa=ROOT/"scripts"/"qa.py"
+        with tempfile.TemporaryDirectory() as tmp:
+            state=Path(tmp)/"state.json"
+            blocked=subprocess.run([
+                sys.executable,str(qa),"next",str(BANK),
+                "--state",str(state),"--require-model-audit"
+            ],cwd=str(ROOT),capture_output=True,text=True)
+            self.assertEqual(2,blocked.returncode)
+            self.assertIn("strict question audit required",blocked.stderr)
+            self.assertFalse(state.exists())
+            self.assertNotIn("question",blocked.stdout)
+
+    def test_qa_strict_next_accepts_valid_separate_model_review(self):
+        qa=ROOT/"scripts"/"qa.py"
+        with tempfile.TemporaryDirectory() as tmp:
+            state=Path(tmp)/"state.json"
+            review=Path(tmp)/"model-review.json"
+            review.write_text(json.dumps(completed_packet(self.bank,self.digest)),
+                              encoding="utf-8")
+            response=subprocess.run([
+                sys.executable,str(qa),"next",str(BANK),
+                "--state",str(state),"--require-model-audit",
+                "--model-audit",str(review)
+            ],cwd=str(ROOT),capture_output=True,text=True)
+            self.assertEqual(0,response.returncode,response.stderr)
+            result=json.loads(response.stdout)
+            self.assertEqual("recorded_model_review_for_practice",
+                             result["model_audit_status"])
+            self.assertNotIn("answer",result)
+            self.assertNotIn("explanation",result)
+            self.assertIn("question",result)
+            prior=state.read_bytes()
+            review_packet=json.loads(review.read_text())
+            review_packet["items"]["ALG-001"]["checks"]["ambiguity_and_conditions"]["result"]="uncertain"
+            review.write_text(json.dumps(review_packet),encoding="utf-8")
+            rejected=subprocess.run([
+                sys.executable,str(qa),"next",str(BANK),
+                "--state",str(state),"--require-model-audit",
+                "--model-audit",str(review)
+            ],cwd=str(ROOT),capture_output=True,text=True)
+            self.assertEqual(2,rejected.returncode)
+            self.assertEqual(prior,state.read_bytes())
+            self.assertNotIn("question",rejected.stdout)
+
+    def test_qa_legacy_next_is_explicitly_not_model_audited(self):
+        qa=ROOT/"scripts"/"qa.py"
+        with tempfile.TemporaryDirectory() as tmp:
+            response=subprocess.run([
+                sys.executable,str(qa),"next",str(BANK),
+                "--state",str(Path(tmp)/"state.json")
+            ],cwd=str(ROOT),capture_output=True,text=True)
+            self.assertEqual(0,response.returncode,response.stderr)
+            self.assertEqual("not_checked_legacy_mode",
+                             json.loads(response.stdout)["model_audit_status"])
+
+    def test_qa_course_audit_flag_refuses_generic_practice(self):
+        qa=ROOT/"scripts"/"qa.py"
+        with tempfile.TemporaryDirectory() as tmp:
+            review=Path(tmp)/"review.json"
+            review.write_text(json.dumps(completed_packet(self.bank,self.digest)),
+                              encoding="utf-8")
+            state=Path(tmp)/"state.json"
+            blocked=subprocess.run([
+                sys.executable,str(qa),"next",str(BANK),
+                "--state",str(state),"--model-audit",str(review),
+                "--require-course-audit"
+            ],cwd=str(ROOT),capture_output=True,text=True)
+            self.assertEqual(2,blocked.returncode)
+            self.assertFalse(state.exists())
+
     def test_cli_accepted_synthetic_review_hides_keys(self):
         with tempfile.TemporaryDirectory() as tmp:
             review=Path(tmp)/"review.json"
