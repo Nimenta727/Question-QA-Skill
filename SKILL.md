@@ -4,7 +4,7 @@ description: Design source-grounded, original, rigorous and fair questions; run 
 license: MIT
 compatibility: Any Agent Skills-compatible assistant; Python 3.9+ optional for local state and deterministic grading.
 metadata:
-  version: "0.8.0"
+  version: "0.9.0"
   languages: "zh-CN,en"
 ---
 
