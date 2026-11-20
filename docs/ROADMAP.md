@@ -18,3 +18,16 @@
 4. External verified question sources with license/provenance checks.
 
 Priorities: accuracy and fairness > observable evidence > maintainability > unnecessary orchestration; no inflated token cost.
+
+
+## v0.2 — shipped, diagnosis fidelity improvements
+- Independent item family/day evidence, higher-order and delayed-retrieval gates.
+- Guess/hint and overconfidence signals; optional rubric-backed misconception tags.
+- Bounded adaptive quick sessions, focus concept, no exact item repeats, explicit exhaustion.
+- Concept and cognitive-level reports, bilingual docs and regression tests.
+
+## v0.3 — next: rigorous validation
+- Anonymous, consented held-out answer-sequence evaluation with leakage-safe splits.
+- Measure false-strong diagnosis rate, future-answer prediction, calibration and group fairness.
+- Verify real question banks, equivalent answers and source fidelity with human review.
+- Consider optional learned BKT/IRT/FSRS adapters only with calibration evidence and sensible fallback.

@@ -16,3 +16,11 @@ Limitations:
 - State reports cover answered concept × level only; absence from a report means untested, not "mastered".
 - Use separate state files per learner. Store no names or raw response text; keep state private and out of Git.
 - Concurrent writes to one state path are not supported; use serialized sessions.
+
+
+## Version 0.2 optional fields / v0.2 可选字段
+- family: shared stable family identifier for paraphrases / near-duplicate variants. If omitted, defaults to the item ID.
+- prerequisites: list of other concept IDs already present within the same bank.
+- misconceptions: dictionary mapping each incorrect A/B/C/D choice to a reviewed misconception label. Correct-choice codes are invalid.
+
+The state file additionally stores a short session ID, item family, response confidence, hint-used flag, level/difficulty/type and optional misconception tag. It never stores raw response text. All previous v1 bank fields remain required and unchanged. For reporting thresholds, see DIAGNOSIS.md.

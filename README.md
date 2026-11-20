@@ -29,6 +29,26 @@ python3 -m unittest discover -s tests -v
 
 The next command never returns answer keys; answer returns feedback after submission. For open responses use --score and --reason with the rubric. Sample questions are generated demonstrations, not official exam problems.
 
+## Diagnosis v0.2: more defensible evidence
+
+The CLI now tracks independent item families, different UTC dates, cognitive depth,
+guessing, hints, confident errors, and reviewed misconception tags. The report
+separates within-session performance from retained performance: strong evidence
+requires independent questions, higher-order application and a later-day probe.
+
+Adaptive selection responds to mistakes with easier/related probes, to guesses
+with confirmation, and to successful answers with transfer or untested topics.
+Questions are never repeated in one session. Every session has a limit and a
+clear stop reason. These are lightweight heuristics rather than a calibrated
+IRT/CAT/BKT implementation. See [diagnosis details](docs/DIAGNOSIS.md).
+
+~~~bash
+python3 scripts/qa.py start examples/sample_bank.json --mode quick --limit 6 --focus linear-equations
+python3 scripts/qa.py next examples/sample_bank.json
+python3 scripts/qa.py answer examples/sample_bank.json --response C --confidence guess
+python3 scripts/qa.py report --bank examples/sample_bank.json
+~~~
+
 ## Design constraints
 Every item should be checked for provenance, deep but teachable reasoning, a unique or fully specified answer set, and fair framing. The tracker does **not** infer mastery from a single item. It shows insufficient_evidence until at least three observations from two unique item IDs per concept × cognitive level. Numeric indicators are rough formative signals, not calibrated probabilities.
 

@@ -15,7 +15,7 @@ After an answer, tag: concept, cognitive level, source, task variant, score {0, 
 - Ambiguous response => clarify before attributing a misconception.
 - Stop at the learner's request; or after default 6, providing a concise provisional profile.
 
-A single correct answer or a single wrong answer is weak evidence. Item bank's offline estimate labels fewer than three attempts or fewer than two unique item IDs as insufficient_evidence. Results are formative and should state untested areas, rather than reporting universal ability.
+A single right or wrong answer is weak evidence. Offline estimate accounts for independent item families (not merely IDs), distinct UTC dates, multiple cognitive levels, guessing and hint-assisted responses. Tentatively strong is withheld without delayed, higher-order and independent evidence. See docs/DIAGNOSIS.md. Results are formative and should state untested areas, rather than reporting universal ability.
 
 ## Output template
 During session:
@@ -24,7 +24,7 @@ After response: [correct/partial/needs review] — [one precise reason]. Next: [
 Closing: [tested topics + evidence counts]; [provisional strengths and uncertain/weak areas]; [one prioritized review action]; [suggested spaced follow-up]. No verbose transcript.
 
 ## Minimal state to persist
-Persist only IDs, scores, concept/level, optional confidence and timestamps locally (scripts/qa.py); NEVER log identifiable student details or raw free-text answers by default. If no storage is available, keep a 1–2 line state summary in conversation, never promise cross-chat persistence.
+Persist only IDs, item families, scores, concept/level, confidence, hint use, misconception code and timestamps locally (scripts/qa.py); NEVER log identifiable student details or raw free-text answers by default. If no storage is available, keep a 1–2 line state summary in conversation, never promise cross-chat persistence.
 
 ## Limitations
 Response time, confidence, speed and choice distractors can inform a follow-up, but alone do not measure comprehension. Offline scorer has exact-match short answers; semantically equivalent alternatives require explicit aliases or rubric review.

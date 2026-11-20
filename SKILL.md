@@ -26,10 +26,10 @@ Purpose: generate deep but fair questions, then diagnose learning through *evide
 1. Establish the knowledge claims and breadth; start with a short, straightforward diagnostic probe.
 2. Ask exactly ONE question; wait for the learner's answer. Never expose the answer/rubric in the prompt.
 3. Prefer short recall, discrimination between close concepts, one-step application and reasoned "why"; multiple-choice only when it adds diagnostic value. Avoid trivia and trick wording.
-4. After response: judge against an explicit key/rubric; report brief result + precise misconception + one corrective idea. If ambiguous, ask a targeted follow-up before scoring.
+4. After response: judge against an explicit key/rubric; report brief result + precise misconception ONLY when supported by the selected distractor or reviewed rubric, otherwise say uncertain. If ambiguous, ask a targeted follow-up before scoring.
 5. Ask confidence (sure/unsure/guess) optionally, not on every turn. Use confidence and response time only as soft context, never as proof of mastery.
-6. Adapt: if uncertain or wrong, test prerequisite/contrast; if correct, ask a transfer or counterexample; sample other untouched concepts. Stop at 6 by default, or earlier if the learner chooses.
-7. End with coverage, evidence count, current strengths, untested areas, next 2–3 recommended probes, and suggested review dates. Do not equate 1 correct response with mastery.
+6. Adapt: if wrong, test a different item family on the prerequisite/contrast; if guessed correct, confirm via a different item type; if confidently correct, test transfer or uncovered concepts. Stop at 6 by default, or earlier if the learner chooses.
+7. End with coverage, evidence count, current strengths, untested areas, next 2–3 recommended probes, and suggested review dates. Never equate one correct response or repeated same-day exposure with mastery; check different cognitive levels and delayed retrieval.
 
 ### DEEP — default 5 questions
 1. Map objectives and key concepts from source; balance core coverage.
@@ -51,16 +51,17 @@ Purpose: generate deep but fair questions, then diagnose learning through *evide
 ## 4. Optional executable local workflow
 Use python3 scripts/qa.py (Python 3.9+, no dependencies):
 - validate BANK.json
+- start BANK.json --state .qa-state.json --mode quick --limit 6 --focus concept-id (focus optional)
 - next BANK.json --state .qa-state.json --mode quick
-- answer BANK.json --state .qa-state.json --response "B" --confidence sure
+- answer BANK.json --state .qa-state.json --response "B" --confidence sure --hint-used (hint flag optional)
 - answer BANK.json --state .qa-state.json --response "..." --score 0.5 --reason "rubric-based evaluation" (manual/open responses only)
-- report --state .qa-state.json
+- report --state .qa-state.json --bank BANK.json
 
-Write bank format per examples/sample_bank.json and docs/FORMAT.md. Never show the bank JSON to a learner before answering; it contains keys. State is LOCAL and untracked.
+Write bank format per examples/sample_bank.json and docs/FORMAT.md. For interpretation gates read docs/DIAGNOSIS.md only when needed. Never show the bank JSON to a learner before answering; it contains keys. State is LOCAL and untracked.
 
 ## 5. Token budget
 - For each QUICK turn: question only (typically under 80 Chinese characters unless reasoning needs data); after answer, 1-line verdict + 1-line reason + next single question.
-- Persist compact records; on continuation read the report, not the entire dialogue.
+- Persist compact records of item families, cognitive levels, time, optional hint/confidence and misconception code; on continuation read the report, not entire dialogue.
 - Deterministically validate, select, mark objective answers and aggregate stats in Python; spend LLM reasoning on authoring, source checking and nuanced open responses only.
 - Reuse validated items until exposed, then generate fresh *variants* of the same concept rather than repeating the same stem.
 - Avoid multi-agent orchestration for a six-question quiz. Never echo source files or large rulesets into the learner-facing output.
