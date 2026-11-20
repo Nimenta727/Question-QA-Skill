@@ -44,7 +44,9 @@ def selected_files(root=ROOT):
                     or (folder == "examples" and any(
                         marker in file.name.lower() for marker in
                         ("private", "credential", "token", "secret",
-                         "audit-key", "checkpoint", "receipt", "registry")))):
+                         "audit-key", "checkpoint", "receipt", "registry",
+                         "independent-audit", "model-audit", "audit-packet",
+                         "course-extract", "source-extract", "course_source")))):
                 continue
             paths.append(file)
     return sorted(paths, key=lambda path: path.relative_to(root).as_posix())
@@ -109,7 +111,9 @@ def verify(path):
             "scripts/appeals.py", "scripts/reviewer_trial.py",
             "scripts/reviewer_pilot.py", "scripts/reviewer_credentials.py",
             "scripts/audit_ledger.py", "scripts/tutor_core.py",
-            "references/tutoring.md", "references/operations.md"}.issubset(contents):
+            "scripts/model_audit.py", "references/model_audit.md",
+            "references/tutoring.md", "references/operations.md",
+            "docs/MODEL_AUDIT.zh-CN.md", "docs/MODEL_AUDIT.md"}.issubset(contents):
         raise ValueError("required Skill modules missing")
     return {"valid": True, "version": VERSION, "files": len(contents),
             "archive_sha256": sha256(Path(path).read_bytes())}

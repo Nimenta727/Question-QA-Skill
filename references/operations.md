@@ -14,3 +14,7 @@
 | 打包发行 | scripts/build_release.py，docs/RELEASE.md | 严格排除私人学习记录 |
 
 核心边界：Agent默认只需命题→学生作答→可靠证据→单个追问。运维和审计模块不参与日常教学，避免无效上下文成本。
+
+
+## v1.1.0 strict AI question verification
+New and edited items intended for students must follow references/model_audit.md first: the reviewing model independently solves **before** viewing the author's proposed answer, then challenges each option/rubric, source and diagnostic rationale. For a real separate reviewing-model packet, scripts/model_audit.py validates required evidence, the entire bank/source SHA256 and exact quotations, and qa.py next --require-model-audit --model-audit FILE blocks failed/incomplete reviews. This is core *pedagogical safety*, not a reviewer identity platform. It cannot by itself prove semantic truth or run another model API; qualified human review is still needed for formal examinations. See docs/MODEL_AUDIT.zh-CN.md.

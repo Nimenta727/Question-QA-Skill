@@ -65,3 +65,13 @@ reviewer-credentials-private*/
 *.audit-key
 *.audit-key.hex
 reviewer-registry-private*.json
+
+
+# v1.1.0 actual private course excerpts and model reviewer packets
+independent-audit*.json
+model-audit*.json
+audit-packet*.json
+course-extract*.txt
+source-extract*.txt
+course_source*.txt
+COURSE_EXTRACT.txt

@@ -13,6 +13,7 @@ class SkillContractTests(unittest.TestCase):
         self.assertLess(len(text),7000,"The core Skill has grown into a platform manual")
         for expected in ("QUICK","DEEP","一次只问一个问题",
                          "references/tutoring.md","references/authoring.md",
+                     "scripts/model_audit.py","references/model_audit.md",
                          "references/operations.md","tutor_next_move"):
             self.assertIn(expected,text)
         self.assertLess(text.index("## 2. QUICK"),text.index("## 3. DEEP"))
@@ -20,6 +21,8 @@ class SkillContractTests(unittest.TestCase):
     def test_optional_advanced_tools_remain_available(self):
         for required in ("scripts/qa.py","scripts/tutor_core.py",
                          "scripts/assessment_engine.py",
+                         "scripts/model_audit.py",
+                         "references/model_audit.md",
                          "scripts/reviewer_credentials.py",
                          "scripts/audit_ledger.py",
                          "docs/TEACHING_EVALUATION.zh-CN.md",
