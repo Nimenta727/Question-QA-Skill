@@ -75,7 +75,10 @@ class QualityReportTests(unittest.TestCase):
         bank["items"][1]["stem"]=bank["items"][0]["stem"]+"？"
         codes={f["code"] for f in audit(bank,digest)}
         self.assertIn("duplicate_stem",codes)
-        bank["items"][1]["stem"]=bank["items"][0]["stem"].replace("19","18")
+        long_stem = ("请计算下列代数表达式，并说明每一步变形的依据，"
+                     "然后判断最终的数学结论是否成立：3x+4=19")
+        bank["items"][0]["stem"]=long_stem
+        bank["items"][1]["stem"]=long_stem.replace("19","18")
         codes={f["code"] for f in audit(bank,digest)}
         self.assertIn("near_duplicate_stem",codes)
 
