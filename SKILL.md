@@ -1,125 +1,71 @@
 ---
 name: question-qa-skill
-description: Design source-grounded, original, rigorous and fair questions; run adaptive one-at-a-time quick oral/written checks; diagnose knowledge and plan spaced reviews with verifiable evidence. Use for quizzes, exam generation, learning diagnostics and follow-up practice.
+description: Create source-faithful, fair and diagnostic questions; run adaptive one-question-at-a-time tutoring; locate reasoning gaps through evidence and design focused follow-up practice. Use for course-based questions, 深度出题, 快问快答, 学习诊断 and targeted review.
 license: MIT
-compatibility: Any Agent Skills-compatible assistant; Python 3.9+ optional for local state and deterministic grading.
+compatibility: Any Agent Skills-compatible assistant; optional offline Python 3.9+ helper tools.
 metadata:
   version: "0.9.0"
   languages: "zh-CN,en"
 ---
 
-# Question-QA-Skill
+# Question-QA-Skill — 以问题理解学习，而不是用分数猜测掌握
 
-Purpose: generate deep but fair questions, then diagnose learning through *evidence*, not impression. Default to Chinese when the learner writes in Chinese. Preserve the instructor's scope and definitions; never invent what a teacher taught.
+**核心任务**：根据真实课程范围提出有深度但公平的题目，通过学生的回答、解释与独立追问识别**有证据的理解缺口**，并给出最有帮助的下一问。默认与学生使用相同语言；中文交互优先中文。
 
-## 1. Route, and load only what is needed
-- "出题/模拟卷/深度练习" => DEEP mode; read references/authoring.md once.
-- "快问快答/测测掌握/抽查" => QUICK mode; read references/diagnosis.md once.
-- A specified discipline => read ONLY the matching portion of references/subjects.md.
-- "继续/复习/追踪" => read compact report via scripts/qa.py if state and bank exist; otherwise ask for the prior record or begin a new baseline.
-- "可视化/学习报告/知识图谱" => generate offline HTML via scripts/dashboard.py; do not embed student answers or answer keys.
-- "评估学生回答/批改开放题" => use a reviewed per-criterion rubric and structured evidence; read docs/INSTALL.zh-CN.md or docs/INSTALL.md for the assessor format.
-- For a course file or named teacher's material, analyze available source first. If inaccessible, label as general-knowledge questions and do not impersonate that source.
-- No source material? Ask at most one essential question about subject; if subject is known, begin with a defensible general-level baseline.
-- Do not preload all references. Do not generate extra examples until requested.
+## 1. 先选任务，按需读取
 
-## 2. Modes
-### QUICK — default 6 prompts, one per turn
-1. Establish the knowledge claims and breadth; start with a short, straightforward diagnostic probe.
-2. Ask exactly ONE question; wait for the learner's answer. Never expose the answer/rubric in the prompt.
-3. Prefer short recall, discrimination between close concepts, one-step application and reasoned "why"; multiple-choice only when it adds diagnostic value. Avoid trivia and trick wording.
-4. After response: judge against an explicit key/rubric; report brief result + precise misconception ONLY when supported by the selected distractor or reviewed rubric, otherwise say uncertain. If ambiguous, ask a targeted follow-up before scoring.
-5. Ask confidence (sure/unsure/guess) optionally, not on every turn. Use confidence and response time only as soft context, never as proof of mastery.
-6. Adapt: if wrong, test a different item family on the prerequisite/contrast; if guessed correct, confirm via a different item type; if confidently correct, test transfer or uncovered concepts. Stop at 6 by default, or earlier if the learner chooses.
-7. End with coverage, evidence count, current strengths, untested areas, next 2–3 recommended probes, and suggested review dates. Never equate one correct response or repeated same-day exposure with mastery; check different cognitive levels and delayed retrieval.
+- 用户要求出题/深度练习/模拟卷：走 DEEP；仅需命题细节时读 references/authoring.md。
+- 用户要求快问快答/测测理解/口头抽查/继续练习：走 QUICK；读 references/tutoring.md。已经了解本节协议时无需重复加载。
+- 用户提供课程文件：先提取课程目标、知识点和原始条件；只在必要时读 references/subjects.md 的匹配领域。**不可伪称读过未读取的老师课件**。
+- 需要实际本地进度、题库或可视化：按需使用 scripts/qa.py 和 scripts/dashboard.py；没有文件时**直接以聊天方式教学**，不让脚本阻碍问答。
+- 身份认证、审计、双审阅研究、数据恢复及发行操作：只有明确请求才读 references/operations.md 和对应 docs/；**日常教学不调用这些复杂工具**。
 
-### DEEP — default 5 questions
-1. Map objectives and key concepts from source; balance core coverage.
-2. Design ECD trio: target CLAIM -> observable EVIDENCE -> TASK for each question.
-3. Mix mechanisms, derivations, error detection, boundary cases, transfer and synthesis. Novelty comes from authentic contexts and meaningful reasoning, NEVER obscure trivia.
-4. State conditions, units, assumptions, expected answer form, scoring rubric, source anchors and difficulty justification.
-5. Verify every answer independently, check distractor plausibility, ambiguity, accessibility, neutrality, instruction alignment and all alternative valid answers.
-6. Deliver student paper first and answer/explanation as a separate, clearly marked section ONLY when requested, or after submission for interactive practice.
-7. If current claims require verification, retrieve reliable material, cite dated sources and mark uncertain facts. Do not fabricate official examination questions.
+## 2. QUICK：默认 6 轮，一次只问一个问题
 
-## 3. Evidence integrity
-- Evidence precedence: user-provided lesson > verified curriculum/primary source > reliable secondary source > clearly labeled model-generated practice.
-- Source anchors must identify the section/line/page when available. Do not claim verified provenance without inspection.
-- Neutrality: never assume a political, cultural or personal view as the only correct one on disputed subjects; frame questions around attributable evidence and explicit criteria.
-- Coverage and depth are separate axes. Avoid rewarding linguistic fluency when testing math/science reasoning.
-- For open responses, score only against a published rubric; when equivalence or correctness is unclear, return "needs review", do not silently score zero.
-- An estimated mastery indicator is **formative** and not a calibrated test score.
-- Open-answer assessment must cite concrete reasoning evidence for each rubric criterion and provide feedback specific to incomplete criteria. Use human or careful AI review; local code validates the rubric data but does not semantically evaluate student text.
-- For equivalent short answers not explicitly listed in aliases, allow a reviewer-documented equivalence override only after an independent check; objective multiple-choice keys are never overridable.
+1. **定义目标**：确定本轮目标知识点、常见前置概念、预期可观察证据及课程边界。用户只说“考考我”但已给课程，直接开始，勿反复盘问。
+2. **基线题**：提出一个短、清晰、没有刁钻条件的基础问题；别在提问时公开标准答案、rubric或误区结论。等待学生回答，不要一次列六题。
+3. **核验回答**：以可靠教材、正确解答或已审阅rubric为准。反馈“正确/部分/待核验”及**一个具体依据**。对于自然语言、合理等价形式或歧义答复，必要时先问一句澄清；不能可靠判分时标记“待复核”，不可默记零分。
+4. **选下一问**（只依据有证据的表现）：
+   - 错误，但未确定原因 → 请学生说明关键一步、验证一个先修条件或提出对照题；不要臆测其心理、能力或具体误区。
+   - 有审阅证据支持某一误区 → 换表述或边界情形测试该误区，避免只是复述刚公布的正确答案。
+   - 答对但猜测/不确定/借助提示 → 用不同题族、不同表征无提示复核；同题改数字不算独立证据。
+   - 完全正确且有可靠理由 → 推向应用、反例、边界条件或迁移；必要时扩展到未测知识点。
+   - 得到部分分 → 针对rubric未满足的一个关键环节追问，不要求重写整题。
+5. **掌握表达需克制**：一次答对、重复同题或同一天接连回答，只能说明当下观察；独立题族、多个认知层次与真正延迟提取是不同维度。不要把本地启发式指数当成“掌握概率”。
+6. **结束**：用户叫停即结束；默认在第6轮结束。列出已测知识与证据、当前可解释的错误/不确定性、未测内容及下一次具体、独立的复习题方向，不作标准化能力排名。
 
-## 4. Optional executable local workflow
-Use python3 scripts/qa.py (Python 3.9+, no dependencies):
-- validate BANK.json
-- start BANK.json --state .qa-state.json --mode quick --limit 6 --focus concept-id (focus optional)
-- next BANK.json --state .qa-state.json --mode quick
-- answer BANK.json --state .qa-state.json --response "B" --confidence sure --hint-used (hint flag optional)
-- answer BANK.json --state .qa-state.json --response "..." --score 0.5 --reason "rubric-based evaluation" (manual/open responses only)
-- report --state .qa-state.json --bank BANK.json
-- answer BANK.json --state .qa-state.json --response "..." --reason "reviewed each criterion" --rubric-judgments @review.json (manual items)
-- answer BANK.json --state .qa-state.json --response "equivalent representation" --review-equivalent --reason "verified equivalence" (short-only)
-- dashboard via python3 scripts/dashboard.py BANK.json --state .qa-state.json --output learning-dashboard.html
+通常学生看到的内容只需：“简短反馈（1—2句）→ 下一道问题”。不要展示后台计划 JSON、冗长推理或评分管理日志。
 
-Write bank format per examples/sample_bank.json and docs/FORMAT.md. For interpretation gates read docs/DIAGNOSIS.md only when needed. Never show the bank JSON to a learner before answering; it contains keys. State is LOCAL and untracked.
+## 3. DEEP：默认 5 道高质量题
 
-## 5. Token budget
-- For each QUICK turn: question only (typically under 80 Chinese characters unless reasoning needs data); after answer, 1-line verdict + 1-line reason + next single question.
-- Persist compact records of item families, cognitive levels, time, optional hint/confidence and misconception code; on continuation read the report, not entire dialogue.
-- Deterministically validate, select, mark objective answers and aggregate stats in Python; spend LLM reasoning on authoring, source checking and nuanced open responses only.
-- Reuse validated items until exposed, then generate fresh *variants* of the same concept rather than repeating the same stem.
-- Avoid multi-agent orchestration for a six-question quiz. Never echo source files or large rulesets into the learner-facing output.
+1. 明确课件范围、学习目标与可评估的知识断言（claim）→可观察证据（evidence）→题目任务（task）。
+2. 先检验题目所需条件和正确解法，再设计贴近课程的应用、机制解释、错误分析、边界与迁移。独到不是偏门、超纲或文字陷阱。
+3. 每题内部保留：目标知识点、课程来源定位、认知层次、独立解答、合理等价答案、得分标准，以及错选项反映的可能而非确定的误区。
+4. 检查多解、题干歧义、无关语言负担、数学适用条件、来源真实性和公平性。需要开放题时给可操作的逐项rubric。
+5. 默认先给学生题面；解析、标准答案和rubric在交卷后或用户明确请求时再展示。若用户明确要带答案的教师版，则分区提供。
+6. 不得自称生成的是官方原题；超出用户课件范围的内容必须标注拓展。
 
-## 6. Completion gate
-Before releasing a question bank check source fidelity; claim/evidence alignment; objective, independent solutions; alternate correct answers; plausible distractors; balanced difficulty; fairness; no leakage; concise feedback; evidence uncertainty. Run python3 -m unittest discover -s tests -v for code changes.
+详细命题检查见 references/authoring.md；需要本地银行审查时使用 scripts/qa.py validate 与 scripts/question_quality.py。
 
-## 7. Evidence and validation gate (load only when needed)
-If asked whether the diagnosis is accurate, inspect docs/VALIDATION.md (or docs/VALIDATION.zh-CN.md). The current formative index has **not** shown robust predictive improvement over historical quiz means on the external FORGET-SE exam benchmark. Never describe `rate` as calibrated mastery probability, call a provisional label a standardized test result, or infer adaptive item-choice causal benefits from observational data. Do not add BKT/IRT to the default loop until sufficient held-out calibration data and evidence exist. For offline evaluation use scripts/evaluate.py or scripts/evaluate_forget_se.py; never commit raw learner records.
+## 4. AI 的“下一问”合同
 
-## 8. Official offline distribution
-Release v0.4.0 includes an offline bilingual dashboard, criterion-based student feedback and SHA256-manifest-verified ZIP. Read docs/INSTALL.zh-CN.md or docs/INSTALL.md for installation and privacy notes, docs/RELEASE.md for reproducibility, and CHANGELOG.md for version changes. Only release files allowlisted by scripts/build_release.py. Never embed student raw responses in the dashboard, demos or release.
+每次判定之后，内部形成一个短计划：
+- **观察**：回答是否正确、证据是否可核验、有无猜测/提示/可靠的逐项rubric依据。
+- **目标**：接下来要区分的两种解释，如“真理解分配律”与“记住这题答案”。
+- **动作**：clarify_reasoning / repair_prerequisite / verify_independently / probe_transfer / close_and_review。
+- **验证**：选择新的独立题族、可观察成功条件；有疑问则先澄清，不要把缺少证据写成“学不会”。
 
+如果题库没有合适题目，AI可以根据实际课件另拟一题，但必须先重新校验答案、范围、歧义与评分标准，不得自动生成即当作已审核题目。
 
-## 9. Independent item-quality review / 命题质量门槛
-Before releasing a newly generated question bank, use python3 scripts/qa.py validate BANK.json followed by python3 scripts/question_quality.py BANK.json. Arithmetic witnesses (when available) check only explicit numeric consistency, not proof of curriculum or fairness. For an independently reviewed bank, generate an all-false review template with --review-template FILE, have the reviewer attest to source, answer, scope, ambiguity, fairness and rubric, then run --review FILE --strict. Do not have the authoring model self-certify every box. Read docs/QUESTION_QUALITY.zh-CN.md or docs/QUESTION_QUALITY.md only when authoring/auditing.
+## 5. 可选轻量 CLI（不连接模型API）
 
-External validation has now been replicated on the independent ASSISTments2015 mathematics practice cohort (docs/VALIDATION_ASSIST2015.md), with no proven index advantage over a simple learner-history baseline. The previous FORGET-SE result remains separate (different prediction task). Never imply item-family/day/cognitive-level data exist when absent. BKT/IRT not yet released.
+~~~bash
+python3 scripts/qa.py validate examples/sample_bank.json
+python3 scripts/qa.py next examples/sample_bank.json --state .qa-state.json --mode quick
+python3 scripts/qa.py answer examples/sample_bank.json --state .qa-state.json --response "C"
+python3 scripts/qa.py report --state .qa-state.json --bank examples/sample_bank.json
+~~~
 
+next 返回学生可见题目及内部 tutor_intent（不要向学生展示内部字段）；answer 返回已核验得分、必要反馈与 tutor_next_move；report 返回观察证据和 teaching_summary。本地评分脚本不会理解任意自然语言、不能代替AI/教师的开放题判断，也没有模型API依赖。学生原始回答默认不写入状态。
 
-## 10. v0.6.0 formative, reviewer and release workflows
-For student free-form answers, an independently arranged two-reviewer assessment may be supplied to qa.py answer through --independent-reviews @reviews.json. Each reviewer must anchor each rubric judgment in the student's actual answer, with evidence, feedback and a declared independent identity. When the two reviewers disagree, require a distinct adjudicator using --adjudication @decisions.json before scoring. Prefer --response-file PRIVATE.txt over raw answers in command arguments. Details: docs/ASSESSMENT.zh-CN.md or docs/ASSESSMENT.md. The local CLI does NOT call LLMs or independently verify semantic correctness, nor does it cryptographically prove reviewers' independence.
-
-Use separate evidence_engine.py, prediction_engine.py and adaptive_engine.py: a descriptive evidence sufficiency index is not a calibrated probability; the historical-score baseline is uncalibrated and distinct; selecting the next question returns an explanatory rule-code, not a proven causal benefit. See docs/ARCHITECTURE.md. Versioned ZIPs are published once per fixed Git tag, never silently replaced.
-
-
-## 11. v0.7.0 safe math, state and reviewer study
-For explicitly numeric/polynomial short answers, the bank may opt into restricted exact math equivalence with answer_equivalence; never enable this on choice/manual questions, and never run arbitrary student Python source. Unsupported syntax should preserve the pending answer for independent review. Consult docs/MATH_EQUIVALENCE.zh-CN.md / .md when authoring numerical items.
-
-State transactions now require OS-native exclusive locks and save a last-good previous committed state as STATE.bak. Use qa.py state-check and state-recover --confirm only with understanding that the newest action may be rolled back; never publish private state or backups. Consult docs/STATE_SAFETY.zh-CN.md / .md.
-
-A separate aggregate-only reviewer study tool measures rubric-score agreement and weighted kappa, not correctness. Genuine independent reviewers, opt-in/permissions and separate expert criterion validation are required before claiming real study results. See docs/REVIEWER_STUDY.zh-CN.md / .md.
-
-
-## 12. v0.8.0 appeals, private lifecycle and permission-gated review research
-Each new completed response carries a stable event_id. A student may request correction with qa.py appeal-open, and an actual independent reviewer should verify the original answer before appeal-resolve --reviewer-confirmed is declared. Corrected rubric scores must agree with the published criteria, and original grade plus corrected grade remain in reason-coded audit metadata without student raw text. See docs/APPEALS.zh-CN.md / docs/APPEALS.md.
-
-Local state retains up to five prior valid snapshots plus the previous .bak. Explicit snapshot recovery, aggregate/private export and local managed-file deletion are available; private export and deletion require confirmation. Deletion does not securely erase remote or historical copies. See docs/DATA_LIFECYCLE.zh-CN.md / docs/DATA_LIFECYCLE.md.
-
-A pseudonymous two-reviewer study preparation tool can split randomized A/B task lists and freeze completed first-round rating packets, but real reviewer independence, educational authorization and consent must be verified externally. No human-subject study was performed. See docs/REVIEW_TRIAL.zh-CN.md / docs/REVIEW_TRIAL.md.
-
-
-## 13. v0.9.0 — locally authenticated correction and HMAC evidence
-For high-trust local grading correction, enroll reviewer capabilities using scripts/reviewer_credentials.py and enable audit protection in qa.py **before opening any appeals**. A protected appeal must be opened with --audit-key-file and closed only by an active enrolled --reviewer-id/--reviewer-token-file plus a matching --registry and --audit-key-file; --reviewer-confirmed alone is NEVER sufficient on protected state.
-
-Use qa.py audit-verify to verify HMAC links and the externally authenticated .audit-policy marker. Retain independently stored audit-checkpoint receipts to detect replacement by older, valid signed state; the key is never included in learning state or release assets. Reviewer credentials authenticate local secret possession, NOT actual educator identity; controlled storage and external institutional verification are mandatory. Read docs/SECURITY_AUDIT.zh-CN.md or docs/SECURITY_AUDIT.md when using protected appeals.
-
-The private reviewer_trial.py workflow can finalize C decisions only after frozen A/B scores match their original hashes and all disputed rubric criteria are adjudicated. This is NOT proof of genuine independent human participation or consent. Research oversight remains external. See docs/REVIEW_TRIAL.zh-CN.md.
-
-
-## 13. v0.9.0 local credential verification and independently controlled human review
-When a school's reviewer has been locally enrolled by a real administrator, use scripts/reviewer_credentials.py and qa.py audit-init to require active reviewer key possession for protected appeal correction. For protected states, the old --reviewer-confirmed self-declaration does NOT bypass authentication. HMAC audit logs link opened/resolved appeals; audit-checkpoint enables comparison against an externally preserved receipt. See docs/SECURE_REVIEW.zh-CN.md / docs/SECURE_REVIEW.md and docs/SECURITY_AUDIT.zh-CN.md / .md. This is local capability verification, **not real-world identity authentication or professional qualification**. A file owner with all secrets and authority can rewrite records; full rollback can evade detection without an independently retained checkpoint.
-
-For future authorized educational pilots, compare two frozen independent reviewer packets against a separately prepared expert reference with scripts/reviewer_pilot.py and docs/REFERENCE_PILOT.zh-CN.md / .md. High pairwise agreement alone cannot prove correctness, and external expert reference agreement is still not authenticated accuracy. All included score packets are synthetic, and no actual human participant study has been completed.
+**原则**：优先课程对齐、问题质量、真实可观察证据与学生体验。复杂审计、安全管理和研究工具不应主导一次普通的六轮问答。
