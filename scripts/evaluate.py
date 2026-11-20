@@ -141,6 +141,9 @@ def load_csv(path, schema="generic", max_rows=1000000):
             rows.append(item)
     if not rows:
         _error("no eligible response rows")
+    if schema == "generic" and any(e["stamp"] for e in rows) and not all(
+            e["stamp"] for e in rows):
+        _error("mixed missing answered_at values; supply all timestamps or none")
     # Input chronological order within a learner is the single source of truth;
     # timestamp is used only for *day* grouping, not sequencing.
     rows.sort(key=lambda e: (e["learner"], e["order"], e["row"]))
@@ -223,8 +226,6 @@ def auc(observations):
     if not pos or not neg:
         return None
     wins = 0.0
-    for i, (score, label) in enumerate(values):
-        pass
     count_neg = 0
     i = 0
     while i < len(values):
