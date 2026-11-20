@@ -263,6 +263,31 @@ class SignedAppealAudit(unittest.TestCase):
             self.assertTrue(key.exists())
             self.assertFalse(state.exists())
 
+    def test_protect_audit_key_output_from_snapshot_directory(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            state=Path(tmp)/"score.json"
+            registry=Path(tmp)/"registry.json"
+            admin=Path(tmp)/"admin.token"
+            reviewer_credentials.initialize(registry,admin)
+            self.assertEqual(0,run(QA,"next",BANK,"--state",state).returncode)
+            forbidden=state_store.snapshots_path(state)/"audit-key.hex"
+            wrong=run(QA,"audit-init","--state",state,"--registry",registry,
+                      "--admin-token-file",admin,"--audit-key-output",forbidden)
+            self.assertEqual(2,wrong.returncode)
+            self.assertIn("destination conflicts",wrong.stderr)
+            self.assertFalse(forbidden.exists())
+            self.assertNotIn("audit",json.loads(state.read_text()))
+            key=Path(tmp)/"secret.hex"
+            valid=run(QA,"audit-init","--state",state,"--registry",registry,
+                      "--admin-token-file",admin,"--audit-key-output",key)
+            self.assertEqual(0,valid.returncode,valid.stderr)
+            backup=state_store.backup_path(state).read_bytes()
+            wrong_receipt=run(QA,"audit-checkpoint","--state",state,
+                              "--audit-key-file",key,
+                              "--output",state_store.backup_path(state))
+            self.assertEqual(2,wrong_receipt.returncode)
+            self.assertEqual(backup,state_store.backup_path(state).read_bytes())
+
     def test_old_unprotected_appeal_still_runs_and_is_labeled_unauthenticated(self):
         with tempfile.TemporaryDirectory() as tmp:
             state=Path(tmp)/"state.json"
