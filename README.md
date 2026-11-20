@@ -53,3 +53,10 @@ The local scorer does not automatically understand arbitrary natural-language re
 A correct answer, repeated near-duplicate or same-day streak is not proof of durable learning. The existing evidence index is descriptive, **not** a calibrated mastery probability; two earlier external studies did not demonstrate reliable predictive improvement over simpler historical baselines. Behavior tests verify the software chooses the intended tutoring branches but do **not** establish high-quality LLM question generation or improved student learning. See [pedagogical review rubric](docs/TEACHING_EVALUATION.md) and [evidence](docs/VALIDATION.md).
 
 Historical tools for double review, correction appeals, data lifecycle, tamper-evident local audits, research preparation and dashboards are preserved but **not required** for ordinary tutoring. See [optional operations](references/operations.md) and [changelog](CHANGELOG.md). MIT licensed, offline by default; protect any real learner data appropriately.
+
+
+## Two-agent repository development (not the tutoring Skill)
+
+Repository development uses **Agent A, the implementation specialist**, and **Agent B, the independent functional auditor and next-priority planner**. They work through separate sessions, commit-scoped PR review, passing CI and dated docs/routine logs. Agent profiles do not autonomously invoke themselves, and a single assistant's second pass is not claimed as independent Agent B work. The tutor does not require these two agents for a student quiz.
+
+[Development handoff protocol](docs/PROJECT_TWO_AGENT_WORKFLOW.md) · [Builder profile](.github/agents/feature-builder.agent.md) · [Auditor profile](.github/agents/quality-auditor.agent.md)

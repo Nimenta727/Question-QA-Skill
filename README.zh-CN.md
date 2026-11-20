@@ -61,3 +61,10 @@ python3 scripts/qa.py report --state .qa-state.json --bank examples/sample_bank.
 此前的双审阅、申诉、安全审计、备份、研究工作流及离线看板均保留。只有确实需要时才按 [references/operations.md](references/operations.md) 找到相应工具和说明。安全与数据管理不应该增加普通六轮答题的复杂度。
 
 代码使用 MIT 许可证；日常 Skill 不依赖网络服务。若处理真实学生记录，务必本地妥善保护数据与必要授权。
+
+
+## 项目后续开发：双智能体分工（非学生做题流程）
+
+项目本身的开发现在使用两套角色配置：**Agent A 编写代码和测试；Agent B 独立检查PR的功能、找出错误并决定下一项优先开发任务**。开发需有分支、PR、跨平台CI、逐提交的 docs/routine 日志和对最新提交的独立审阅；没发生的独立审核不会被描述为“通过”。这些配置只服务研发，不会增加日常学生做题时的模型调用。
+
+[研发双智能体协议](docs/PROJECT_TWO_AGENT_WORKFLOW.zh-CN.md) · [Agent A配置](.github/agents/feature-builder.agent.md) · [Agent B配置](.github/agents/quality-auditor.agent.md)
