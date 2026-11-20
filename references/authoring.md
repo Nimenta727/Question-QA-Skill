@@ -29,3 +29,7 @@ For paper mode: output a coherent exam paper first (subject, scope, time, number
 
 ## v0.5.0 offline quality checks and accountable review
 For any bank to be issued to learners: run qa.py validate first, then question_quality.py BANK.json. If the item is a simple numeric objective question, optionally attach a bounded arithmetic witness and independently verify it corresponds to the actual question assumptions. Do NOT claim numeric consistency solves textual ambiguity or validates official curriculum provenance. Generate a blank SHA256-bound form using --review-template, have a distinct reviewer confirm answer/source/scope/ambiguity/fairness/rubric, then use --review FILE --strict to enforce that recorded review. Do not let the same authoring model self-certify. Refer to docs/QUESTION_QUALITY.md or .zh-CN.md when needed.
+
+
+## v1.0.0 fair next-question variants
+When an adaptive session requires a new question because no suitable reviewed item is available, treat the generated tutor_core new_item_authoring_brief as **instructions for a draft**, not a trusted answer key. Before presenting the question: (a) confirm its learning objective occurs in the actual course source, (b) avoid merely changing numbers in the same family, (c) solve independently and list valid equivalents and domain assumptions, (d) state one observable criterion that distinguishes understanding from guessing, and (e) check ambiguity, fairness and source anchor. Do not claim the draft has been independently reviewed without a distinct qualified reviewer.

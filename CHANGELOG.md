@@ -1,5 +1,15 @@
 # Changelog / 版本记录
 
+## v1.0.0 — 2026-11-21 — Return to evidence-driven AI tutoring
+
+- Replaced the continually growing primary SKILL.md with a compact, course-faithful QUICK and DEEP tutoring contract. Previously implemented security, data lifecycle, audit and research tools remain available only when requested via references/operations.md.
+- Added a bounded, answer-key-free scripts/tutor_core.py pedagogical decision layer. Incorrect and unverified reasoning, guessed/hint-assisted correct answers, rubric-partial credit, transfer requests, missing reviewed question families and session end-of-budget each receive an explicit next teaching intent.
+- Exposed safe tutor_intent on qa.py next, tutor_next_move on answer, and teaching_summary on report and completed session. All historical grading, local storage and v0.2 scientific diagnostic indices remain backward-compatible.
+- New item-authoring briefs contain the scope and independent review checklist, not fictitious question keys; a suggested reviewed bank item is marked for reconsideration when its family/level cannot satisfy the intended probe.
+- Added synthetic teaching-path regression tests (question budget, alternate family, no key leak, partial evidence, novice prerequisite gaps) and independent human-review quality criteria; passing tests do not demonstrate learner outcome gains.
+- Rewrote bilingual README and maintained all advanced optional tooling. Scientific findings on two external real datasets remain negative/inconclusive, with no refitting of held-out test data.
+
+
 ## v0.9.0 — 2026-11-20
 
 - Added offline administrator-scoped reviewer credentials, secure local token files, salted PBKDF2 verifiers and revocation; protected score corrections require verified active reviewer token possession rather than legacy self-declaration.

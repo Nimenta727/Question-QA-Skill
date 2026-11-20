@@ -1,30 +1,12 @@
-# QUICK 快问快答诊断协议
+# QUICK observed-evidence diagnosis (implementation notes)
 
-## Default six-probe loop
-- Q1 baseline concept or prerequisite; Q2 neighboring core concept; Q3–Q4 apply and distinguish; Q5 counterexample/transfer; Q6 confirm the weakest *different* subskill.
-- This is a template, not a fixed sequence: adaptive branching may override it.
-- One prompt per exchange. Wait for the learner; no answer or marked choice is shown before the response.
-- Choose a brief free-response when objective recall matters; use choice questions when distinguishing misconceptions.
-- Confidence labels: sure / unsure / guess / none. Avoid forced self-disclosure or high-pressure timers.
+The learner-facing default tutoring protocol is now references/tutoring.md. This file describes **only the local diagnostic interpretation rules**, not the complete AI teaching conversation.
 
-## Branching and evidence
-After an answer, tag: concept, cognitive level, source, task variant, score {0, 0.5, 1}, confidence, brief error category.
-- Correct + sound explanation => ask a higher-level transfer or sample an untested concept.
-- Correct + guessed/uncertain => ask a *different representation* of the same skill before claiming mastery.
-- Wrong => test the nearest prerequisite or a contrast (not another near-identical prompt).
-- Ambiguous response => clarify before attributing a misconception.
-- Stop at the learner's request; or after default 6, providing a concise provisional profile.
+- Each observation needs concept, independent item family, cognitive level, score, confidence (optional), hint flag, UTC date and concise **reviewed** misconception code if available.
+- One correct response is not mastery; same-family repetitions or same-day practice do not establish retention. A verified higher-order or delayed response requires a genuinely distinct task and time gap, not an invented timestamp.
+- Wrong answers without a reviewed reason must be flagged error_cause_unverified, not assigned a fictitious misconception. Guess/hint-assisted success needs an independent confirmation.
+- The historical descriptive evidence index in scripts/diagnosis.py, separate history baseline in scripts/prediction_engine.py and adaptive selector in scripts/adaptive_engine.py remain unchanged for prior-study reproducibility; they are **not calibrated mastery probabilities**.
+- scripts/tutor_core.py maps the most recent recorded response to a compact teaching instruction and checks whether the next selected item fits the desired independent probe. Its plan is advice to the AI, never itself a semantic judgment about student thinking.
+- A completed session receives a bounded report: what was actually tested, which knowledge claims remain uncertain or untested, and one justified next retrieval task. Do not continue asking when the student stops.
 
-A single right or wrong answer is weak evidence. Offline estimate accounts for independent item families (not merely IDs), distinct UTC dates, multiple cognitive levels, guessing and hint-assisted responses. Tentatively strong is withheld without delayed, higher-order and independent evidence. See docs/DIAGNOSIS.md. Results are formative and should state untested areas, rather than reporting universal ability.
-
-## Output template
-During session:
-Question 3/6 — [one self-contained question].
-After response: [correct/partial/needs review] — [one precise reason]. Next: [one question].
-Closing: [tested topics + evidence counts]; [provisional strengths and uncertain/weak areas]; [one prioritized review action]; [suggested spaced follow-up]. No verbose transcript.
-
-## Minimal state to persist
-Persist only IDs, item families, scores, concept/level, confidence, hint use, misconception code and timestamps locally (scripts/qa.py); NEVER log identifiable student details or raw free-text answers by default. If no storage is available, keep a 1–2 line state summary in conversation, never promise cross-chat persistence.
-
-## Limitations
-Response time, confidence, speed and choice distractors can inform a follow-up, but alone do not measure comprehension. Offline scorer has exact-match short answers; semantically equivalent alternatives require explicit aliases or rubric review.
+See docs/DIAGNOSIS.md, docs/VALIDATION.md and docs/VALIDATION_ASSIST2015.md for scientific limitations.

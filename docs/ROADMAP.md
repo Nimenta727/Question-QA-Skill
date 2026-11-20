@@ -1,129 +1,32 @@
-# Roadmap / 下一步计划
+# Roadmap / 路线图 — 核心AI教学优先
 
-## v0.1 — delivered
-- Cross-platform Agent Skill with original deep questions + six-turn adaptive oral/written checks.
-- Local no-dependency JSON question bank validator, one-at-a-time selector, objective and rubric-backed grading, compact learning history, provisional proficiency labels, spacing suggestions.
-- Bilingual documentation, provenance and fairness rules, example data and repeatable tests.
+项目方向：**高质量命题 → 学生回答 → 可核验理解证据 → 最有信息量的下一问 → 清晰的学习漏洞与复习建议**。
 
-## v0.2 — next
-1. Per-session limits/coverage constraints and a short-question budget with a clear stop condition.
-2. Question variants and stronger novelty/duplication audit; answer equivalence checks for algebra expressions.
-3. Independent solution verification for generated mathematics and subject-specific unit tests.
-4. Export/import portable summaries and privacy-preserving classroom reports.
+本文件重新聚焦当前和未来教学路线；历史 v0.1–v0.9 发行进度和更早规划保留于 CHANGELOG.md、docs/routine/ 和 Git commit 历史。安全、研究与发行工具仍存在，但不是日常六轮教学的依赖。
 
-## v0.3 — later
-1. Optional, separately labeled BKT/IRT modules *only* after sufficient item/learner calibration evidence.
-2. Item-level discrimination / exposure metrics and teacher review UI.
-3. Configurable learning goals and scheduling, accessibility/localization reviews.
-4. External verified question sources with license/provenance checks.
+## v1.0.0 — 教学主线重构（本版）
 
-Priorities: accuracy and fairness > observable evidence > maintainability > unnecessary orchestration; no inflated token cost.
+- 以精简 SKILL.md 描述 QUICK 一题一问、DEEP 源于课件的深度命题、答案等价/开放题审阅与学习证据边界。
+- 引入 tutor_core.py 的教学追问目标：基础错误→澄清或先修；猜对/提示正确→独立题族复核；可靠正确→边界与迁移；部分得分→集中补缺；会话上限→结束。
+- 题库已耗尽时生成**需要审核的新题设计要求**，不自动把临时生成的题和答案当成“已审核”。
+- qa.py 的 next、answer、report 输出新教学计划与本轮理解证据概要，不变更已有判分、鉴别性不足的诊断公式和状态兼容。
+- 建立六维人工命题/追问质量评审规则与合成教学场景软件回归；两者都不是独立课堂效果实验。
+- 复杂审计、身份、备份、研究等功能保留，但不进入默认 Agent 上下文。
 
+## 下一步 P0：真正提升题目与追问质量
 
-## v0.2 — shipped, diagnosis fidelity improvements
-- Independent item family/day evidence, higher-order and delayed-retrieval gates.
-- Guess/hint and overconfidence signals; optional rubric-backed misconception tags.
-- Bounded adaptive quick sessions, focus concept, no exact item repeats, explicit exhaustion.
-- Concept and cognitive-level reports, bilingual docs and regression tests.
+1. 面向**真实课程文件**构建命题蓝图：知识点、定义/前置、推理机制、代表性错误、迁移边界和来源页码，一题一个可观察知识断言。
+2. 对新生成题实施专家盲审，比较解答准确、课程对齐、区分理解与死记、对等价答案的宽容以及对学生语言表达偏差的公平性。
+3. 将诊断追问针对具体漏步进行语义复核：文本解释、过程题和学生自我修正前后，必须保留未经证实的其他解释，不能凭答对率贴能力标签。
+4. 低成本交互评估：对同一已获授权课程情景比较一题一问策略与固定题序的实际信息量，统计无效重复提问和不必要的上下文开销。
 
-## v0.3 — next: rigorous validation
-- Anonymous, consented held-out answer-sequence evaluation with leakage-safe splits.
-- Measure false-strong diagnosis rate, future-answer prediction, calibration and group fairness.
-- Verify real question banks, equivalent answers and source fidelity with human review.
-- Consider optional learned BKT/IRT/FSRS adapters only with calibration evidence and sensible fallback.
+## P1：教育实证与可验证解释
 
-## v0.3 evaluation milestone — delivered (2026-11-20)
-- Learner-disjoint next-response replay benchmark with AUC, probability-baseline Brier/ECE, learner bootstrap uncertainty.
-- Fixed-version public FORGET-SE external-criterion benchmark with conflict-ID exclusion; report pooled and within-concept AUC.
-- 61 Python regressions passed across 3.9 and 3.12; published negative/inconclusive findings in [VALIDATION.md](VALIDATION.md).
+- 合规取得独立真实教师评阅和适用参与者/监护许可后，预注册测评的命题质量、知识漏洞判断准确性和学生反馈改善指标。
+- 获取第三组真正独立、有题目身份、题族、真实时间、可靠认知标注及延迟回忆的新数据；旧 FORGET-SE 与 ASSISTments2015 不能继续用作新参数的独立留出集。
+- 掌握概率、BKT/IRT与学习收益声明只有在独立外部研究支持后才能引入，不能让启发式指数越权。
 
-## Next gate before any BKT/IRT
-1. Acquire a **second independent** and appropriately licensed cohort with reviewed item families, cognitive levels and genuine spaced recalls.
-2. Separate evidence sufficiency/diagnostic follow-up rules from empirically calibrated future-answer forecasting.
-3. Pre-register holdout evaluation, calibration, false-strong risk and fairness criteria. Never tune on the existing held-out test.
-4. Only then compare optional calibrated BKT/IRT to simple baselines. Keep default local skill zero extra API or model-token cost.
+## P2：可选平台级功能
 
-
-## v0.4.0 — P2 release and reviewed answer assessment (delivered)
-- **Offline HTML visualization**: knowledge map, coverage, level-based observed scores, reviewer-tagged mistakes, response trends, rubric criteria and suggested review schedule. Works bilingually without any external fonts, scripts or network.
-- **Reviewed student assessment**: per-criterion open-answer scoring with evidence, partial credit and actionable corrections; explicit short-answer equivalence override by reviewer.
-- **Official artifact pipeline**: deterministic, privacy-safe ZIP, embedded SHA256 manifest, standalone install documentation, CI tests against freshly extracted package, and GitHub Release workflow.
-- **Scientific restraint**: v0.2 index still lacks proven predictive uplift; not a calibrated learner model.
-
-## Beyond v0.4.0
-1. Independent question-bank correctness and fairness validator.
-2. Second real learner cohort with verified time intervals, author-reviewed item family/cognitive metadata and subject-level analysis.
-3. Accessibility review and multilingual screen-reader checks for the offline dashboard; opt-in aggregate exports only.
-4. Pilot observation of rubric reviewer agreement and score consistency; further model calibration only when independently demonstrated.
-
-
-## v0.5.0 — delivered: item validation + independent mathematics benchmark
-- Safe deterministic item-quality auditor (exact/near duplicate, optional rational witness, provenance/rubric anomalies) with independent reviewer approval gating.
-- Public ASSISTments2015 real learner evaluation, pinned verified source, no raw student data redistribution, independent per-learner historical prediction.
-- Honest negative/inconclusive findings: AUC 0.620 evidence index vs 0.710 learner history; within-skill confidence interval spans zero. See VALIDATION_ASSIST2015.md.
-- Next: vetted problem identities, two-reviewer disagreement analysis, true delayed response dates, independent course scope alignment, prospective opt-in adaptive policy trials and sample-adequate separate calibrated models only if baseline comparison warrants them.
-
-
-## v0.6.0 — delivered: assessment consensus and explainable architecture
-- Two separate reviewer packets and mandatory third-party adjudication before recording disputed free-form scores, with proof-of-presence for quoted student phrases; still requires genuine semantic assessment.
-- Separately exposed observed evidence, history baseline and adaptive-selection explanation modules without modifying already evaluated v0.2 scoring weights or claims.
-- Privacy-friendly response-file handling and more complete compatibility testing across Linux, macOS, Windows.
-- Immutable, tag-versioned SHA256-verified releases; main branch changes cannot silently replace a published version.
-
-## After v0.6.0
-1. Build real reviewer-blinded validation protocol with provenance and judge agreement outcomes, and a documented appeal/correction process. Synthetic identity declarations alone are not proof.
-2. Add optional, well-tested mathematics equivalence verification and safe, isolated code-answer unit testing; do NOT run untrusted submissions in the host OS.
-3. Add atomic, private state storage with concurrency-safe locking, backup/recovery and selective deletion.
-4. Collect consented third independent cohort with reviewed problem IDs and authentic time gaps; measure diagnostic mistakes and adaptive policy effectiveness before trying calibrated models.
-
-
-## v0.7.0 — delivered
-- Bounded exact rational and polynomial equivalence on author-opted-in short numeric items; unsupported student input is escalated instead of blindly marked incorrect.
-- Native same-state file locks, one-step last-good backup, atomic snapshots, explicit integrity inspection and opt-in recovery on local filesystems.
-- Aggregate private rubric inter-rater comparison and protocol for a future real, appropriately authorized blinded study; synthetic test cases are not validation evidence.
-- Cross-platform verification maintained; immutable tag v0.7.0 release distinct from prior versions.
-
-## v0.8.0 candidates (not yet implemented)
-1. Consent-based prospective independent reviewer pilot, source-grounded expert adjudication and formal learner correction/appeal mechanisms.
-2. Accessible user-facing mathematical-expression editor, careful symbol normalization and exact-condition annotation; avoid generic symbolic solvers without independent evaluation.
-3. Multi-snapshot encrypted backup/retention, optional SQLite transaction backend for classroom concurrency, secure deletion/export controls.
-4. New independent external cohort with authentic question identity/timing for diagnostic false-positive and adaptive learning outcome measurement. Do not reuse old held-out tests for hyperparameters.
-
-
-## v0.8.0 — delivered
-- Review-gated grade appeal lifecycle; before/after correction audit, revised learner evidence immediately reflected in reports and rule-based selection, legacy history migration without breaking schema.
-- At most five rolling verified previous local state snapshots, explicit rollback, safe aggregate vs consent-confirmed private export, and user-confirmed deletion of managed files.
-- Pseudonymous independent reviewer trial preparation and first-round freeze tooling with authorization self-declaration gate, exact rubric matching and aggregate-only reliability report; **no genuine human participants have yet been enrolled**.
-- Previous versions remain immutable and historical external test results remain unaffected.
-
-## v0.9.0 candidates (not yet completed)
-1. Implement authenticated reviewer identity and tamper-evident correction ledger; retain school-level appeal rights, not just locally editable JSON.
-2. Under actual education-institution and guardian/student approval, run a prospective blinded two-reviewer pilot with independently adjudicated reference grades; publish aggregate uncertainty, never raw learner records.
-3. Optional encrypted snapshot retention policies and stronger shared-database consistency for classroom-scale deployments, with secure key handling.
-4. New independent longitudinal validation data containing problem identities, actual review timing and checked cognitive levels before calibrating any learner-prediction model.
-
-
-## v0.9.0 — delivered and trust boundaries
-- Local high-entropy reviewer capability registration, revocation and credential-gated audited score appeal correction, preserving v0.8 legacy compatibility with explicit self-declared labels.
-- Tamper-evident HMAC correction audit with signed external policy binding and independent checkpoint receipts to help identify old-state rollbacks; keys must be guarded separately and local files remain alterable by holders of sufficient access.
-- Frozen A/B review trial now supports a third C adjudicator on exactly the criteria disputed before first-round freeze. Optional synthetic expert-reference comparisons describe metrics but cannot certify genuine experts.
-- No verified real-world reviewer identity or prospective human-subject classroom trial is claimed.
-
-## v1.0 candidate milestones (not yet delivered)
-1. Institution-integrated reviewer identity, role assignment and independently controlled audit witnesses with reliable trusted timestamps, key rotation and compromise recovery.
-2. Consent-verified prospective blinded educational reliability pilot and independent specialist reference scoring, with uncertainty intervals and learner appeal oversight.
-3. Database-backed authenticated event sourcing for managed multi-user installations, encryption and retention requirements selected by responsible institutions.
-4. New independent longitudinal cohort with verified item IDs/cognitive levels/delayed assessment before any calibrated mastery or learning-benefit claim.
-
-
-## v0.9.0 — completed implementation (not independent human validation)
-- Pseudonymous locally enrolled reviewer capability secrets, admin enrollment/revocation, protected appeal correction and HMAC-chain audit with external checkpoint receipts.
-- Signed policy to make accidental protected-mode downgrade or unsigned snapshot restore fail closed; still local OS security and key custody boundaries.
-- Separate reference-rubric comparison on frozen first-round reviewers, showing the important possibility of reviewers agreeing with each other but differing from an external reference; case-level uncertainty and no identifier export.
-- Fully synthetic, end-to-end plan → reviewer A/B freeze → expert reference comparison and cross-platform regression.
-
-## Next independent requirements
-1. Genuine institutional credential/role provisioning, trusted checkpoint custody, authenticated event actors and human review records for actual classroom use; do not mistake local secrets for identity verification.
-2. Appropriate school permission, consent/guardian processes, qualified independent reviewers and externally checked expert marking before any real pilot.
-3. Third completely unseen learner cohort and item-level timestamps for predictive/adaptive model validation.
-4. Optional central encrypted transactional store with user-managed access controls and real audit retention policies.
+- 既有本地数据安全、双评阅、申诉、HMAC审计和研究工具继续维护兼容与安全缺陷；不应默认加进教学循环。
+- 需要真正机构级身份、加密数据库、远程见证等部署场景时才启动相应独立项目，不应绑架核心 Skill 的简洁性。

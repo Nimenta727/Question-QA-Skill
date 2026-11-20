@@ -60,3 +60,9 @@ The original diagnostic index and item selection strategy are retained unchanged
 
 ## v0.8.0 correction propagation
 An explicitly confirmed appeal modifies the effective event score. Subsequent reports, formative evidence, the comparison baseline and rule-based future question selection see the corrected score, not the earlier disputed one. The local appeal audit tracks both before and after values. This does not empirically calibrate mastery probabilities or prove benefits of adaptive learning.
+
+
+## v1.0.0 answer-to-probe pedagogical decisions
+The descriptive evidence diagnosis remains unchanged, but the AI tutor now receives an **instructional next-move plan**, not merely a label. Wrong answer without verified cause prompts clarification; optional explicit prerequisites guide repair; guessed/assisted correct responses prompt independent-family rechecks; valid unassisted successes lead to transfer; partial-credit responses demand targeted criterion repair; end-of-budget sessions must stop. This is testable rule behavior and not a calibrated probability or proof of student improvement.
+
+CLI JSON: next.tutor_intent, answer.tutor_next_move and report.teaching_summary. No student free-text answer or unpublished key appears inside these fields. For the conversational loop see references/tutoring.md.

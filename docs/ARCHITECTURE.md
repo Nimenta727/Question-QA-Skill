@@ -17,3 +17,9 @@ math_equivalence.py is a limited deterministic equivalence helper, not an adapti
 
 ## v0.8.0 revision, retention and study boundaries
 appeals.py stores minimal reason-coded before/after corrections and updates effective response scores for diagnosis, score-history comparison, adaptive questions and the local dashboard. This is not an authenticated teacher approval or cryptographically protected ledger. state_store.py supports at most five valid prior snapshots and ordinary controlled export/deletion; external file copies remain outside its remit. reviewer_trial.py produces randomized pseudonymous tasks for two independent reviewers and freezes first-round aggregate score statistics, but cannot establish real authorization, blindness or educational effectiveness.
+
+
+## v1.0.0 pedagogical orchestration — thin and optional
+scripts/tutor_core.py sits above the existing offline diagnosis, selector, rubric review and privacy-sensitive state layer. It reads only already-recorded response metadata (score, family, concept, level, confidence, hint and source-reviewed item metadata) and emits a compact instructional plan for the AI. It does not call external APIs, read student original text, author unverified answers, retrain a prediction model, override grading or require the audit platform.
+
+The human-facing pipeline is: course scope → one diagnostic claim/task → student response → justified grade or requested clarification → targeted independent follow-up → cautious session summary. The old v0.2 index and previous validation experiments are preserved unchanged. Security and authentication mechanisms remain independently available via references/operations.md but are not a prerequisite for ordinary tutoring.

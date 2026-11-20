@@ -66,3 +66,14 @@ Only a fresh state without previously opened appeals can opt into the local sign
 
 ## v0.9.0 optional cryptographically checked appeal metadata
 Protected states can contain an audit journal of sequential, HMAC-linked appeal open and resolution records, keyed by an external administrator-held secret and bound to the state reviewer registry ID. A separate sidecar policy indicates protected mode; the self-declared legacy correction command cannot resolve protected appeals without active reviewer token authentication. Receipts can be exported to a separately controlled directory to check for rollback or truncation. The cryptographic proof covers the specified records under local key custody; it cannot independently verify human identity or teacher judgment. See docs/SECURE_REVIEW.md / docs/SECURITY_AUDIT.md.
+
+
+## v1.0.0 optional formative teaching plan output (no bank schema change)
+
+The validated bank and local state schema remain version 1. Existing objective grading and manual rubric review are unchanged. Additional CLI JSON fields are optional and intended for the AI tutor, not for direct disclosure to students:
+
+- next → tutor_intent: the desired pedagogical move (baseline / repair_prerequisite / clarify_reasoning / verify_independently / probe_transfer / close_and_review / draft_source_anchored_item), short instruction, observed evidence status, candidate source-reviewed item ID and fit (or request for a new, independently validated question brief).
+- answer → tutor_next_move: same plan evaluated **after** the committed response; no text of the student response or answer key is included.
+- report and session budget/exhaustion → teaching_summary: observations limited to the active session, concept/family coverage, incorrect and partial observations, confidence/hint uncertainty, untested concepts and explicitly non-calibrated interpretation.
+
+A candidate item is NOT proven educationally appropriate merely by having been selected; when suggestion_fit is review_or_author_better_variant, an AI tutor should prefer a genuinely independent checked question. The source-anchor brief explicitly states that a genuine instructor source has not been independently verified. The terminal student prompt should display only the question, not these internal metadata fields.
