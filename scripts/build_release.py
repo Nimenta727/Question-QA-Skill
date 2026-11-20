@@ -40,7 +40,11 @@ def selected_files(root=ROOT):
             if (not file.is_file() or file.is_symlink() or
                     "__pycache__" in file.parts or
                     any(part.startswith(".") for part in file.relative_to(root).parts)
-                    or file.suffix not in SUFFIXES):
+                    or file.suffix not in SUFFIXES
+                    or (folder == "examples" and any(
+                        marker in file.name.lower() for marker in
+                        ("private", "credential", "token", "secret",
+                         "audit-key", "checkpoint", "receipt", "registry")))):
                 continue
             paths.append(file)
     return sorted(paths, key=lambda path: path.relative_to(root).as_posix())
