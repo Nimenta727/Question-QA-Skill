@@ -54,6 +54,43 @@ def initialize(state,key,registry_id):
             "past_appeals_certified":False}
 
 
+def policy_path(state_path):
+    """Locally retained, independently HMAC-authenticated audit-mode marker."""
+    return Path(str(state_path) + ".audit-policy")
+
+
+def create_policy(state_path,state,key):
+    obj=_audit(state,key)
+    body={"format":1,"registry_id":obj["registry_id"],"key_id":obj["key_id"]}
+    mac=hmac.new(key,b"question-qa-policy/v1\0"+_canonical(body),
+                 hashlib.sha256).hexdigest()
+    reviewer_credentials._new_file(
+        policy_path(state_path),
+        (_canonical({**body,"mac":mac})+b"\n"))
+
+
+def verify_policy(state_path,state,key):
+    path=policy_path(state_path)
+    if path.is_symlink() or not path.is_file():
+        raise ValueError("audit policy marker missing; protected mode cannot be downgraded")
+    try:
+        policy=json.loads(path.read_text(encoding="utf-8"))
+    except (ValueError,UnicodeError):
+        raise ValueError("audit policy marker malformed")
+    if not isinstance(policy,dict) or set(policy)!={"format","registry_id","key_id","mac"}:
+        raise ValueError("audit policy marker altered")
+    body={k:v for k,v in policy.items() if k!="mac"}
+    expected=hmac.new(key,b"question-qa-policy/v1\0"+_canonical(body),
+                      hashlib.sha256).hexdigest()
+    if not isinstance(policy["mac"],str) or not hmac.compare_digest(policy["mac"],expected):
+        raise ValueError("audit policy HMAC mismatch")
+    obj=_audit(state,key)
+    if (body["format"]!=1 or body["registry_id"]!=obj["registry_id"]
+            or body["key_id"]!=obj["key_id"]):
+        raise ValueError("audit policy and state binding mismatch")
+    return True
+
+
 def _audit(state,key):
     obj=state.get("audit")
     if (not isinstance(obj,dict) or set(obj)!={"format","key_id","registry_id","entries"}
@@ -82,8 +119,10 @@ def append(state,key,action,appeal):
     return {"audit_seq":data["seq"],"audit_head":mac}
 
 
-def verify(state,key,receipt=None):
+def verify(state,key,receipt=None,state_path=None):
     obj=_audit(state,key)
+    if state_path is not None:
+        verify_policy(state_path,state,key)
     entries=obj["entries"]
     prev="0"*64
     seen={}
