@@ -19,10 +19,11 @@ CONFIDENCES = {"sure", "unsure", "guess", "none"}
 SPACING_DAYS = (1, 3, 7, 14, 30)
 SCHEMA = 1
 try:
-    from . import diagnosis, feedback
+    from . import diagnosis, feedback, assessment_engine
 except ImportError:
     import diagnosis
     import feedback
+    import assessment_engine
 
 
 def utc_now():
@@ -285,8 +286,21 @@ def handle_answer(args):
     q = next((x for x in bank["items"] if x["id"] == pending["id"]), None)
     if q is None:
         fail("pending item not found")
+    if args.response_file is not None:
+        if args.response is not None:
+            fail("--response and --response-file cannot be combined")
+        # Avoid raw answer in the CLI process list or shell history.
+        args.response = Path(args.response_file).read_text(encoding="utf-8")
+    if args.response is None:
+        fail("provide --response or --response-file")
     rubric_review = None
-    if args.rubric_judgments is not None:
+    if args.independent_reviews is not None:
+        if q["type"] != "manual" or args.score is not None or args.rubric_judgments is not None:
+            fail("--independent-reviews applies only to manual items and cannot combine with other scores")
+        rubric_review = assessment_engine.resolve(
+            q["rubric"], args.response, args.independent_reviews, args.adjudication)
+        score, method = rubric_review["score"], rubric_review["method"]
+    elif args.rubric_judgments is not None:
         if q["type"] != "manual" or args.score is not None:
             fail("--rubric-judgments is only for manual items and cannot combine with --score")
         if not args.reason or not args.reason.strip():
@@ -295,6 +309,8 @@ def handle_answer(args):
         score, method = rubric_review["score"], rubric_review["method"]
     else:
         score, method = grade(q, args.response, args.score, args.reason)
+    if args.adjudication and args.independent_reviews is None:
+        fail("--adjudication requires --independent-reviews")
     if args.review_equivalent:
         if q["type"] != "short" or args.score is not None or args.rubric_judgments is not None:
             fail("--review-equivalent only available for short answer with independent reviewer")
@@ -323,6 +339,11 @@ def handle_answer(args):
         event["misconception"] = misconception
     if rubric_review is not None:
         event["criterion_scores"] = [r["score"] for r in rubric_review["criteria"]]
+        if "agreement" in rubric_review:
+            # Persist only small numeric agreement metadata, not reviewer IDs,
+            # quotations, free-form evidence or the raw student's answer.
+            event["review_agreement"] = rubric_review["agreement"]["rate"]
+            event["review_disputes"] = len(rubric_review["agreement"]["disputed_indices"])
     state["history"].append(event)
     state["pending"] = None
     write_state(args.state, state)
@@ -399,13 +420,16 @@ def main(argv=None):
     p = subs.add_parser("answer")
     p.add_argument("bank")
     p.add_argument("--state", default=".qa-state.json")
-    p.add_argument("--response", required=True)
+    p.add_argument("--response")
+    p.add_argument("--response-file", help="read student response from a private UTF-8 file")
     p.add_argument("--confidence", choices=sorted(CONFIDENCES), default="none")
     p.add_argument("--hint-used", action="store_true")
     p.add_argument("--misconception")
     p.add_argument("--score", type=float)
     p.add_argument("--reason")
     p.add_argument("--rubric-judgments", help="JSON array or @path of reviewed rubric scores")
+    p.add_argument("--independent-reviews", help="@file containing two distinct reviewer assessments")
+    p.add_argument("--adjudication", help="@file with required third-party decisions on disagreements")
     p.add_argument("--review-equivalent", action="store_true", help="reviewer-confirmed equivalent short answer; requires --reason")
     p = subs.add_parser("report")
     p.add_argument("--state", default=".qa-state.json")
