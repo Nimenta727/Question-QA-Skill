@@ -295,6 +295,14 @@ def handle_answer(args):
         score, method = rubric_review["score"], rubric_review["method"]
     else:
         score, method = grade(q, args.response, args.score, args.reason)
+    if args.review_equivalent:
+        if q["type"] != "short" or args.score is not None or args.rubric_judgments is not None:
+            fail("--review-equivalent only available for short answer with independent reviewer")
+        if score == 1:
+            fail("answer already matches key; no equivalence review required")
+        if not args.reason or not args.reason.strip():
+            fail("equivalence review requires --reason with independently checked equivalence")
+        score, method = 1.0, "reviewed_equivalent_answer"
     if not state.get("session"):
         state["session"] = new_session("quick")
     session = state["session"]
@@ -332,6 +340,9 @@ def handle_answer(args):
     result["feedback"] = feedback.concise_feedback(q, score, misconception, args.confidence)
     if rubric_review is not None:
         result["assessment"] = rubric_review
+    if args.review_equivalent:
+        result["review_note"] = ("Accepted as equivalent by reviewer; "
+                                 "not verified automatically by local code.")
     if q["type"] == "manual":
         result["rubric"] = q["rubric"]
         result["review_reason"] = args.reason
@@ -395,6 +406,7 @@ def main(argv=None):
     p.add_argument("--score", type=float)
     p.add_argument("--reason")
     p.add_argument("--rubric-judgments", help="JSON array or @path of reviewed rubric scores")
+    p.add_argument("--review-equivalent", action="store_true", help="reviewer-confirmed equivalent short answer; requires --reason")
     p = subs.add_parser("report")
     p.add_argument("--state", default=".qa-state.json")
     p.add_argument("--bank")
