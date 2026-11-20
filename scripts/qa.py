@@ -19,7 +19,7 @@ CONFIDENCES = {"sure", "unsure", "guess", "none"}
 SPACING_DAYS = (1, 3, 7, 14, 30)
 SCHEMA = 1
 try:
-    from . import diagnosis, feedback, assessment_engine, evidence_engine, prediction_engine, adaptive_engine, math_equivalence, state_store
+    from . import diagnosis, feedback, assessment_engine, evidence_engine, prediction_engine, adaptive_engine, math_equivalence, state_store, appeals
 except ImportError:
     import diagnosis
     import feedback
@@ -29,6 +29,7 @@ except ImportError:
     import adaptive_engine
     import math_equivalence
     import state_store
+    import appeals
 
 
 def utc_now():
@@ -355,7 +356,8 @@ def handle_answer(args):
         "difficulty": q["difficulty"], "type": q["type"],
         "score": score, "method": method,
         "confidence": args.confidence, "hint_used": args.hint_used,
-        "session": session["id"], "at": utc_now().isoformat()
+        "session": session["id"], "at": utc_now().isoformat(),
+        "event_id": uuid.uuid4().hex
     }
     if misconception:
         event["misconception"] = misconception
@@ -371,7 +373,7 @@ def handle_answer(args):
     write_state(args.state, state)
     c_events = [e for e in state["history"] if e["concept"] == q["concept"]]
     result = {
-        "score": score, "method": method, "expected": answer_key(q),
+        "event_id": event["event_id"], "score": score, "method": method, "expected": answer_key(q),
         "explanation": q["explanation"], "concept": q["concept"],
         "level": q["level"], "status": estimate(c_events),
         "evidence_profile": evidence_engine.profile(c_events),
@@ -422,6 +424,8 @@ def handle_report(args):
                 for concept, events in sorted(by_concept.items())]
     print(json.dumps({
         "total_answers": len(state["history"]), "pending": bool(state.get("pending")),
+        "appeal_summary": {"open":sum(a.get("status")=="open" for a in state.get("appeals",[])),
+                           "resolved":sum(a.get("status")=="resolved" for a in state.get("appeals",[]))},
         "session": diagnosis.session_summary(state["history"], state.get("session")),
         "concepts": concepts, "areas": rows,
         "caution": ("Rate is a descriptive evidence index, NOT a probability of mastery. "
@@ -471,7 +475,38 @@ def main(argv=None):
     p.add_argument("--state", default=".qa-state.json")
     p = subs.add_parser("state-recover")
     p.add_argument("--state", default=".qa-state.json")
-    p.add_argument("--confirm", action="store_true", help="explicit rollback of last saved action")
+    p.add_argument("--confirm", action="store_true", help="explicit rollback")
+    p.add_argument("--snapshot", help="optional exact snapshot ID; otherwise uses .bak")
+    p = subs.add_parser("state-snapshots")
+    p.add_argument("--state", default=".qa-state.json")
+    p = subs.add_parser("state-export")
+    p.add_argument("--state", default=".qa-state.json")
+    p.add_argument("--output", required=True)
+    p.add_argument("--include-private", action="store_true",
+                   help="export private event history, not only aggregates")
+    p.add_argument("--confirm-private", action="store_true",
+                   help="acknowledge that output contains private learner information")
+    p = subs.add_parser("state-delete")
+    p.add_argument("--state", default=".qa-state.json")
+    p.add_argument("--confirm-delete", choices=("DELETE-LOCAL",),
+                   help="explicitly delete managed state, backup and snapshots")
+    p = subs.add_parser("appeal-open")
+    p.add_argument("--state", default=".qa-state.json")
+    target = p.add_mutually_exclusive_group(required=True)
+    target.add_argument("--event-id")
+    target.add_argument("--event-index", type=int)
+    p.add_argument("--reason", choices=sorted(appeals.OPEN_REASONS), required=True)
+    p = subs.add_parser("appeal-list")
+    p.add_argument("--state", default=".qa-state.json")
+    p = subs.add_parser("appeal-resolve")
+    p.add_argument("--state", default=".qa-state.json")
+    p.add_argument("--appeal-id", required=True)
+    p.add_argument("--decision", choices=("uphold","correct"), required=True)
+    p.add_argument("--reason", choices=sorted(appeals.RESOLVE_REASONS), required=True)
+    p.add_argument("--reviewer-confirmed", action="store_true",
+                   help="explicit self-declared independent review")
+    p.add_argument("--new-score", type=float)
+    p.add_argument("--criterion-scores", help="JSON array of revised criterion scores")
     args = parser.parse_args(argv)
     try:
         if args.cmd == "validate":
@@ -502,10 +537,36 @@ def main(argv=None):
                 elif args.cmd == "state-recover":
                     if not args.confirm:
                         fail("state-recover requires --confirm (rolls back latest action)")
-                    restored = state_store.recover(args.state)
+                    restored = state_store.recover(args.state, args.snapshot)
                     print(json.dumps({"restored": True,
                                       "answers": len(restored["history"]),
-                                      "caution": "Last action may be lost."}, ensure_ascii=True))
+                                      "caution": "One or more recent actions may be lost."}, ensure_ascii=True))
+                elif args.cmd == "state-snapshots":
+                    print(json.dumps(state_store.inspect(args.state), ensure_ascii=True))
+                elif args.cmd == "state-export":
+                    if args.include_private != args.confirm_private:
+                        fail("--include-private requires --confirm-private; neither may be used alone")
+                    result = state_store.export(args.state, args.output, args.include_private)
+                    print(json.dumps(result, ensure_ascii=True))
+                elif args.cmd == "state-delete":
+                    if args.confirm_delete != "DELETE-LOCAL":
+                        fail("state-delete requires --confirm-delete DELETE-LOCAL")
+                    print(json.dumps(state_store.delete_local(args.state), ensure_ascii=True))
+                elif args.cmd == "appeal-open":
+                    state = read_state(args.state)
+                    result = appeals.open_appeal(state, args.reason, args.event_id, args.event_index)
+                    write_state(args.state, state)
+                    print(json.dumps(result, ensure_ascii=True))
+                elif args.cmd == "appeal-list":
+                    print(json.dumps(appeals.view(read_state(args.state)), ensure_ascii=True))
+                elif args.cmd == "appeal-resolve":
+                    state = read_state(args.state)
+                    values = json.loads(args.criterion_scores) if args.criterion_scores else None
+                    result = appeals.resolve_appeal(
+                        state, args.appeal_id, args.decision, args.reason,
+                        args.reviewer_confirmed, args.new_score, values)
+                    write_state(args.state, state)
+                    print(json.dumps(result, ensure_ascii=True))
     except (ValueError, OSError, json.JSONDecodeError) as exc:
         print("error: " + str(exc), file=sys.stderr)
         return 2
