@@ -1,0 +1,80 @@
+name: FORGET-SE real external-criterion benchmark
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/evaluate_forget_se.py
+      - tests/test_forget_se.py
+      - .github/workflows/benchmark-forget-se.yml
+permissions:
+  contents: read
+jobs:
+  benchmark:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate external criterion tests
+        run: python -m unittest discover -s tests -p 'test_forget_se.py' -v
+      - name: Fetch and verify pinned FORGET-SE research CSV files
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib
+          import os
+          from pathlib import Path
+          from urllib.request import urlopen
+          revision = '012f4ca56155140f5e5017dd336e4f9a5c5f249c'
+          hashes = {
+              'forget_se.csv': '57a74310ffbf31b8462117c24e6eade3814715fc',
+              'exam.csv': 'a807fc746bbdcdeb1af646dda3120e4deb7b3995'
+          }
+          for filename, expected in hashes.items():
+              url = ('https://raw.githubusercontent.com/alyssa-sha/FORGET-SE/'
+                     + revision + '/' + filename)
+              with urlopen(url, timeout=60) as inp:
+                  data = inp.read(1000001)
+              if len(data) > 1000000:
+                  raise SystemExit('Dataset file exceeds the pinned size cap')
+              sha = hashlib.sha1(b'blob ' + str(len(data)).encode()
+                                 + b'\0' + data).hexdigest()
+              if sha != expected:
+                  raise SystemExit('Git blob content mismatch: ' + filename)
+              (Path(os.environ['RUNNER_TEMP']) / filename).write_bytes(data)
+              print('Verified upstream research data:', filename, len(data), 'bytes')
+          PY
+      - name: Run student-disjoint exam benchmark
+        shell: bash
+        run: |
+          python scripts/evaluate_forget_se.py \
+            --weekly "$RUNNER_TEMP/forget_se.csv" \
+            --exam "$RUNNER_TEMP/exam.csv" \
+            --bootstraps 200 \
+            --output forget-se-aggregate.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r = json.loads(Path('forget-se-aggregate.json').read_text())
+          print('Source counts:',r['data_counts'])
+          print('Split learners:',r['split_learners'])
+          for part in ('validation','test'):
+              sample = r[part]
+              print(part, 'n=',sample['n'],'learners=',sample['learners'])
+              for name, scores in sample['models'].items():
+                  print(name, 'AUC=',scores['auc'] if scores else None)
+              print('AUC difference index-minus-mean CI:',
+                    sample['index_minus_quiz_average_auc_95ci'])
+              print('Strong-label observations:',
+                    sample['diagnostic_labels']['tentatively_strong']['count'])
+          print('Cautious decision:',r['decision'])
+          PY
+      - name: Upload aggregate report ONLY (not raw student records)
+        uses: actions/upload-artifact@v4
+        with:
+          name: forget-se-aggregate-report
+          path: forget-se-aggregate.json
+          retention-days: 14
