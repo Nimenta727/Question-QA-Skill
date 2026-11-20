@@ -103,3 +103,7 @@ CLI 返回综合得分、每条标准的证据与反馈、已达标项、待改�
 
 ## v0.9.0 受保护评分、外部审计检查点及专家参照比较
 本地管理员可通过 scripts/reviewer_credentials.py 登记、检查和撤销审阅者的能力凭据，调用 qa.py audit-init 对尚未出现申诉的学习状态启用保护模式。受保护状态的结案必须验证实际凭据，且可生成独立保管的 audit-checkpoint 用于发现审计回滚。详情见 docs/SECURE_REVIEW.zh-CN.md / docs/SECURITY_AUDIT.zh-CN.md。对研究样本，scripts/reviewer_pilot.py 可以把冻结的双审阅分数同另行获取的专家参照比较；docs/REFERENCE_PILOT.zh-CN.md 有八例完全合成演示，不代表真人实验已完成。
+
+
+## v1.1.0 学生看到题目之前：严格模型审题
+任何课程题先读取真实课件，Agent独立解题后让另一审阅回合主动挑错，而非简单“已检查”。本地可先运行 scripts/model_audit.py BANK.json --template audit.json --source-file COURSE_EXTRACT.txt；由实际独立审阅模型填写后运行 --review audit.json --source-file COURSE_EXTRACT.txt --require-course。选题使用 qa.py next BANK.json --require-model-audit --model-audit audit.json --audit-source-file COURSE_EXTRACT.txt --require-course-audit。所有不确定性未解决即拒绝展示。没有课程资料则明确使用通用练习模式，不可冒充课程出处。完整步骤见 docs/MODEL_AUDIT.zh-CN.md；程序本身不调用AI，不证明审核者身份或实际内容正确性。

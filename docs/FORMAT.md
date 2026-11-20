@@ -77,3 +77,9 @@ The validated bank and local state schema remain version 1. Existing objective g
 - report and session budget/exhaustion → teaching_summary: observations limited to the active session, concept/family coverage, incorrect and partial observations, confidence/hint uncertainty, untested concepts and explicitly non-calibrated interpretation.
 
 A candidate item is NOT proven educationally appropriate merely by having been selected; when suggestion_fit is review_or_author_better_variant, an AI tutor should prefer a genuinely independent checked question. The source-anchor brief explicitly states that a genuine instructor source has not been independently verified. The terminal student prompt should display only the question, not these internal metadata fields.
+
+
+## v1.1.0 model evidence record (separate from item bank schema)
+The optional model audit packet schema is implemented by scripts/model_audit.py. It is separate from learner state and question bank format; the bank schema remains version 1. The packet stores entire-bank and optional exact-course-extract SHA256, two declared model actor IDs, independent solution and answer for each item, source quote, accepted alternatives, analyses of every non-key single-choice option or every open-response rubric criterion, nine substantive evidence checks, tracked warning codes and unresolved risks. Every item must pass or the entire review is BLOCKED. The verifier only establishes its own mechanically verifiable facts and does not attest to true independent semantic review.
+
+qa.py next supports --require-model-audit --model-audit PATH [--audit-source-file TEXT] [--require-course-audit]. A missing, stale or uncertain review blocks before pending question is exposed. Without the strict flag, old CLI usage is kept for backward compatibility but explicitly returns model_audit_status=not_checked_legacy_mode. The student-facing interface must not conflate this with reviewed content.

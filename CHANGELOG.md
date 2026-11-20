@@ -1,5 +1,16 @@
 # Changelog / 版本记录
 
+## v1.1.0 — 2026-11-21 — Strict adversarial model audit before presenting questions
+
+- A model reviewer now has a first-class two-pass audit contract: solve the student-facing task **without** the author's key, then challenge the answer, alternative keys, domain assumptions, actual curriculum citations, each distractor or rubric criterion, diagnostic distinction, level alignment, fairness and semantic novelty. A single failed or uncertain issue blocks adoption.
+- Added scripts/model_audit.py: an all-unapproved template, independent-review declaration, required item-specific justifications across nine checks, exact bank and course-source SHA256 binding, verifiable source quotes, selected answer agreement, unresolved risk and static warning gates. No raw student response or private course extract is ever included in a public report.
+- qa.py next supports --require-model-audit --model-audit FILE and --audit-source-file / --require-course-audit. In strict mode **no learner-facing question** is returned unless the complete model evidence packet passes; legacy no-audit mode remains but explicitly says not_checked_legacy_mode.
+- A proposed alternative valid short answer which the actual grader would reject, a second single-choice answer key, a course claim without a source and any edited question/source invalidate approval.
+- SKILL.md now makes adversarial question critique compulsory before each QUICK/DEEP prompt. references/model_audit.md and bilingual usage guides explain independent solving, source verification, strict stop conditions and qualified human validation for formal assessments.
+- Added adversarial synthetic tests and an **actual self-critique** of the existing demo bank documenting weak distractors, missing domain assumptions and potentially mismatched cognitive-level labels. That self-critique is not a claimed independent review.
+- The verifier checks evidence **structure and a few objective facts**, and does NOT itself run an LLM or prove semantic truth, fairness, actual independent reviewer identity or improved learner outcomes.
+
+
 ## v1.0.0 — 2026-11-21 — Return to evidence-driven AI tutoring
 
 - Replaced the continually growing primary SKILL.md with a compact, course-faithful QUICK and DEEP tutoring contract. Previously implemented security, data lifecycle, audit and research tools remain available only when requested via references/operations.md.

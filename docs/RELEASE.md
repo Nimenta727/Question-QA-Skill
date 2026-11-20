@@ -60,3 +60,7 @@ The distribution must contain reviewer_credentials.py, audit_ledger.py and revie
 
 ## v1.0.0 — core-skill delivery vs optional advanced tooling
 The primary SKILL.md is now intentionally short and routes ordinary tutors only to the adaptive tutoring/authoring references. Other modules remain packaged in the full offline reproducible ZIP but are not preloaded as model context. v1.0.0 additionally requires scripts/tutor_core.py, references/tutoring.md and references/operations.md, plus the complete synthetic tutoring regression suite. This change neither creates a general LLM model endpoint nor verifies human teaching outcomes. The main repository/tag and checksum policy remain immutable and exact-commit-bound.
+
+
+## v1.1.0 model audit shipping requirements
+The distributed Skill now requires scripts/model_audit.py, references/model_audit.md and both docs/MODEL_AUDIT language variants. All source extracts and actual model reviewer packets are private and should be stored outside the project. The release validator excludes explicitly named model-audit packets and course/source extracts when accidentally placed under examples/, without removing genuinely synthetic demonstration files. Build/verify checks remain SHA256 manifest-bound, independently tested on Windows, macOS and Linux, and re-executed after fresh ZIP extraction. Note that these CI suites use deliberately synthetic evidence and DO NOT prove a real independent AI model was invoked, or that the audited questions are semantically correct.
