@@ -113,6 +113,23 @@ class FrozenExpertReferenceTests(unittest.TestCase):
         two=reviewer_pilot.evaluate(manifest,frozen,a,b,expert,50,42)
         self.assertEqual(one,two)
 
+    def test_shipped_synthetic_pilot_is_complete_and_reproducible(self):
+        plan=json.loads((ROOT/"examples"/"sample_trial_plan.json").read_text(encoding="utf-8"))
+        a=json.loads((ROOT/"examples"/"sample_trial_reviewer_A.json").read_text(encoding="utf-8"))
+        b=json.loads((ROOT/"examples"/"sample_trial_reviewer_B.json").read_text(encoding="utf-8"))
+        expert=json.loads((ROOT/"examples"/"sample_trial_expert_reference.json").read_text(encoding="utf-8"))
+        self.assertEqual("synthetic",plan["study_type"])
+        self.assertFalse(plan["authorized"])
+        with tempfile.TemporaryDirectory() as directory:
+            local=Path(directory)/"private"
+            reviewer_trial.prepare(plan,local)
+            manifest=json.loads((local/"private-manifest.json").read_text(encoding="utf-8"))
+            frozen=reviewer_trial.freeze(manifest,a,b,bootstraps=20)
+            summary=reviewer_pilot.evaluate(manifest,frozen,a,b,expert,bootstraps=20)
+            self.assertEqual(8,summary["metrics"]["cases"])
+            self.assertGreater(summary["metrics"]["consensus_agreed_but_reference_disagreed"],0)
+            self.assertFalse(summary["genuine_human_review_verified"])
+
     def test_cli_outputs_aggregate_not_original_case_names(self):
         manifest,frozen,a,b,expert=setup()
         with tempfile.TemporaryDirectory() as tmp:
