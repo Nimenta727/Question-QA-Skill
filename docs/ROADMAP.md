@@ -114,3 +114,16 @@ Priorities: accuracy and fairness > observable evidence > maintainability > unne
 2. Consent-verified prospective blinded educational reliability pilot and independent specialist reference scoring, with uncertainty intervals and learner appeal oversight.
 3. Database-backed authenticated event sourcing for managed multi-user installations, encryption and retention requirements selected by responsible institutions.
 4. New independent longitudinal cohort with verified item IDs/cognitive levels/delayed assessment before any calibrated mastery or learning-benefit claim.
+
+
+## v0.9.0 — completed implementation (not independent human validation)
+- Pseudonymous locally enrolled reviewer capability secrets, admin enrollment/revocation, protected appeal correction and HMAC-chain audit with external checkpoint receipts.
+- Signed policy to make accidental protected-mode downgrade or unsigned snapshot restore fail closed; still local OS security and key custody boundaries.
+- Separate reference-rubric comparison on frozen first-round reviewers, showing the important possibility of reviewers agreeing with each other but differing from an external reference; case-level uncertainty and no identifier export.
+- Fully synthetic, end-to-end plan → reviewer A/B freeze → expert reference comparison and cross-platform regression.
+
+## Next independent requirements
+1. Genuine institutional credential/role provisioning, trusted checkpoint custody, authenticated event actors and human review records for actual classroom use; do not mistake local secrets for identity verification.
+2. Appropriate school permission, consent/guardian processes, qualified independent reviewers and externally checked expert marking before any real pilot.
+3. Third completely unseen learner cohort and item-level timestamps for predictive/adaptive model validation.
+4. Optional central encrypted transactional store with user-managed access controls and real audit retention policies.

@@ -8,3 +8,7 @@
 - Versioned release uses six Linux/Windows/macOS × Python 3.9/3.12 test combinations and full fresh-extraction/SHA256 checks. Every repository modification has a dated record in docs/routine.
 
 中文重点：这是**本地持凭据认证和可核验的申诉审计链**，不是现实教师实名身份系统、更不是绝对不可篡改的成绩账本。真实双审阅者试验尚未取得参与者授权或开展；合成实验仅用于软件验收。
+
+
+### Independent expert-reference comparison
+scripts/reviewer_pilot.py adds a separately supplied expert reference to the previously frozen two-rater round. It verifies the original first-round packet hashes, checks complete rubric/case alignment, and reports each rater's expert-reference agreement and score gap, both-rater consensus disagreeing with the external reference, and case-clustered uncertainty. docs/REFERENCE_PILOT.md and .zh-CN.md include an eight-case synthetic full workflow. It is not automatically authenticated expert correctness or real human-subject research.

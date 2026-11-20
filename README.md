@@ -132,3 +132,9 @@ Previously released ZIPs remain immutable; future software quality claims must r
 - Existing unprotected v0.8 appeals remain supported but are explicitly labeled self-declared, rather than falsely presented as credential-verified.
 
 No genuine human-subject trial has been run by this project; external authorization, qualified reviewers, student/guardian consent when required and protected source data remain prerequisites.
+
+
+## v0.9.0 — secured local review and expert-reference pilot readiness
+The optional protected mode gives a real administrator tools for enrolling and revoking locally scoped reviewer credentials (random tokens and salted PBKDF2 verifiers), requires valid key possession before protected grading appeals are resolved, and links changes in an HMAC-SHA256 appeal audit. Separately retained, keyed checkpoints can reveal rollback. They do NOT prove a teacher's real identity or make a local JSON file absolutely immutable. See [secure review setup](docs/SECURE_REVIEW.md) and [audit limitations](docs/SECURITY_AUDIT.md).
+
+A new [expert-reference comparison](docs/REFERENCE_PILOT.md) complements two-reviewer agreement by testing how often both reviewers agree with one another yet depart from a separately supplied expert score. It reports only aggregate reference agreement, score differences and case-bootstrap uncertainty, with no student-level records in output. A reproducible eight-case synthetic demo is provided. It is **not** a real human-subject validation experiment.

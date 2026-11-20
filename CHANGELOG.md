@@ -2,6 +2,15 @@
 
 ## v0.9.0 — 2026-11-20
 
+- Added offline administrator-scoped reviewer credentials, secure local token files, salted PBKDF2 verifiers and revocation; protected score corrections require verified active reviewer token possession rather than legacy self-declaration.
+- Added HMAC-SHA256 appeal audit chain for open/resolve operations, a separate signed policy marker, integrity checking and independently archived keyed checkpoints; does not claim teacher identity verification, cryptographic non-repudiation or absolute immunity to rollback without external trust.
+- Strengthened recovery and secret destination controls, and disallowed protected-mode downgrade through normal legacy correction paths.
+- Added frozen-round independent expert-reference comparison with aggregate-only agreement/absolute errors, common reviewer-reference disagreements and case-bootstrap uncertainty, plus eight wholly synthetic end-to-end cases. No real student/teacher study or independently certified gold-standard accuracy.
+- Additional security/research/privacy regressions; GitHub CI on Ubuntu/Windows/macOS with Python 3.9/3.12, immutable checksummed distribution and full fresh-extraction smoke tests.
+
+
+## v0.9.0 — 2026-11-20
+
 - Added stdlib-only, local credential-based reviewer enrollment, authenticated review, revocation and private token-file handling with salted PBKDF2-HMAC verifiers; actual educator identity, professional qualifications and blind-review independence are not verified by software.
 - Added HMAC-linked appeal audit sequence, external signed policy binding, effective-score consistency checks and optional independently stored rollback-detecting checkpoint receipts. High-trust appeal correction requires reviewer credentials plus audit key, and signed-state rollback/deletion has explicit extra confirmation.
 - Added third-party disputed-criteria finalization for previously frozen A/B reviewer study packets. A synthetic expert-reference comparison tool and samples can assess agreement with a declared reference, not prove expert correctness or demonstrate real human participation.

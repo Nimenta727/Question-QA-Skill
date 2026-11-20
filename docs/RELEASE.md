@@ -52,3 +52,7 @@ The v0.8.0 archive requires appeals.py, reviewer_trial.py and state_store.py. Al
 
 ## v0.9.0 additional safety gate
 Release ZIP must contain scripts/reviewer_credentials.py and scripts/audit_ledger.py, the previously included scripts/appeals.py and scripts/reviewer_trial.py, plus tests and bilingual safe-use instructions. The package must NEVER include local reviewer registries, administrator/reviewer token files, HMAC audit keys, .audit-policy markers, checkpoint receipts, student response files or private rating packets. This is a reproducible versioned release, not a certified school identity system or real human experiment.
+
+
+## v0.9.0 reviewer-security and research packaging
+The distribution must contain reviewer_credentials.py, audit_ledger.py and reviewer_pilot.py; the first two require externally held private credentials/audit secrets, while the third accepts pseudonymous private rating packets. No admin/reviewer token, audit key, external receipt, policy sidecar, actual student submission or human research record is part of the official archive. Synthetic public example packets are intentionally shipped for regression. Use the SHA256 manifest, three-OS tests and immutable Git tag to verify source/package identity. The local audit is not a qualified digital signature or a tamper-proof institutional ledger.

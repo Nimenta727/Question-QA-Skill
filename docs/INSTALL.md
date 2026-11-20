@@ -79,3 +79,7 @@ State snapshots: state-snapshots, optional state-recover --snapshot ID --confirm
 
 ## v0.9.0 protected review setup
 To set up credential-gated review, create a private reviewer registry and private admin/reviewer token files with scripts/reviewer_credentials.py. Then enable a protected audit on a local learner state *before opening any appeals* using qa.py audit-init with an administrator token; the tool creates an external HMAC key and state audit-policy marker. Protected appeal-resolve requires registry, reviewer ID, reviewer-token-file and audit-key-file, not only legacy --reviewer-confirmed. Use audit-verify and retain separately protected audit-checkpoint receipts. Read docs/SECURITY_AUDIT.md first; external reviewer identity is not established by tokens alone.
+
+
+## v0.9.0 protected reviewer mode and independent reference scoring
+Use scripts/reviewer_credentials.py to initialize the local registry, enroll/revoke teachers under administrator control, and scripts/qa.py audit-init to protect a fresh learner state. Protected appeal corrections require the valid reviewer token, registry and independently secured HMAC key. Retain audit-checkpoint receipts separately to compare against rollback. Full protocol: docs/SECURE_REVIEW.md and docs/SECURITY_AUDIT.md. For a future externally authorized pilot, use the frozen A/B score packets and scripts/reviewer_pilot.py with a separate expert reference; docs/REFERENCE_PILOT.md includes a fully synthetic demonstration.

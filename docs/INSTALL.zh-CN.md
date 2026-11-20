@@ -92,3 +92,7 @@ CLI 返回综合得分、每条标准的证据与反馈、已达标项、待改�
 
 ## v0.9.0 受保护申诉操作
 先使用 scripts/reviewer_credentials.py 创建本地管理员和审阅者凭据并保护好秘密文件；学习状态尚无历史申诉时，可调用 qa.py audit-init 绑定注册表和独立审计密钥。之后申诉纠错必须提交有效审阅者token、登记簿及审计密钥，不能只声明“审核过”。使用 audit-verify 校验，建议将 audit-checkpoint 收据独立保存以检测合法旧快照回滚。详见 docs/SECURITY_AUDIT.zh-CN.md。凭据不等同于真实教职认证。
+
+
+## v0.9.0 受保护评分、外部审计检查点及专家参照比较
+本地管理员可通过 scripts/reviewer_credentials.py 登记、检查和撤销审阅者的能力凭据，调用 qa.py audit-init 对尚未出现申诉的学习状态启用保护模式。受保护状态的结案必须验证实际凭据，且可生成独立保管的 audit-checkpoint 用于发现审计回滚。详情见 docs/SECURE_REVIEW.zh-CN.md / docs/SECURITY_AUDIT.zh-CN.md。对研究样本，scripts/reviewer_pilot.py 可以把冻结的双审阅分数同另行获取的专家参照比较；docs/REFERENCE_PILOT.zh-CN.md 有八例完全合成演示，不代表真人实验已完成。

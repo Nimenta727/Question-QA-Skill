@@ -62,3 +62,7 @@ Five prior valid snapshots are retained in state.json.snapshots/ plus state.json
 
 ## v0.9.0 authenticated appeal audit (optional)
 Only a fresh state without previously opened appeals can opt into the local signed-review mode. state.audit contains a version, HMAC key identifier, reviewer registry identifier and sequential HMAC-linked entries for appeal openings/closures. Each entry commits to previous MAC, appeal snapshot and the corresponding event's effective score; state.json.audit-policy is a separate authenticated metadata marker. Secrets and real reviewer identity are NOT stored in this structure. External checkpoint receipts commit to chain length/head and can reveal replacement by older signed state if kept independently. The HMAC does NOT sign every non-appealed historical response. See docs/SECURITY_AUDIT.md.
+
+
+## v0.9.0 optional cryptographically checked appeal metadata
+Protected states can contain an audit journal of sequential, HMAC-linked appeal open and resolution records, keyed by an external administrator-held secret and bound to the state reviewer registry ID. A separate sidecar policy indicates protected mode; the self-declared legacy correction command cannot resolve protected appeals without active reviewer token authentication. Receipts can be exported to a separately controlled directory to check for rollback or truncation. The cryptographic proof covers the specified records under local key custody; it cannot independently verify human identity or teacher judgment. See docs/SECURE_REVIEW.md / docs/SECURITY_AUDIT.md.
