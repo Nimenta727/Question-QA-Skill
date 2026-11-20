@@ -1,0 +1,17 @@
+[
+  {
+    "score": 1,
+    "evidence": "正确论证 a 非零时可以除以 a",
+    "feedback": "概念边界明确。"
+  },
+  {
+    "score": 0.5,
+    "evidence": "提到 a=0 时无解但未说明 b 非零",
+    "feedback": "明确区分 a=0,b≠0 的情形并解释。"
+  },
+  {
+    "score": 0,
+    "evidence": "未讨论 a=b=0 的情形",
+    "feedback": "补充此时所有 x 都是方程的解。"
+  }
+]

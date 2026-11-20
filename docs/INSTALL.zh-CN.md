@@ -1,0 +1,65 @@
+# Question-QA-Skill v0.4.0 安装与使用
+
+本项目是能够被兼容 Agent Skills 协议的助手读取的 Skill，同时包含独立的离线 Python CLI。Python 3.9+，无需额外 pip 依赖，支持 Windows、macOS 和 Linux。
+
+## 安装
+
+1. 在 GitHub Releases 下载 question-qa-skill-0.4.0.zip 和 SHA256SUMS.txt。
+2. 使用系统自带工具核对 SHA256，再解压 ZIP。
+3. 将解压后的整个目录注册或复制至你的 Agent 所支持的 Skill 路径（各宿主路径不同；不是安装 Python 扩展）。
+4. 也可直接使用命令行。进入解压后的目录，执行：
+
+    python3 scripts/qa.py validate examples/sample_bank.json
+
+Windows 上若没有 python3 命令，可以换用 py -3。
+
+## 学生答题与追踪（快问快答）
+
+    python3 scripts/qa.py start examples/sample_bank.json --state .qa-state.json --mode quick --limit 6
+    python3 scripts/qa.py next examples/sample_bank.json --state .qa-state.json
+    python3 scripts/qa.py answer examples/sample_bank.json --state .qa-state.json --response C --confidence unsure
+    python3 scripts/qa.py report --state .qa-state.json --bank examples/sample_bank.json
+
+每次 next 只暴露题干、选项及编号；answer 才核对答案并给解释。未交卷前不要把包含标准答案的 JSON 题库直接展示给学生。
+
+## 主观题评分（逐项审阅）
+
+主观题必须由教师或 Agent **先检查真实学生作答，并按题目的每条 rubric 对照证据**。程序不会自己判断任意自然语言答案语义是否正确。
+
+    python3 scripts/qa.py next examples/sample_bank.json --state .qa-state.json
+
+对出现的主观题，按照它的 rubric 创建自己的 review.json，例如 examples/sample_review.json（**仅演示格式，切勿直接拿演示分数评真实学生**）。该 JSON 数组每条必须包含 score（只能为 0、0.5、1）、evidence（观察到的具体作答证据）、feedback（下一步建议），顺序与 rubric 相同。审阅后运行：
+
+    python3 scripts/qa.py answer examples/sample_bank.json --state .qa-state.json --response "学生实际回答" --reason "逐项核验得分" --rubric-judgments @review.json
+
+CLI 返回综合得分、每条标准的证据与反馈、已达标项、待改进项；本地学习状态只存放每项**数值分数**，不存储学生原文或评语。仍可用旧的 --score 0/0.5/1 --reason 对主观题手工给出粗粒度分数。
+
+对于短答题，与标准答案字符串不一致但审阅者确认数学/语义等价时，可以用 --review-equivalent --reason "等价性理由" 重新记录为正确，仅限待回答的短答题，选择题不可覆盖。
+
+**隐私注意**：命令行中的原始回答可能留在本机终端历史或系统进程信息中；不要在命令行参数里输入学生姓名、联系方式等身份信息。可以使用匿名的学习状态文件并保持本地保存。
+
+## 离线 HTML 学习看板
+
+真实记录：
+
+    python3 scripts/dashboard.py examples/sample_bank.json --state .qa-state.json --output learning-dashboard.html --lang zh
+
+无个人数据的演示记录：
+
+    python3 scripts/dashboard.py examples/sample_bank.json --state examples/demo_state.json --output demo-dashboard.html --lang en
+
+用浏览器打开生成的 HTML。页面自带深浅色适配、中英文切换和打印功能，展示知识图谱（有先修边才连线）、知识点证据、认知层次、已审核的错因、逐项评分和历史趋势。整页无需联网，没有第三方字体/CDN、学生原始回答或题库答案。
+
+看板的得分、颜色、图表反映**已观察的作答情况**，并非经过标定的掌握概率或标准化考试成绩。
+
+## 开发与离线发行检查
+
+    python3 -m unittest discover -s tests -v
+    python3 scripts/build_release.py --output dist
+    python3 scripts/build_release.py --verify dist/question-qa-skill-0.4.0.zip
+
+发行 ZIP 中的 manifest.json 对每个文件记录 SHA256，GitHub Actions 还会上传 SHA256SUMS.txt。参考 docs/RELEASE.md 和 CHANGELOG.md。
+
+## 诊断可信度说明
+
+公开 FORGET-SE 数据的首轮真实外部效标评测**尚未证明** v0.2 诊断指数优于简单历史成绩基线，因此这里不提供 BKT/IRT 模型，也不宣称能从少量回答准确读取潜在掌握状态。详见 docs/VALIDATION.zh-CN.md。
