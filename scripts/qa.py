@@ -19,7 +19,7 @@ CONFIDENCES = {"sure", "unsure", "guess", "none"}
 SPACING_DAYS = (1, 3, 7, 14, 30)
 SCHEMA = 1
 try:
-    from . import diagnosis, feedback, assessment_engine, evidence_engine, prediction_engine, adaptive_engine, math_equivalence, state_store, appeals, audit_ledger, reviewer_credentials, tutor_core
+    from . import diagnosis, feedback, assessment_engine, evidence_engine, prediction_engine, adaptive_engine, math_equivalence, state_store, appeals, audit_ledger, reviewer_credentials, tutor_core, model_audit
 except ImportError:
     import diagnosis
     import feedback
@@ -33,6 +33,7 @@ except ImportError:
     import audit_ledger
     import reviewer_credentials
     import tutor_core
+    import model_audit
 
 
 def utc_now():
@@ -255,6 +256,20 @@ def handle_start(args):
 
 def handle_next(args):
     bank, digest = read_bank(args.bank)
+    audited = False
+    if args.require_model_audit and not args.model_audit:
+        fail("strict question audit required: provide --model-audit FILE")
+    if args.model_audit:
+        packet = model_audit._read_json(args.model_audit)
+        verdict = model_audit.verify(
+            bank, digest, packet, args.audit_source_file,
+            require_course=args.require_course_audit)
+        if not verdict["can_present_for_formative_practice"]:
+            fail("question audit blocked: "+",".join(
+                sorted({f["code"] for f in verdict["failures"]})))
+        audited = True
+    elif args.require_course_audit:
+        fail("--require-course-audit also requires --model-audit")
     state = read_state(args.state)
     if not state.get("session"):
         mode = args.mode or "quick"
@@ -298,6 +313,8 @@ def handle_next(args):
                             "selection": selection}
         write_state(args.state, state)
     result = safe_prompt(q)
+    result["model_audit_status"] = ("recorded_model_review_for_practice"
+                                    if audited else "not_checked_legacy_mode")
     if state.get("pending", {}).get("selection"):
         result["selection"] = state["pending"]["selection"]
     result["session"] = diagnosis.session_summary(state["history"], session)
@@ -484,6 +501,12 @@ def main(argv=None):
     p.add_argument("--mode", choices=("quick", "deep"))
     p.add_argument("--limit", type=int)
     p.add_argument("--focus")
+    p.add_argument("--require-model-audit", action="store_true",
+                   help="strict mode: block any question lacking a passing model critique")
+    p.add_argument("--model-audit", help="completed separate model review JSON for this exact bank")
+    p.add_argument("--audit-source-file", help="the actual course source TEXT bound by review SHA256")
+    p.add_argument("--require-course-audit", action="store_true",
+                   help="refuse generic practice; require actual source text and citations")
     p = subs.add_parser("answer")
     p.add_argument("bank")
     p.add_argument("--state", default=".qa-state.json")
