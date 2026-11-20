@@ -21,3 +21,9 @@ The file must cover exactly the same set of cases and fixed rubric lengths as th
 The result includes a first-round stage marker, SHA256 checksums of both structured review packets and aggregate agreement/uncertainty, never case IDs, raw student responses or reviewer personal details. Hash commitments are not timestamps signed by a trusted institution and cannot authenticate identity, independent work, consent or scoring correctness. Arrange separate expert validity checks and third-reviewer adjudication, and publish only permitted aggregate statistics.
 
 No research participant data is collected or uploaded by these commands. Protect private plan, answer and rating files from release archives or public commits. Read docs/REVIEWER_STUDY.md for statistical cautions.
+
+
+## v0.9.0: external expert-reference comparison after first-round freeze
+Reviewer A/B agreement alone cannot detect shared grading mistakes. After freezing both independent first-round packets, obtain a separate, curriculum-grounded expert reference under appropriate authorization and compare each reviewer with that reference using scripts/reviewer_pilot.py. The analysis includes criterion-level reference agreement, absolute score differences, reviewer consensus that disagrees with the expert and a cluster-bootstrap interval.
+
+See [REFERENCE_PILOT.md](REFERENCE_PILOT.md) for the exact private input contract and the limitations of the benchmark. The supplied expert reference, blindness, reviewer competence, consent and actual educational correctness must all be established independently; this software does not certify them.
