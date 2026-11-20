@@ -221,7 +221,7 @@ def handle_start(args):
     state["pending"] = None
     write_state(args.state, state)
     print(json.dumps({"session": diagnosis.session_summary(state["history"], state["session"])},
-                     ensure_ascii=False))
+                     ensure_ascii=True))
 
 
 def handle_next(args):
@@ -251,7 +251,7 @@ def handle_next(args):
             write_state(args.state, state)
             print(json.dumps({"complete": True, "reason": "question_budget_reached",
                               "session": diagnosis.session_summary(state["history"], session)},
-                             ensure_ascii=False))
+                             ensure_ascii=True))
             return
         q, selection = adaptive_engine.choose(bank["items"], state["history"], session["mode"],
                                               session_history=part, focus=session.get("focus"))
@@ -259,7 +259,7 @@ def handle_next(args):
             write_state(args.state, state)
             print(json.dumps({"complete": True, "reason": "item_bank_exhausted",
                               "session": diagnosis.session_summary(state["history"], session)},
-                             ensure_ascii=False))
+                             ensure_ascii=True))
             return
         state["pending"] = {"id": q["id"], "bank_digest": digest,
                             "selection": selection}
@@ -268,7 +268,7 @@ def handle_next(args):
     if state.get("pending", {}).get("selection"):
         result["selection"] = state["pending"]["selection"]
     result["session"] = diagnosis.session_summary(state["history"], session)
-    print(json.dumps(result, ensure_ascii=False))
+    print(json.dumps(result, ensure_ascii=True))
 
 
 def selected_choice(q, response):
@@ -377,7 +377,7 @@ def handle_answer(args):
         result["review_reason"] = args.reason
     elif score == 0 and q["type"] == "short":
         result["note"] = "Exact match only; review equivalent answers before inferring misconceptions."
-    print(json.dumps(result, ensure_ascii=False))
+    print(json.dumps(result, ensure_ascii=True))
 
 
 def handle_report(args):
@@ -408,7 +408,7 @@ def handle_report(args):
         "caution": ("Rate is a descriptive evidence index, NOT a probability of mastery. "
                     "Strong status requires varied independent items, cognitive breadth "
                     "and delayed retrieval. Review timing is not a fitted FSRS model.")
-    }, ensure_ascii=False, indent=2))
+    }, ensure_ascii=True, indent=2))
 
 
 def main(argv=None):
@@ -452,7 +452,7 @@ def main(argv=None):
     try:
         if args.cmd == "validate":
             bank, _ = read_bank(args.bank)
-            print(json.dumps({"valid": True, "items": len(bank["items"])}, ensure_ascii=False))
+            print(json.dumps({"valid": True, "items": len(bank["items"])}, ensure_ascii=True))
         elif args.cmd == "start":
             handle_start(args)
         elif args.cmd == "next":
