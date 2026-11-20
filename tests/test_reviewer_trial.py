@@ -107,6 +107,80 @@ class ProtocolSafetyTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,"rubric length"):
                 reviewer_trial.freeze(manifest,a,b)
 
+    def test_third_party_finalization_bound_to_frozen_review_packets(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder=Path(tmp)/"study"
+            reviewer_trial.prepare(plan(),folder)
+            manifest=json.loads((folder/"private-manifest.json").read_text())
+            first=packet(manifest,"A")
+            second=packet(manifest,"B",1)
+            frozen=reviewer_trial.freeze(manifest,first,second,bootstraps=0)
+            disputes=[]
+            for a,b in zip(first["cases"],second["cases"]):
+                for i,(left,right) in enumerate(zip(a["scores"],b["scores"])):
+                    if left!=right:
+                        disputes.append({"case_id":a["case_id"],"criterion_index":i,
+                                         "score":left,"reason_code":"rubric_clarification"})
+            c={"adjudicator_id":"reviewer-C","independent_self_declared":True,
+               "decisions":disputes}
+            final=reviewer_trial.finalize(manifest,frozen,first,second,c)
+            self.assertEqual("adjudication_complete",final["stage"])
+            self.assertEqual(len(disputes),final["disputed_criteria_adjudicated"])
+            self.assertEqual(0,final["unresolved_cases"])
+            self.assertFalse(final["independent_adjudicator_identity_verified"])
+            self.assertNotIn("case-00",json.dumps(final))
+            altered=copy.deepcopy(second)
+            altered["cases"][0]["scores"][0]=1-altered["cases"][0]["scores"][0]
+            with self.assertRaisesRegex(ValueError,"differ from immutable"):
+                reviewer_trial.finalize(manifest,frozen,first,altered,c)
+            missing=copy.deepcopy(c)
+            missing["decisions"].pop()
+            with self.assertRaisesRegex(ValueError,"all frozen"):
+                reviewer_trial.finalize(manifest,frozen,first,second,missing)
+            duplicated=copy.deepcopy(c)
+            duplicated["decisions"].append(copy.deepcopy(disputes[0]))
+            with self.assertRaisesRegex(ValueError,"only each disputed"):
+                reviewer_trial.finalize(manifest,frozen,first,second,duplicated)
+            unagreed=copy.deepcopy(c)
+            unagreed["decisions"][0]["criterion_index"]=1
+            with self.assertRaisesRegex(ValueError,"only each disputed"):
+                reviewer_trial.finalize(manifest,frozen,first,second,unagreed)
+
+    def test_cli_finalize_does_not_leak_pseudonyms_or_replace_result(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder=Path(tmp)/"private"
+            reviewer_trial.prepare(plan(),folder)
+            manifest=json.loads((folder/"private-manifest.json").read_text())
+            a,b=packet(manifest,"A"),packet(manifest,"B",1)
+            frozen=reviewer_trial.freeze(manifest,a,b,bootstraps=0)
+            disputes=[]
+            for first,second in zip(a["cases"],b["cases"]):
+                for i,(x,y) in enumerate(zip(first["scores"],second["scores"])):
+                    if x!=y:
+                        disputes.append({"case_id":first["case_id"],
+                                         "criterion_index":i,"score":x,
+                                         "reason_code":"other"})
+            inputs=[frozen,a,b,{"adjudicator_id":"independent-C",
+                    "independent_self_declared":True,"decisions":disputes}]
+            filenames=[]
+            for idx,item in enumerate(inputs):
+                p=Path(tmp)/("input%d.json"%idx)
+                p.write_text(json.dumps(item),encoding="utf-8")
+                filenames.append(p)
+            target=Path(tmp)/"final.json"
+            cmd=[sys.executable,str(TRIAL),"finalize",
+                 "--manifest",str(folder/"private-manifest.json"),
+                 "--first-round",str(filenames[0]),
+                 "--review-a",str(filenames[1]),
+                 "--review-b",str(filenames[2]),
+                 "--adjudication",str(filenames[3]),"--output",str(target)]
+            first=subprocess.run(cmd,cwd=str(ROOT),capture_output=True,text=True)
+            self.assertEqual(0,first.returncode,first.stderr)
+            self.assertEqual("adjudication_complete",json.loads(target.read_text())["stage"])
+            self.assertNotIn("case-",target.read_text())
+            retry=subprocess.run(cmd,cwd=str(ROOT),capture_output=True,text=True)
+            self.assertNotEqual(0,retry.returncode)
+
     def test_cli_freezes_non_overwriting_aggregate_file(self):
         with tempfile.TemporaryDirectory() as tmp:
             folder=Path(tmp)
