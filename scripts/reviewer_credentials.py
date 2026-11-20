@@ -107,9 +107,11 @@ def _require_admin(data, admin_token_file):
         raise ValueError("admin credential authentication failed")
 
 
-def enroll(registry, admin_token_file, reviewer_id, token_output):
+def enroll(registry, admin_token_file, reviewer_id, token_output, role="reviewer"):
     if not REVIEWER_ID.fullmatch(reviewer_id):
         raise ValueError("reviewer ID must be 3..64 safe ASCII characters")
+    if role not in ("reviewer","approver"):
+        raise ValueError("role must be reviewer or approver")
     if Path(token_output).resolve()==Path(registry).resolve():
         raise ValueError("token cannot replace registry")
     with state_store.locked_state(registry):
@@ -120,7 +122,7 @@ def enroll(registry, admin_token_file, reviewer_id, token_output):
         if Path(token_output).exists():
             raise FileExistsError("credential output already exists")
         token=secrets.token_urlsafe(32)
-        entry={"role":"reviewer","status":"active","verifier":_verifier(token)}
+        entry={"role":role,"status":"active","verifier":_verifier(token)}
         _new_file(token_output,(token+"\n").encode("ascii"))
         try:
             data["reviewers"][reviewer_id]=entry
@@ -128,7 +130,7 @@ def enroll(registry, admin_token_file, reviewer_id, token_output):
         except BaseException:
             Path(token_output).unlink(missing_ok=True)
             raise
-    return {"reviewer_id":reviewer_id,"enrolled":True,"identity_verified":False}
+    return {"reviewer_id":reviewer_id,"role":role,"enrolled":True,"identity_verified":False}
 
 
 def revoke(registry, admin_token_file, reviewer_id):
@@ -143,16 +145,20 @@ def revoke(registry, admin_token_file, reviewer_id):
     return {"reviewer_id":reviewer_id,"revoked":True}
 
 
-def authenticate(registry, reviewer_id, reviewer_token_file, registry_id=None):
+def authenticate(registry, reviewer_id, reviewer_token_file, registry_id=None,
+                 required_role="reviewer"):
     data=read_registry(registry)
     if registry_id is not None and data["registry_id"]!=registry_id:
         raise ValueError("reviewer registry does not match protected state")
     entry=data["reviewers"].get(reviewer_id)
-    if not entry or entry.get("status")!="active" or entry.get("role")!="reviewer":
+    if required_role not in ("reviewer","approver"):
+        raise ValueError("unsupported credential role")
+    if not entry or entry.get("status")!="active" or entry.get("role")!=required_role:
         raise ValueError("reviewer is not active and authorized")
     if not _check(entry.get("verifier"),_read_token(reviewer_token_file)):
         raise ValueError("reviewer credential authentication failed")
-    return {"reviewer_id":reviewer_id,"registry_id":data["registry_id"],
+    return {"reviewer_id":reviewer_id,"role":required_role,
+            "registry_id":data["registry_id"],
             "credential_verified":True,"real_identity_verified":False}
 
 
@@ -167,6 +173,7 @@ def main(argv=None):
     a.add_argument("--admin-token-file",required=True)
     a.add_argument("--reviewer-id",required=True)
     a.add_argument("--token-output",required=True)
+    a.add_argument("--role",choices=("reviewer","approver"),default="reviewer")
     a=subs.add_parser("revoke")
     a.add_argument("--registry",required=True)
     a.add_argument("--admin-token-file",required=True)
@@ -175,16 +182,18 @@ def main(argv=None):
     a.add_argument("--registry",required=True)
     a.add_argument("--reviewer-id",required=True)
     a.add_argument("--token-file",required=True)
+    a.add_argument("--required-role",choices=("reviewer","approver"),default="reviewer")
     args=p.parse_args(argv)
     try:
         if args.action=="init":
             result=initialize(args.registry,args.admin_token_output)
         elif args.action=="enroll":
-            result=enroll(args.registry,args.admin_token_file,args.reviewer_id,args.token_output)
+            result=enroll(args.registry,args.admin_token_file,args.reviewer_id,args.token_output,args.role)
         elif args.action=="revoke":
             result=revoke(args.registry,args.admin_token_file,args.reviewer_id)
         else:
-            result=authenticate(args.registry,args.reviewer_id,args.token_file)
+            result=authenticate(args.registry,args.reviewer_id,args.token_file,
+                                required_role=args.required_role)
         print(json.dumps(result,ensure_ascii=True))
         return 0
     except (ValueError,OSError,TypeError,json.JSONDecodeError) as exc:
