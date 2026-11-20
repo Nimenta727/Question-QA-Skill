@@ -57,7 +57,7 @@ class MathematicalEquivalenceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             me.polynomial("999999999*999999999*999999999*999999999")
         with self.assertRaises(ValueError):
-            me.polynomial("("*20+"x"+")"*20,("x",))
+            me.polynomial("1+"*22+"1",("x",))
 
     def test_bad_spec_fails_before_grading(self):
         for spec in ({"kind":"polynomial","variables":["z"]},

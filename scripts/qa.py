@@ -90,6 +90,9 @@ def validate_bank(data):
         elif not isinstance(q.get("rubric"), list) or not q["rubric"] or not all(
                 isinstance(x, str) and x.strip() for x in q["rubric"]):
             fail("%s manual response requires rubric criteria" % q["id"])
+    for q in items:
+        if "answer_equivalence" in q and q["type"] != "short":
+            fail(q["id"] + " answer_equivalence is only supported on short answers")
     concepts = {q["concept"] for q in items}
     for q in items:
         if "family" in q and (not isinstance(q["family"], str) or not q["family"].strip()):
@@ -192,9 +195,9 @@ def grade(q, response, manual_score=None, reason=None, allow_unverified=False):
     if "answer_equivalence" in q:
         try:
             equivalent = math_equivalence.matches(q["answer"], response, q["answer_equivalence"])
-        except ValueError as exc:
-            if not allow_unverified:
-                fail("math_equivalence_unverified: unsupported input; request independent review")
+        except ValueError:
+            # Preserve grade()'s legacy numeric return contract; the CLI
+            # explicitly refuses to commit this unresolved judgment.
             return 0.0, "math_equivalence_unverified"
         return (1.0 if equivalent else 0.0), ("verified_math_equivalence" if equivalent
                                                else "verified_math_inequivalent")
@@ -326,6 +329,8 @@ def handle_answer(args):
     else:
         score, method = grade(q, args.response, args.score, args.reason,
                               allow_unverified=args.review_equivalent)
+    if method == "math_equivalence_unverified" and not args.review_equivalent:
+        fail("math_equivalence_unverified: unsupported input; request independent review")
     if args.adjudication and args.independent_reviews is None:
         fail("--adjudication requires --independent-reviews")
     if args.review_equivalent:
