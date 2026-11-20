@@ -115,6 +115,25 @@ class CorePedagogyTests(unittest.TestCase):
         self.assertEqual("draft_source_anchored_item",p["move"])
         self.assertNotIn(one["answer"],p["instruction"])
 
+    def test_exhausted_bank_provides_safe_authoring_brief(self):
+        first=self.item("ALG-001")
+        p=tutor_core.plan([first],[event(first,score=0)],{"id":"s","limit":6})
+        brief=p["new_item_authoring_brief"]
+        self.assertEqual("linear-equations",brief["objective_concept"])
+        self.assertEqual("clarify_reasoning",brief["underlying_learning_need"])
+        self.assertFalse(brief["source_is_actual_instructor_material_verified"])
+        self.assertIn(first["id"],brief["avoid_same_item_families"])
+        self.assertTrue(brief["request_one_new_item_only"])
+        self.assertNotIn(first["answer"],json.dumps(brief))
+        self.assertNotIn(first["explanation"],json.dumps(brief))
+
+    def test_session_summary_requires_stop_when_budget_exhausted(self):
+        first=self.item("ALG-001")
+        report=tutor_core.compact_session_report(
+            self.items,[event(first)],{"id":"s","limit":1})
+        self.assertEqual("close_and_schedule_review",report["next_action"])
+        self.assertFalse(report["retention_verified"])
+
     def test_session_scope_and_gap_summary(self):
         first=event(self.item("ALG-001"),score=0,session="s")
         other=event(self.item("ALG-005"),score=1,session="older")

@@ -79,6 +79,7 @@ def plan(items, history, session=None, next_item=None):
     else:
         move = "probe_transfer"
     evidence["delayed_retrieval_verified"] = False  # never infer time gaps from same-session success
+    underlying_need = move
     if not ended and not candidates:
         move = "draft_source_anchored_item"
     suggestion = None
@@ -116,8 +117,28 @@ def plan(items, history, session=None, next_item=None):
             diagnosis = "correctness_needs_independent_confirmation"
         else:
             diagnosis = "correct_on_this_item_only"
-    # This plan never embeds a student's actual answer, the question's answer
-    # or explanation, detailed source text, or a presumed psychological trait.
+    authoring_brief = None
+    if move == "draft_source_anchored_item":
+        # A generation brief, not a fabricated or automatically approved item.
+        source = last_item.get("source") if last_item else None
+        authoring_brief = {
+            "objective_concept": source_concept or focus,
+            "underlying_learning_need": underlying_need,
+            "previous_cognitive_levels": sorted(x for x in known_levels if x in VALID_LEVELS),
+            "avoid_same_item_families": sorted(str(x) for x in known_families if x)[:8],
+            "source_anchor_to_verify": source,
+            "source_is_actual_instructor_material_verified": False,
+            "request_one_new_item_only": True,
+            "review_before_presenting": [
+                "match_stated_course_scope",
+                "show_all_conditions_and_valid_answers",
+                "check_solution_and_rubric_independently",
+                "ensure_new_reasoning_not_just_new_numbers",
+                "avoid_ambiguity_and_trick_wording"
+            ]
+        }
+    # Never embed student original text, actual answer keys, explanations,
+    # or unverified diagnostic labels in the learner-facing plan.
     return {
         "move": move, "instruction": INSTRUCTIONS[move],
         "target_concept": (source_concept if last else focus),
@@ -125,6 +146,7 @@ def plan(items, history, session=None, next_item=None):
         "observation": evidence,
         "suggested_reviewed_item": suggestion,
         "suggestion_fit": fit,
+        "new_item_authoring_brief": authoring_brief,
         "must_ask_one_question": move != "close_and_review",
         "stop_reason": "session_budget" if ended else None,
         "safety": ("One response does not prove mastery. Do not invent source claims, "
@@ -162,7 +184,10 @@ def compact_session_report(items, history, session=None):
         "answered": len(events),
         "concepts": out,
         "untested_concepts": untested,
-        "next_action": ("ask_one_new_independent_probe" if events
+        "next_action": ("close_and_schedule_review" if session and
+                        session.get("limit") is not None and
+                        len(events) >= session["limit"] else
+                        "ask_one_new_independent_probe" if events
                         else "establish_baseline"),
         "retention_verified": False,
         "standardized_mastery_estimate": None
