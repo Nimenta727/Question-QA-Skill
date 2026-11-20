@@ -19,9 +19,10 @@ CONFIDENCES = {"sure", "unsure", "guess", "none"}
 SPACING_DAYS = (1, 3, 7, 14, 30)
 SCHEMA = 1
 try:
-    from . import diagnosis
+    from . import diagnosis, feedback
 except ImportError:
     import diagnosis
+    import feedback
 
 
 def utc_now():
@@ -284,7 +285,16 @@ def handle_answer(args):
     q = next((x for x in bank["items"] if x["id"] == pending["id"]), None)
     if q is None:
         fail("pending item not found")
-    score, method = grade(q, args.response, args.score, args.reason)
+    rubric_review = None
+    if args.rubric_judgments is not None:
+        if q["type"] != "manual" or args.score is not None:
+            fail("--rubric-judgments is only for manual items and cannot combine with --score")
+        if not args.reason or not args.reason.strip():
+            fail("structured rubric review needs --reason")
+        rubric_review = feedback.assess_rubric(q["rubric"], args.rubric_judgments)
+        score, method = rubric_review["score"], rubric_review["method"]
+    else:
+        score, method = grade(q, args.response, args.score, args.reason)
     if not state.get("session"):
         state["session"] = new_session("quick")
     session = state["session"]
@@ -303,6 +313,8 @@ def handle_answer(args):
     }
     if misconception:
         event["misconception"] = misconception
+    if rubric_review is not None:
+        event["criterion_scores"] = [r["score"] for r in rubric_review["criteria"]]
     state["history"].append(event)
     state["pending"] = None
     write_state(args.state, state)
@@ -317,6 +329,9 @@ def handle_answer(args):
     }
     if misconception:
         result["misconception"] = misconception
+    result["feedback"] = feedback.concise_feedback(q, score, misconception, args.confidence)
+    if rubric_review is not None:
+        result["assessment"] = rubric_review
     if q["type"] == "manual":
         result["rubric"] = q["rubric"]
         result["review_reason"] = args.reason
@@ -379,6 +394,7 @@ def main(argv=None):
     p.add_argument("--misconception")
     p.add_argument("--score", type=float)
     p.add_argument("--reason")
+    p.add_argument("--rubric-judgments", help="JSON array or @path of reviewed rubric scores")
     p = subs.add_parser("report")
     p.add_argument("--state", default=".qa-state.json")
     p.add_argument("--bank")
