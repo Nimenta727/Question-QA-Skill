@@ -1,0 +1,51 @@
+{
+  "date": "2026-11-20",
+  "dataset": "FORGET-SE",
+  "source": "https://github.com/alyssa-sha/FORGET-SE",
+  "source_commit": "012f4ca56155140f5e5017dd336e4f9a5c5f249c",
+  "run": "https://github.com/Nimenta727/Question-QA-Skill/actions/runs/44743252876",
+  "weekly_rows": 10873,
+  "partial_weekly_scores": 729,
+  "exam_rows": 186,
+  "conflicting_anon_ids_excluded": 18,
+  "valid_students": 150,
+  "split_students": {
+    "train": 84,
+    "validation": 36,
+    "test": 30
+  },
+  "test_targets": 279,
+  "seed": 2026,
+  "bootstrap_draws": 200,
+  "validation_pooled_auc": {
+    "global": 0.5,
+    "concept_prior": 0.773611726480579,
+    "quiz_average": 0.7203145768719539,
+    "quiz_recent3": 0.7509230542017428,
+    "diagnostic_index": 0.5351129818342933
+  },
+  "test_pooled_auc": {
+    "global": 0.5,
+    "concept_prior": 0.7571707617970598,
+    "quiz_average": 0.6997789657653953,
+    "quiz_recent3": 0.735247249922895,
+    "diagnostic_index": 0.5149326616634111
+  },
+  "test_within_concept_macro_auc": {
+    "global": 0.5,
+    "concept_prior": 0.5,
+    "quiz_average": 0.5508600759144238,
+    "quiz_recent3": 0.5537803701934136,
+    "diagnostic_index": 0.5535137240979633
+  },
+  "test_index_minus_quiz_mean_pooled_ci95": [
+    -0.23959627329192545,
+    -0.13766129953180317
+  ],
+  "test_index_minus_quiz_mean_within_concept_ci95": [
+    -0.011637199058251668,
+    0.015512742325402229
+  ],
+  "tentatively_strong_count": 0,
+  "decision": "No validated predictive advantage or strong-label accuracy; defer calibrated BKT/IRT."
+}
