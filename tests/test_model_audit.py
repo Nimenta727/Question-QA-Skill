@@ -296,6 +296,21 @@ class AuditContractTests(unittest.TestCase):
             self.assertEqual("not_checked_legacy_mode",
                              json.loads(response.stdout)["model_audit_status"])
 
+    def test_source_text_alone_can_never_be_mistaken_for_model_review(self):
+        qa=ROOT/"scripts"/"qa.py"
+        with tempfile.TemporaryDirectory() as tmp:
+            state=Path(tmp)/"state.json"
+            source=Path(tmp)/"course.txt"
+            source.write_text("Unreviewed course document content",
+                              encoding="utf-8")
+            result=subprocess.run([
+                sys.executable,str(qa),"next",str(BANK),
+                "--state",str(state),"--audit-source-file",str(source)
+            ],cwd=str(ROOT),capture_output=True,text=True)
+            self.assertEqual(2,result.returncode)
+            self.assertFalse(state.exists())
+            self.assertIn("--model-audit",result.stderr)
+
     def test_qa_course_audit_flag_refuses_generic_practice(self):
         qa=ROOT/"scripts"/"qa.py"
         with tempfile.TemporaryDirectory() as tmp:

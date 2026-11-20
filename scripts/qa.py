@@ -258,6 +258,8 @@ def handle_next(args):
     audited = False
     if args.require_model_audit and not args.model_audit:
         fail("strict question audit required: provide --model-audit FILE")
+    if args.audit_source_file and not args.model_audit:
+        fail("--audit-source-file alone does not establish an audit; provide --model-audit")
     if args.model_audit:
         # Lazy import prevents qa -> model_audit -> question_quality -> qa
         # circular imports when CLI modules are invoked as standalone scripts.
