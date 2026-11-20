@@ -28,12 +28,12 @@ class LocalReviewerCredentials(unittest.TestCase):
             teacher=Path(tmp)/"teacher.token"
             created=reviewer_credentials.initialize(registry,admin)
             self.assertFalse(created["identity_verified"])
-            self.assertNotIn(admin.read_text().strip(),registry.read_text())
+            self.assertNotIn(admin.read_text(encoding="utf-8").strip(),registry.read_text(encoding="utf-8"))
             enrolled=reviewer_credentials.enroll(registry,admin,"teacher-A",teacher)
             self.assertTrue(enrolled["enrolled"])
             self.assertTrue(reviewer_credentials.authenticate(registry,"teacher-A",teacher)
                             ["credential_verified"])
-            self.assertNotIn(teacher.read_text().strip(),registry.read_text())
+            self.assertNotIn(teacher.read_text(encoding="utf-8").strip(),registry.read_text(encoding="utf-8"))
             with self.assertRaisesRegex(ValueError,"already enrolled"):
                 reviewer_credentials.enroll(registry,admin,"teacher-A",Path(tmp)/"dup.token")
             wrong=Path(tmp)/"other.token"
@@ -93,8 +93,8 @@ class SignedAppealAudit(unittest.TestCase):
                     "--admin-token-file",admin,"--audit-key-output",key)
         self.assertEqual(0,started.returncode,started.stderr)
         self.assertTrue(state.exists())
-        self.assertNotIn(teacher.read_text().strip(),state.read_text())
-        self.assertNotIn(key.read_text().strip(),state.read_text())
+        self.assertNotIn(teacher.read_text(encoding="utf-8").strip(),state.read_text(encoding="utf-8"))
+        self.assertNotIn(key.read_text(encoding="utf-8").strip(),state.read_text(encoding="utf-8"))
         return state,registry,admin,teacher,key,event_id
 
     def open(self,state,key,event_id):
@@ -120,7 +120,7 @@ class SignedAppealAudit(unittest.TestCase):
                         "--decision","correct","--reason","key_verified","--new-score","1",
                         "--reviewer-confirmed","--audit-key-file",key)
             self.assertEqual(2,no_auth.returncode)
-            self.assertEqual(0,json.loads(state.read_text())["history"][0]["score"])
+            self.assertEqual(0,json.loads(state.read_text(encoding="utf-8"))["history"][0]["score"])
             done=self.resolve(state,registry,teacher,key,appeal_id)
             self.assertEqual(0,done.returncode,done.stderr)
             result=json.loads(done.stdout)
@@ -131,8 +131,8 @@ class SignedAppealAudit(unittest.TestCase):
             self.assertEqual(0,checked.returncode,checked.stderr)
             self.assertEqual(2,json.loads(checked.stdout)["entries"])
             self.assertTrue(json.loads(checked.stdout)["valid"])
-            self.assertNotIn(teacher.read_text().strip(),state.read_text())
-            self.assertNotIn(key.read_text().strip(),state.read_text())
+            self.assertNotIn(teacher.read_text(encoding="utf-8").strip(),state.read_text(encoding="utf-8"))
+            self.assertNotIn(key.read_text(encoding="utf-8").strip(),state.read_text(encoding="utf-8"))
 
     def test_revoked_token_and_wrong_registry_cannot_resolve(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -148,22 +148,22 @@ class SignedAppealAudit(unittest.TestCase):
             reviewer_credentials.revoke(registry,admin,"teacher-A")
             revoked=self.resolve(state,registry,teacher,key,appeal_id)
             self.assertEqual(2,revoked.returncode)
-            self.assertEqual("open",json.loads(state.read_text())["appeals"][0]["status"])
+            self.assertEqual("open",json.loads(state.read_text(encoding="utf-8"))["appeals"][0]["status"])
 
     def test_tampered_appeal_and_score_detected(self):
         with tempfile.TemporaryDirectory() as tmp:
             state,registry,admin,teacher,key,event_id=self.prepare(tmp)
             aid=self.open(state,key,event_id)
             self.assertEqual(0,self.resolve(state,registry,teacher,key,aid).returncode)
-            original=json.loads(state.read_text())
-            corrupted=json.loads(state.read_text())
+            original=json.loads(state.read_text(encoding="utf-8"))
+            corrupted=json.loads(state.read_text(encoding="utf-8"))
             corrupted["history"][0]["score"]=0
             state.write_text(json.dumps(corrupted))
             invalid=run(QA,"audit-verify","--state",state,"--audit-key-file",key)
             self.assertEqual(2,invalid.returncode)
             self.assertIn("grade changed",invalid.stderr)
             state.write_text(json.dumps(original))
-            corrupted=json.loads(state.read_text())
+            corrupted=json.loads(state.read_text(encoding="utf-8"))
             corrupted["audit"]["entries"][0]["appeal"]["score_before"]=1
             state.write_text(json.dumps(corrupted))
             invalid=run(QA,"audit-verify","--state",state,"--audit-key-file",key)
@@ -187,10 +187,10 @@ class SignedAppealAudit(unittest.TestCase):
                               if x["valid"] and
                               # current last snapshot before secure resolution:
                               json.loads((state_store.snapshots_path(state)/
-                                        (x["snapshot_id"]+".json")).read_text())
+                                        (x["snapshot_id"]+".json")).read_text(encoding="utf-8"))
                                   .get("audit",{}).get("entries") and
                               len(json.loads((state_store.snapshots_path(state)/
-                                             (x["snapshot_id"]+".json")).read_text())
+                                             (x["snapshot_id"]+".json")).read_text(encoding="utf-8"))
                                   ["audit"]["entries"])==1)
             denied=run(QA,"state-recover","--state",state,
                        "--snapshot",old_snapshot,"--confirm")
@@ -210,7 +210,7 @@ class SignedAppealAudit(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             state,registry,admin,teacher,key,event_id=self.prepare(tmp)
             self.assertTrue(audit_ledger.policy_path(state).exists())
-            original=json.loads(state.read_text())
+            original=json.loads(state.read_text(encoding="utf-8"))
             changed=dict(original)
             changed.pop("audit")
             state.write_text(json.dumps(changed))
@@ -224,7 +224,7 @@ class SignedAppealAudit(unittest.TestCase):
             state.write_text(json.dumps(original))
             # A locally edited policy MAC cannot be used to sign false grades.
             policy=audit_ledger.policy_path(state)
-            data=json.loads(policy.read_text())
+            data=json.loads(policy.read_text(encoding="utf-8"))
             data["registry_id"]="attacker-registry"
             policy.write_text(json.dumps(data))
             broken=run(QA,"audit-verify","--state",state,"--audit-key-file",key)
@@ -238,12 +238,12 @@ class SignedAppealAudit(unittest.TestCase):
             older=next(x["snapshot_id"] for x in snapshots if
                        "audit" not in json.loads(
                            (state_store.snapshots_path(state)/
-                            (x["snapshot_id"]+".json")).read_text()))
+                            (x["snapshot_id"]+".json")).read_text(encoding="utf-8")))
             denied=run(QA,"state-recover","--state",state,"--snapshot",older,
                        "--confirm","--acknowledge-audit-rollback",
                        "--audit-key-file",key)
             self.assertEqual(2,denied.returncode)
-            self.assertTrue(json.loads(state.read_text()).get("audit"))
+            self.assertTrue(json.loads(state.read_text(encoding="utf-8")).get("audit"))
 
     def test_wrong_key_and_protected_delete_guard(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -276,7 +276,7 @@ class SignedAppealAudit(unittest.TestCase):
             self.assertEqual(2,wrong.returncode)
             self.assertIn("destination conflicts",wrong.stderr)
             self.assertFalse(forbidden.exists())
-            self.assertNotIn("audit",json.loads(state.read_text()))
+            self.assertNotIn("audit",json.loads(state.read_text(encoding="utf-8")))
             key=Path(tmp)/"secret.hex"
             valid=run(QA,"audit-init","--state",state,"--registry",registry,
                       "--admin-token-file",admin,"--audit-key-output",key)

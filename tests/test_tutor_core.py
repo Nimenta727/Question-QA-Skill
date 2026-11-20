@@ -192,7 +192,7 @@ class CorePedagogyTests(unittest.TestCase):
             self.assertEqual(0,result["score"])
             self.assertEqual("draft_source_anchored_item",
                              result["tutor_next_move"]["move"])
-            self.assertEqual(1,json.loads(state.read_text())["history"][0]["score"]==0)
+            self.assertEqual(1,json.loads(state.read_text(encoding="utf-8"))["history"][0]["score"]==0)
 
     def test_cli_end_after_limit_returns_teaching_summary(self):
         with tempfile.TemporaryDirectory() as tmp:

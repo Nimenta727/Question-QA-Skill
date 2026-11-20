@@ -41,20 +41,20 @@ class AppealTests(unittest.TestCase):
                           "--appeal-id",appeal_id,"--decision","correct",
                           "--reason","key_verified","--new-score","1")
             self.assertNotEqual(0,not_ready.returncode)
-            self.assertEqual(0,json.loads(state.read_text())["history"][0]["score"])
+            self.assertEqual(0,json.loads(state.read_text(encoding="utf-8"))["history"][0]["score"])
             solved=run("appeal-resolve","--state",state,
                        "--appeal-id",appeal_id,"--decision","correct",
                        "--reason","key_verified","--new-score","1",
                        "--reviewer-confirmed")
             self.assertEqual(0,solved.returncode,solved.stderr)
-            history=json.loads(state.read_text())
+            history=json.loads(state.read_text(encoding="utf-8"))
             self.assertEqual(1,history["history"][0]["score"])
             self.assertEqual("appeal_correction",history["history"][0]["method"])
             self.assertNotIn("misconception",history["history"][0])
             self.assertEqual(0,history["appeals"][0]["score_before"])
             self.assertEqual(1,history["appeals"][0]["score_after"])
             self.assertEqual("resolved",history["appeals"][0]["status"])
-            self.assertFalse(any(k in state.read_text() for k in
+            self.assertFalse(any(k in state.read_text(encoding="utf-8") for k in
                                  ("Student original response","teacher full name")))
             report=run("report","--state",state,"--bank",BANK)
             self.assertEqual(0,report.returncode)
@@ -169,7 +169,7 @@ class LifecycleTests(unittest.TestCase):
                     state_store.export(path,dest)
                 with self.assertRaises(ValueError):
                     state_store.export(path,path,True)
-            data=dest.read_text()
+            data=dest.read_text(encoding="utf-8")
             self.assertIn("math",data)
             self.assertNotIn("secret-id",data)
             self.assertNotIn("PRIVATE_STUDENT_RESPONSE",data)
@@ -188,7 +188,7 @@ class LifecycleTests(unittest.TestCase):
             permitted=run("state-export","--state",path,"--output",output,
                           "--include-private","--confirm-private")
             self.assertEqual(0,permitted.returncode,permitted.stderr)
-            self.assertEqual("private_full_state",json.loads(output.read_text())["type"])
+            self.assertEqual("private_full_state",json.loads(output.read_text(encoding="utf-8"))["type"])
 
     def test_cli_delete_requires_exact_confirmation_removes_only_owned(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -207,7 +207,7 @@ class LifecycleTests(unittest.TestCase):
             self.assertFalse(state_store.backup_path(path).exists())
             self.assertFalse(state_store.snapshots_path(path).exists())
             self.assertTrue(Path(str(path)+".lock").exists())
-            self.assertEqual("KEEP",other.read_text())
+            self.assertEqual("KEEP",other.read_text(encoding="utf-8"))
 
     def test_snapshot_status_cli_has_no_private_response(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -233,7 +233,7 @@ class LifecycleTests(unittest.TestCase):
             self.assertEqual(2,bad.returncode)
             good=run("state-recover","--state",path,"--snapshot",sid,"--confirm")
             self.assertEqual(0,good.returncode,good.stderr)
-            self.assertEqual([],json.loads(path.read_text())["history"])
+            self.assertEqual([],json.loads(path.read_text(encoding="utf-8"))["history"])
 
 
 if __name__=="__main__":
