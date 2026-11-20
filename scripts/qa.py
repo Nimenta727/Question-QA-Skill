@@ -19,7 +19,7 @@ CONFIDENCES = {"sure", "unsure", "guess", "none"}
 SPACING_DAYS = (1, 3, 7, 14, 30)
 SCHEMA = 1
 try:
-    from . import diagnosis, feedback, assessment_engine, evidence_engine, prediction_engine, adaptive_engine, math_equivalence
+    from . import diagnosis, feedback, assessment_engine, evidence_engine, prediction_engine, adaptive_engine, math_equivalence, state_store
 except ImportError:
     import diagnosis
     import feedback
@@ -28,6 +28,7 @@ except ImportError:
     import prediction_engine
     import adaptive_engine
     import math_equivalence
+    import state_store
 
 
 def utc_now():
@@ -125,17 +126,11 @@ def read_state(path):
 
 
 def write_state(path, state):
-    target = Path(path)
-    target.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp = tempfile.mkstemp(prefix=".qa-", suffix=".json", dir=str(target.parent))
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as out:
-            json.dump(state, out, ensure_ascii=False, indent=2)
-            out.write("\n")
-        os.replace(tmp, target)
-    finally:
-        if os.path.exists(tmp):
-            os.unlink(tmp)
+    """Atomic write with validated prior-state backup.
+
+    All CLI state operations are guarded by state_store.locked_state.
+    """
+    state_store.save(path, state)
 
 
 def evidence(history):
@@ -467,24 +462,45 @@ def main(argv=None):
     p.add_argument("--bank")
     p = subs.add_parser("reset-pending")
     p.add_argument("--state", default=".qa-state.json")
+    p = subs.add_parser("state-check")
+    p.add_argument("--state", default=".qa-state.json")
+    p = subs.add_parser("state-recover")
+    p.add_argument("--state", default=".qa-state.json")
+    p.add_argument("--confirm", action="store_true", help="explicit rollback of last saved action")
     args = parser.parse_args(argv)
     try:
         if args.cmd == "validate":
             bank, _ = read_bank(args.bank)
             print(json.dumps({"valid": True, "items": len(bank["items"])}, ensure_ascii=True))
-        elif args.cmd == "start":
-            handle_start(args)
-        elif args.cmd == "next":
-            handle_next(args)
-        elif args.cmd == "answer":
-            handle_answer(args)
-        elif args.cmd == "report":
-            handle_report(args)
-        elif args.cmd == "reset-pending":
-            state = read_state(args.state)
-            state["pending"] = None
-            write_state(args.state, state)
-            print(json.dumps({"pending": False}))
+        else:
+            # This lock covers the entire read/modify/backup/atomic-write
+            # transaction, preventing lost updates across independent CLIs.
+            with state_store.locked_state(args.state):
+                if args.cmd == "start":
+                    handle_start(args)
+                elif args.cmd == "next":
+                    handle_next(args)
+                elif args.cmd == "answer":
+                    handle_answer(args)
+                elif args.cmd == "report":
+                    handle_report(args)
+                elif args.cmd == "reset-pending":
+                    state = read_state(args.state)
+                    state["pending"] = None
+                    write_state(args.state, state)
+                    print(json.dumps({"pending": False}))
+                elif args.cmd == "state-check":
+                    result = state_store.inspect(args.state)
+                    print(json.dumps(result, ensure_ascii=True))
+                    if result["current"]["exists"] and not result["current"]["valid"]:
+                        return 2
+                elif args.cmd == "state-recover":
+                    if not args.confirm:
+                        fail("state-recover requires --confirm (rolls back latest action)")
+                    restored = state_store.recover(args.state)
+                    print(json.dumps({"restored": True,
+                                      "answers": len(restored["history"]),
+                                      "caution": "Last action may be lost."}, ensure_ascii=True))
     except (ValueError, OSError, json.JSONDecodeError) as exc:
         print("error: " + str(exc), file=sys.stderr)
         return 2
