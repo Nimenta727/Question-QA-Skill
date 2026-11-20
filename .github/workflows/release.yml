@@ -124,8 +124,9 @@ jobs:
           if gh release view "$tag" >/dev/null 2>&1; then
             echo "Immutable $tag release exists: no changes made"; exit 0
           fi
-          existing="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" --jq '.object.sha' 2>/dev/null || true)"
-          if [[ -n "$existing" ]]; then
+          # GitHub CLI may emit JSON "null" to stdout even for a 404;
+          # use the HTTP exit status rather than parsed response content.
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" >/dev/null 2>&1; then
             echo "::error::Tag exists without expected Release. Refusing overwrite"; exit 1
           fi
           (cd dist && sha256sum --check SHA256SUMS.txt)
