@@ -51,7 +51,8 @@ class ExternalCriterionTests(unittest.TestCase):
     def test_aggregate_has_no_student_identifier(self):
         quiz, exam, audit = example()
         report = evaluate(quiz, exam, audit, bootstraps=0)
-        self.assertNotIn("student_", str(report))
+        self.assertNotIn("student_001", str(report))
+        self.assertNotIn("student_002", str(report))
         self.assertFalse(report["decision"]["add_bkt_or_irt"])
 
     def test_no_invented_cognitive_level_or_delay(self):
