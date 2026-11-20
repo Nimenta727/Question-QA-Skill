@@ -102,7 +102,9 @@ def verify(path):
     if not {"SKILL.md", "LICENSE", "scripts/qa.py", "scripts/dashboard.py",
             "scripts/feedback.py", "scripts/math_equivalence.py",
             "scripts/state_store.py", "scripts/reviewer_study.py",
-            "scripts/appeals.py", "scripts/reviewer_trial.py"}.issubset(contents):
+            "scripts/appeals.py", "scripts/reviewer_trial.py",
+            "scripts/reviewer_pilot.py", "scripts/reviewer_credentials.py",
+            "scripts/audit_ledger.py"}.issubset(contents):
         raise ValueError("required Skill modules missing")
     return {"valid": True, "version": VERSION, "files": len(contents),
             "archive_sha256": sha256(Path(path).read_bytes())}
