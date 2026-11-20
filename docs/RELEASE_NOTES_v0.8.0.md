@@ -1,0 +1,9 @@
+# Question-QA-Skill v0.8.0 — Appeals, Data Lifecycle & Trial Preparation
+
+- **Learner grading appeals:** stable answer event IDs, old-state event-index migration, open/list/resolve CLI, explicit self-declared independent reviewer confirmation, strict correction of rubric criteria and total scores, immutable reason-code history of before/after scores. Corrected evidence is immediately used by reports and selection. No raw student answer or reviewer note is persisted by appeals.
+- **Data lifecycle:** native locked transactions now retain up to five time/versioned last-good snapshots alongside the previous .bak. Inspect and explicitly restore a snapshot, export aggregate-only summaries by default, require double confirmation for full private exports, reject overwriting existing export files, and explicitly delete state plus managed backups. Persistent lock sidecars remain and files are not securely erased from external/cloud backups.
+- **Authorized real-study infrastructure:** pre-registered rubric plan, external authorization self-declaration gate, independent randomized reviewer A/B task lists, exact case/criteria checks and first-round scoring freeze with SHA256 hashes and aggregate-only metrics. NO real learners have been recruited or their answers accessed in this release; all shipped data is synthetic. Actual consent, reviewer blindness and ethics clearance must be independently verified.
+- **Reliability:** backward-compatible state schema v1, conservative no-false-grade appeal behavior, additional security/concurrency/privacy regressions, three OSes and two Python versions under CI, immutable v0.8.0 Git-tagged ZIP with SHA256 manifest and freshly extracted smoke tests.
+- Existing FORGET-SE and ASSISTments empirical findings still do not validate a calibrated mastery probability or causal improvement in learning outcomes.
+
+中文要点：评分纠错必须先经过真实独立复核；本地快照包含个人学习历史；删除只是普通文件操作而非取证级擦除；真正的双人盲评试验需要机构授权、知情同意及真实审阅者参与，此版本只实现准备与冻结工具，没有真实试验结论。

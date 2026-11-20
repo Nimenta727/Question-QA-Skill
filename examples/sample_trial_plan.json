@@ -1,0 +1,39 @@
+{
+  "study_type": "synthetic",
+  "authorized": false,
+  "rubric_frozen": true,
+  "case_ids_and_criterion_counts": [
+    {
+      "case_id": "synthetic-case-01",
+      "criteria": 3
+    },
+    {
+      "case_id": "synthetic-case-02",
+      "criteria": 2
+    },
+    {
+      "case_id": "synthetic-case-03",
+      "criteria": 3
+    },
+    {
+      "case_id": "synthetic-case-04",
+      "criteria": 2
+    },
+    {
+      "case_id": "synthetic-case-05",
+      "criteria": 3
+    },
+    {
+      "case_id": "synthetic-case-06",
+      "criteria": 2
+    },
+    {
+      "case_id": "synthetic-case-07",
+      "criteria": 3
+    },
+    {
+      "case_id": "synthetic-case-08",
+      "criteria": 2
+    }
+  ]
+}
