@@ -19,7 +19,7 @@ CONFIDENCES = {"sure", "unsure", "guess", "none"}
 SPACING_DAYS = (1, 3, 7, 14, 30)
 SCHEMA = 1
 try:
-    from . import diagnosis, feedback, assessment_engine, evidence_engine, prediction_engine, adaptive_engine
+    from . import diagnosis, feedback, assessment_engine, evidence_engine, prediction_engine, adaptive_engine, math_equivalence
 except ImportError:
     import diagnosis
     import feedback
@@ -27,6 +27,7 @@ except ImportError:
     import evidence_engine
     import prediction_engine
     import adaptive_engine
+    import math_equivalence
 
 
 def utc_now():
@@ -82,6 +83,9 @@ def validate_bank(data):
                 fail("%s has invalid aliases" % q["id"])
             if len(set(map(normalize, answers))) != len(answers):
                 fail("%s has duplicate short-answer aliases" % q["id"])
+            if "answer_equivalence" in q:
+                vars_ = math_equivalence.validate_spec(q["answer_equivalence"])
+                math_equivalence.polynomial(q["answer"], vars_)
         elif not isinstance(q.get("rubric"), list) or not q["rubric"] or not all(
                 isinstance(x, str) and x.strip() for x in q["rubric"]):
             fail("%s manual response requires rubric criteria" % q["id"])
@@ -169,7 +173,7 @@ def safe_prompt(q):
     return data
 
 
-def grade(q, response, manual_score=None, reason=None):
+def grade(q, response, manual_score=None, reason=None, allow_unverified=False):
     if q["type"] == "manual":
         if manual_score is None or manual_score not in (0.0, 0.5, 1.0):
             fail("manual item requires --score 0, 0.5, or 1")
@@ -188,7 +192,18 @@ def grade(q, response, manual_score=None, reason=None):
             picked = matches[0] if len(matches) == 1 else None
         return float(picked == q["answer"]), "exact_key"
     valid = {normalize(q["answer"])} | {normalize(x) for x in q.get("aliases", [])}
-    return float(normalize(response) in valid), "exact_key"
+    if normalize(response) in valid:
+        return 1.0, "exact_key"
+    if "answer_equivalence" in q:
+        try:
+            equivalent = math_equivalence.matches(q["answer"], response, q["answer_equivalence"])
+        except ValueError as exc:
+            if not allow_unverified:
+                fail("math_equivalence_unverified: unsupported input; request independent review")
+            return 0.0, "math_equivalence_unverified"
+        return (1.0 if equivalent else 0.0), ("verified_math_equivalence" if equivalent
+                                               else "verified_math_inequivalent")
+    return 0.0, "exact_key"
 
 
 def answer_key(q):
@@ -314,7 +329,8 @@ def handle_answer(args):
         rubric_review = feedback.assess_rubric(q["rubric"], args.rubric_judgments)
         score, method = rubric_review["score"], rubric_review["method"]
     else:
-        score, method = grade(q, args.response, args.score, args.reason)
+        score, method = grade(q, args.response, args.score, args.reason,
+                              allow_unverified=args.review_equivalent)
     if args.adjudication and args.independent_reviews is None:
         fail("--adjudication requires --independent-reviews")
     if args.review_equivalent:
@@ -369,6 +385,9 @@ def handle_answer(args):
     result["feedback"] = feedback.concise_feedback(q, score, misconception, args.confidence)
     if rubric_review is not None:
         result["assessment"] = rubric_review
+    if method == "verified_math_equivalence":
+        result["math_note"] = ("Equivalent under the item's explicitly enabled, bounded "
+                               "rational/polynomial rules, not a general semantic proof.")
     if args.review_equivalent:
         result["review_note"] = ("Accepted as equivalent by reviewer; "
                                  "not verified automatically by local code.")

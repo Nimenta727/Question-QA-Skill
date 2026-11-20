@@ -59,6 +59,9 @@
       "verification": {
         "kind": "arithmetic",
         "expression": "(16+5)/3"
+      },
+      "answer_equivalence": {
+        "kind": "rational"
       }
     },
     {
