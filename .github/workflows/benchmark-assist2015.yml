@@ -1,0 +1,86 @@
+name: ASSISTments 2015 independent real-data benchmark
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/benchmark-assist2015.yml
+      - scripts/evaluate_assist2015.py
+      - scripts/evaluate.py
+      - scripts/evaluate_forget_se.py
+      - tests/test_assist2015.py
+permissions:
+  contents: read
+jobs:
+  independent-cohort:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate all ASSIST2015 preprocessing and causal-replay tests
+        run: python3 -m unittest discover -s tests -p 'test_assist2015.py' -v
+      - name: Fetch publicly released research data and verify fixed Git blob hash
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import os
+          from pathlib import Path
+          from urllib.request import urlopen
+
+          # ASSISTments 2015 research-use dataset distributed in pyKT's
+          # public reference repo. Upstream terms prohibit re-identification
+          # and must be respected; raw data never leaves this runner.
+          repo_commit = 'ccbaf37b07e3e7ff7b2415475b2faacb967d54ea'
+          file = '2015_100_skill_builders_main_problems.csv'
+          expected_git_blob = 'f6b86c94e2a90316efd4bfd24655526919a817b0'
+          address = ('https://raw.githubusercontent.com/pykt-team/pykt-toolkit/'
+                     + repo_commit + '/data/assist2015/' + file)
+          with urlopen(address, timeout=150) as response:
+              raw = response.read(25000001)
+          if len(raw) > 25000000:
+              raise SystemExit('Unexpectedly large source file')
+          digest = hashlib.sha1(b'blob ' + str(len(raw)).encode()
+                                + b'\0' + raw).hexdigest()
+          if digest != expected_git_blob:
+              raise SystemExit('Pinned ASSIST2015 source integrity verification failed')
+          (Path(os.environ['RUNNER_TEMP']) / file).write_bytes(raw)
+          print('Verified source byte count:',len(raw))
+          print('Verified source blob SHA:',digest)
+          PY
+      - name: Evaluate independent mathematics cohort
+        shell: bash
+        run: |
+          python3 scripts/evaluate_assist2015.py \
+            --input "$RUNNER_TEMP/2015_100_skill_builders_main_problems.csv" \
+            --seed 2026 --max-learners 1500 --max-rows 1000000 \
+            --min-history 2 --bootstraps 100 \
+            --output "$RUNNER_TEMP/assist2015-aggregate.json"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          report=json.loads((Path(os.environ['RUNNER_TEMP'])/'assist2015-aggregate.json').read_text())
+          print('Audit:',report['input_audit'])
+          print('Learner partitions:',report['learner_counts'])
+          for part in ('validation','test'):
+              d=report[part]
+              print(part,'n predictions',d['eligible_predictions'],
+                    'n learners',d['eligible_learners'])
+              for name,stats in d['metrics'].items():
+                  print(part,name,'AUC',None if stats is None else stats['auc'])
+              print(part,'within-concept macro AUC',d['within_concept_macro_auc'])
+              print(part,'within-concept index minus history AUC CI',
+                    d['index_minus_local_within_concept_auc_ci95'])
+              print(part,'strong-label count',d['diagnostic_labels']['tentatively_strong']['n'])
+          print('Decision:',report['readiness'])
+          PY
+      - name: Retain aggregate-only statistics, not individual student logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: assist2015-aggregate-only
+          path: ${{ runner.temp }}/assist2015-aggregate.json
+          retention-days: 14
