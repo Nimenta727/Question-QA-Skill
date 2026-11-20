@@ -131,6 +131,18 @@ def read_state(path):
     return state
 
 
+def check_secret_output(destination, state_path, extra=()):
+    """Never place an audit key/receipt where state transaction files live."""
+    target = Path(destination).resolve()
+    managed = [Path(state_path), state_store.backup_path(state_path),
+               Path(str(state_path)+".lock"), audit_ledger.policy_path(state_path)]
+    managed.extend(Path(item) for item in extra)
+    if target in {p.resolve() for p in managed} or target.is_relative_to(
+            state_store.snapshots_path(state_path).resolve()):
+        fail("audit key/checkpoint destination conflicts with protected state files")
+    return target
+
+
 def write_state(path, state):
     """Atomic write with validated prior-state backup.
 
@@ -671,9 +683,8 @@ def main(argv=None):
                         fail("initialize a learner state before enabling audit protection")
                     registry = reviewer_credentials.read_registry(args.registry)
                     reviewer_credentials._require_admin(registry,args.admin_token_file)
-                    if Path(args.audit_key_output).resolve() in {
-                            Path(args.state).resolve(),Path(args.registry).resolve()}:
-                        fail("audit secret must not overwrite state or reviewer registry")
+                    check_secret_output(args.audit_key_output, args.state,
+                                        (args.registry,args.admin_token_file))
                     state = read_state(args.state)
                     if state.get("appeals") or "audit" in state or audit_ledger.policy_path(args.state).exists():
                         fail("cannot retroactively authenticate earlier appeal records or replace an audit policy")
@@ -692,9 +703,7 @@ def main(argv=None):
                 elif args.cmd == "audit-checkpoint":
                     state = read_state(args.state)
                     key = audit_ledger.key_from_file(args.audit_key_file)
-                    if Path(args.output).resolve() in {
-                            Path(args.state).resolve(),Path(args.audit_key_file).resolve()}:
-                        fail("checkpoint must not replace state or audit secret")
+                    check_secret_output(args.output, args.state,(args.audit_key_file,))
                     audit_ledger.verify(state,key,state_path=args.state)
                     receipt = audit_ledger.receipt_for(state,key)
                     reviewer_credentials._new_file(
