@@ -1,0 +1,164 @@
+{
+  "version": 1,
+  "subject": "Algebra / 代数（演示题库，并非真实课程）",
+  "items": [
+    {
+      "id": "ALG-001",
+      "concept": "linear-equations",
+      "level": "recall",
+      "difficulty": 1,
+      "type": "single",
+      "stem": "解方程 3x + 4 = 19，x 等于多少？",
+      "options": [
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "answer": "C",
+      "claim": "能够使用等式性质求解一元一次方程",
+      "evidence": "从等式两边同时减4再除以3，得到x=5",
+      "explanation": "3x=15，因此 x=5。",
+      "source": "original-example:basic-algebra"
+    },
+    {
+      "id": "ALG-002",
+      "concept": "linear-equations",
+      "level": "understand",
+      "difficulty": 2,
+      "type": "single",
+      "stem": "一名学生将 2(x+3)=14 化为 2x+3=14。这里的关键错误是什么？",
+      "options": [
+        "没有把2乘到括号内的3",
+        "移项时改变了x的符号",
+        "两边没有同时除以14",
+        "把等号看成了不等号"
+      ],
+      "answer": "A",
+      "claim": "理解分配律而非机械移项",
+      "evidence": "指出分配律需要同时作用于括号内各项",
+      "explanation": "应展开为2x+6=14；漏乘常数3导致错误。",
+      "source": "original-example:basic-algebra"
+    },
+    {
+      "id": "ALG-003",
+      "concept": "linear-equations",
+      "level": "apply",
+      "difficulty": 2,
+      "type": "short",
+      "stem": "一个数的三倍再减5等于16。这个数是多少？只写整数。",
+      "answer": "7",
+      "aliases": [
+        "７"
+      ],
+      "claim": "将文字数量关系转成方程并求解",
+      "evidence": "3x-5=16，由此求得x=7",
+      "explanation": "3x=21，所以x=7。",
+      "source": "original-example:basic-algebra"
+    },
+    {
+      "id": "ALG-004",
+      "concept": "linear-equations",
+      "level": "transfer",
+      "difficulty": 3,
+      "type": "manual",
+      "stem": "某人声称：如果 ax=b，那么 x 一定等于 b/a。请判断该说法在什么条件下成立，并讨论 a=0 时的情况。",
+      "rubric": [
+        "指出a≠0时唯一解为b/a",
+        "指出a=0且b≠0时无解",
+        "指出a=b=0时有无限多个解"
+      ],
+      "claim": "识别代数推导的适用边界",
+      "evidence": "覆盖a为零时的两类情形，而非只写公式",
+      "explanation": "当a≠0时有唯一解；a=0,b≠0无解；a=b=0时所有实数均满足。",
+      "source": "original-example:basic-algebra"
+    },
+    {
+      "id": "ALG-005",
+      "concept": "functions",
+      "level": "recall",
+      "difficulty": 1,
+      "type": "single",
+      "stem": "在实数范围内，f(x)=2x+1。f(3) 等于多少？",
+      "options": [
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "answer": "C",
+      "claim": "能够正确代入函数求值",
+      "evidence": "将x=3代入2x+1得到7",
+      "explanation": "f(3)=2×3+1=7。",
+      "source": "original-example:functions"
+    },
+    {
+      "id": "ALG-006",
+      "concept": "functions",
+      "level": "understand",
+      "difficulty": 2,
+      "type": "single",
+      "stem": "对于 f(x)=x²（定义域为全体实数），下列判断正确的是哪项？",
+      "options": [
+        "不同输入总得到不同输出",
+        "输入2与输入-2得到相同输出",
+        "每个输出都只有一个输入",
+        "函数值可以是任意负实数"
+      ],
+      "answer": "B",
+      "claim": "理解函数与单射的区别",
+      "evidence": "用平方函数的对称输入构造反例",
+      "explanation": "f(2)=f(-2)=4，但仍满足每个输入有唯一输出的函数定义。",
+      "source": "original-example:functions"
+    },
+    {
+      "id": "ALG-007",
+      "concept": "functions",
+      "level": "analyze",
+      "difficulty": 3,
+      "type": "manual",
+      "stem": "设 f(x)=x²，定义域是[-2,3]。写出值域，并说明为什么只代入两端点不够。",
+      "rubric": [
+        "正确给出值域[0,9]",
+        "说明区间内x=0取得最小值0",
+        "说明仅比较端点会漏掉内点极值"
+      ],
+      "claim": "运用区间与函数性质分析最值",
+      "evidence": "检验内点并说明端点比较的局限",
+      "explanation": "x=0属于区间且f(0)=0；最大值在x=3处为9，故值域[0,9]。",
+      "source": "original-example:functions"
+    },
+    {
+      "id": "ALG-008",
+      "concept": "proportions",
+      "level": "apply",
+      "difficulty": 2,
+      "type": "short",
+      "stem": "同一种材料，4件共需12米。按相同比例制作7件需要多少米？只写数字。",
+      "answer": "21",
+      "claim": "识别并使用正比例关系",
+      "evidence": "每件3米，7件共21米",
+      "explanation": "12÷4=3米/件，3×7=21米。",
+      "source": "original-example:proportions"
+    },
+    {
+      "id": "ALG-009",
+      "concept": "proportions",
+      "level": "transfer",
+      "difficulty": 3,
+      "type": "single",
+      "stem": "某商品单价先上涨20%，随后在上涨后的价格上下降20%。与原价相比最终价格如何？",
+      "options": [
+        "不变",
+        "下降4%",
+        "上涨4%",
+        "下降20%"
+      ],
+      "answer": "B",
+      "claim": "理解连乘比例与基准变化",
+      "evidence": "1.2×0.8=0.96，识别相对原价下降4%",
+      "explanation": "两次百分比变化的基数不同，最终是原价的96%。",
+      "source": "original-example:proportions"
+    }
+  ]
+}
