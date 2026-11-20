@@ -8,6 +8,7 @@ import re
 import sys
 import tempfile
 import unicodedata
+import uuid
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -17,6 +18,10 @@ TYPES = {"single", "short", "manual"}
 CONFIDENCES = {"sure", "unsure", "guess", "none"}
 SPACING_DAYS = (1, 3, 7, 14, 30)
 SCHEMA = 1
+try:
+    from . import diagnosis
+except ImportError:
+    import diagnosis
 
 
 def utc_now():
@@ -75,6 +80,22 @@ def validate_bank(data):
         elif not isinstance(q.get("rubric"), list) or not q["rubric"] or not all(
                 isinstance(x, str) and x.strip() for x in q["rubric"]):
             fail("%s manual response requires rubric criteria" % q["id"])
+    concepts = {q["concept"] for q in items}
+    for q in items:
+        if "family" in q and (not isinstance(q["family"], str) or not q["family"].strip()):
+            fail(q["id"] + " invalid family")
+        if "prerequisites" in q:
+            p = q["prerequisites"]
+            if (not isinstance(p, list) or
+                not all(isinstance(x, str) and x in concepts and x != q["concept"]
+                        for x in p) or len(set(p)) != len(p)):
+                fail(q["id"] + " invalid prerequisites")
+        if "misconceptions" in q:
+            m = q["misconceptions"]
+            if (q["type"] != "single" or not isinstance(m, dict) or
+                not all(k in "ABCD" and k != q["answer"] and
+                        isinstance(v, str) and v.strip() for k, v in m.items())):
+                fail(q["id"] + " invalid misconceptions")
     return items
 
 
@@ -116,22 +137,7 @@ def evidence(history):
 
 
 def estimate(events):
-    if not events:
-        return {"label": "untested", "rate": None, "count": 0, "unique_items": 0}
-    # Beta(1,1) smoothed descriptive signal, not IRT / BKT.
-    score = sum(x["score"] for x in events)
-    rate = (1.0 + score) / (2.0 + len(events))
-    unique = len({x["id"] for x in events})
-    if len(events) < 3 or unique < 2:
-        label = "insufficient_evidence"
-    elif rate >= 0.72:
-        label = "tentatively_strong"
-    elif rate <= 0.45:
-        label = "needs_review"
-    else:
-        label = "developing"
-    return {"label": label, "rate": round(rate, 3),
-            "count": len(events), "unique_items": unique}
+    return diagnosis.estimate(events)
 
 
 def due_date(events):
@@ -147,30 +153,8 @@ def due_date(events):
     return (datetime.fromisoformat(last["at"]) + timedelta(days=days)).date().isoformat()
 
 
-def select_item(items, history, mode="quick", now=None):
-    now = now or utc_now()
-    grouped = evidence(history)
-    seen = {h["id"] for h in history}
-    recent = {h["id"] for h in history[-4:]}
-    fresh = [q for q in items if q["id"] not in seen]
-    candidates = fresh or [q for q in items if q["id"] not in recent] or list(items)
-
-    def priority(q):
-        key = (q["concept"], q["level"])
-        events = grouped[key]
-        avg = sum(x["score"] for x in events) / len(events) if events else None
-        target = 2 if avg is None else (3 if avg >= 0.75 else 1 if avg < 0.45 else 2)
-        all_concept = [x for x in history if x["concept"] == q["concept"]]
-        empty_bonus = 7 if not all_concept else (3 if not events else 0)
-        need_bonus = 5 if events and avg < 0.6 else 0
-        review_date = due_date(events)
-        due_bonus = 4 if review_date and review_date <= now.date().isoformat() else 0
-        depth = 2 if mode == "deep" and q["level"] in {"analyze", "transfer", "apply"} else 0
-        quick = 1 if mode == "quick" and q["level"] in {"recall", "understand", "apply"} else 0
-        return (empty_bonus + need_bonus + due_bonus + depth + quick
-                - abs(q["difficulty"] - target) * 1.25
-                - (2 if q["id"] in recent else 0))
-    return sorted(candidates, key=lambda q: (-priority(q), q["id"]))[0]
+def select_item(items, history, mode="quick", now=None, session_history=None, focus=None):
+    return diagnosis.select_item(items, history, mode, now, session_history, focus)
 
 
 def safe_prompt(q):
@@ -210,21 +194,83 @@ def answer_key(q):
     return "See rubric; no automatic model grade"
 
 
+def new_session(mode, limit=None, focus=None):
+    limit = limit or (6 if mode == "quick" else 5)
+    if not 1 <= limit <= 20:
+        fail("session limit must be between 1 and 20")
+    return {"id": uuid.uuid4().hex[:12], "mode": mode, "limit": limit, "focus": focus}
+
+
+def ensure_focus(bank, focus):
+    if focus and focus not in {q["concept"] for q in bank["items"]}:
+        fail("unknown focus concept: " + focus)
+
+
+def handle_start(args):
+    bank, _ = read_bank(args.bank)
+    ensure_focus(bank, args.focus)
+    state = read_state(args.state)
+    if state.get("pending") and not args.discard_pending:
+        fail("unanswered question pending; submit first or pass --discard-pending")
+    state["session"] = new_session(args.mode, args.limit, args.focus)
+    state["pending"] = None
+    write_state(args.state, state)
+    print(json.dumps({"session": diagnosis.session_summary(state["history"], state["session"])},
+                     ensure_ascii=False))
+
+
 def handle_next(args):
     bank, digest = read_bank(args.bank)
     state = read_state(args.state)
+    if not state.get("session"):
+        mode = args.mode or "quick"
+        ensure_focus(bank, args.focus)
+        state["session"] = new_session(mode, args.limit, args.focus)
+    session = state["session"]
+    if args.mode and args.mode != session["mode"]:
+        fail("active mode differs; use start")
+    if args.focus and args.focus != session.get("focus"):
+        fail("active focus differs; use start")
+    if args.limit and args.limit != session["limit"]:
+        fail("active limit differs; use start")
     if state.get("pending"):
         p = state["pending"]
         if p.get("bank_digest") != digest:
-            fail("bank changed while a question was pending; restore bank or use --reset-pending")
-        q = next((item for item in bank["items"] if item["id"] == p["id"]), None)
+            fail("bank changed while pending; restore the bank or reset-pending")
+        q = next((x for x in bank["items"] if x["id"] == p["id"]), None)
         if q is None:
             fail("pending item not found")
     else:
-        q = select_item(bank["items"], state["history"], args.mode)
+        part = [e for e in state["history"] if e.get("session") == session["id"]]
+        if len(part) >= session["limit"]:
+            write_state(args.state, state)
+            print(json.dumps({"complete": True, "reason": "question_budget_reached",
+                              "session": diagnosis.session_summary(state["history"], session)},
+                             ensure_ascii=False))
+            return
+        q = select_item(bank["items"], state["history"], session["mode"],
+                        session_history=part, focus=session.get("focus"))
+        if q is None:
+            write_state(args.state, state)
+            print(json.dumps({"complete": True, "reason": "item_bank_exhausted",
+                              "session": diagnosis.session_summary(state["history"], session)},
+                             ensure_ascii=False))
+            return
         state["pending"] = {"id": q["id"], "bank_digest": digest}
         write_state(args.state, state)
-    print(json.dumps(safe_prompt(q), ensure_ascii=False))
+    result = safe_prompt(q)
+    result["session"] = diagnosis.session_summary(state["history"], session)
+    print(json.dumps(result, ensure_ascii=False))
+
+
+def selected_choice(q, response):
+    if q["type"] != "single":
+        return None
+    ans = normalize(response)
+    if len(ans) == 1 and ans.upper() in "ABCD":
+        return ans.upper()
+    found = [code for code, text in zip("ABCD", q["options"]) if normalize(text) == ans]
+    return found[0] if len(found) == 1 else None
 
 
 def handle_answer(args):
@@ -235,67 +281,107 @@ def handle_answer(args):
         fail("no pending item; run next first")
     if pending.get("bank_digest") != digest:
         fail("bank changed while a question was pending")
-    q = next((i for i in bank["items"] if i["id"] == pending["id"]), None)
+    q = next((x for x in bank["items"] if x["id"] == pending["id"]), None)
     if q is None:
         fail("pending item not found")
     score, method = grade(q, args.response, args.score, args.reason)
+    if not state.get("session"):
+        state["session"] = new_session("quick")
+    session = state["session"]
+    chosen = selected_choice(q, args.response)
+    misconception = (q.get("misconceptions", {}).get(chosen)
+                     if chosen is not None and score < 1 else None)
+    if score < 1 and args.misconception:
+        misconception = args.misconception.strip()[:100]
     event = {
-        "id": q["id"], "concept": q["concept"], "level": q["level"],
+        "id": q["id"], "family": q.get("family", q["id"]),
+        "concept": q["concept"], "level": q["level"],
+        "difficulty": q["difficulty"], "type": q["type"],
         "score": score, "method": method,
-        "confidence": args.confidence,
-        "at": utc_now().isoformat()
+        "confidence": args.confidence, "hint_used": args.hint_used,
+        "session": session["id"], "at": utc_now().isoformat()
     }
+    if misconception:
+        event["misconception"] = misconception
     state["history"].append(event)
     state["pending"] = None
     write_state(args.state, state)
+    c_events = [e for e in state["history"] if e["concept"] == q["concept"]]
     result = {
         "score": score, "method": method, "expected": answer_key(q),
-        "explanation": q["explanation"],
-        "concept": q["concept"], "level": q["level"],
-        "status": estimate(evidence(state["history"])[(q["concept"], q["level"])]),
-        "next_review": due_date(evidence(state["history"])[(q["concept"], q["level"])])
+        "explanation": q["explanation"], "concept": q["concept"],
+        "level": q["level"], "status": estimate(c_events),
+        "level_status": estimate(evidence(state["history"])[(q["concept"], q["level"])]),
+        "next_review": due_date(evidence(state["history"])[(q["concept"], q["level"])]),
+        "session": diagnosis.session_summary(state["history"], session)
     }
+    if misconception:
+        result["misconception"] = misconception
     if q["type"] == "manual":
         result["rubric"] = q["rubric"]
         result["review_reason"] = args.reason
     elif score == 0 and q["type"] == "short":
-        result["note"] = "Exact match only. If the response is equivalent, review and add an alias; do not infer a conceptual error."
+        result["note"] = "Exact match only; review equivalent answers before inferring misconceptions."
     print(json.dumps(result, ensure_ascii=False))
 
 
 def handle_report(args):
     state = read_state(args.state)
     groups = evidence(state["history"])
-    rows = []
-    for (concept, level), events in sorted(groups.items()):
-        rows.append({
-            "concept": concept, "level": level,
-            **estimate(events), "next_review": due_date(events)
-        })
+    rows = [{"concept": c, "level": l, **estimate(events),
+             "next_review": due_date(events)}
+            for (c, l), events in sorted(groups.items())]
+    by_concept = defaultdict(list)
+    for event in state["history"]:
+        by_concept[event["concept"]].append(event)
+    if args.bank:
+        bank, _ = read_bank(args.bank)
+        for q in bank["items"]:
+            by_concept[q["concept"]]
+    concepts = [{"concept": concept, **estimate(events),
+                 "misconceptions": sorted({e["misconception"] for e in events
+                                         if e.get("misconception")})}
+                for concept, events in sorted(by_concept.items())]
     print(json.dumps({
         "total_answers": len(state["history"]), "pending": bool(state.get("pending")),
-        "areas": rows, "caution": "Formative estimates, not calibrated proficiency; untested areas omitted."
+        "session": diagnosis.session_summary(state["history"], state.get("session")),
+        "concepts": concepts, "areas": rows,
+        "caution": ("Rate is a descriptive evidence index, NOT a probability of mastery. "
+                    "Strong status requires varied independent items, cognitive breadth "
+                    "and delayed retrieval. Review timing is not a fitted FSRS model.")
     }, ensure_ascii=False, indent=2))
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="Offline adaptive QA state / 低成本学习诊断")
+    parser = argparse.ArgumentParser(description="Offline diagnostic assessment / 本地诊断测评")
     subs = parser.add_subparsers(dest="cmd", required=True)
     p = subs.add_parser("validate")
     p.add_argument("bank")
-    p = subs.add_parser("next")
+    p = subs.add_parser("start")
     p.add_argument("bank")
     p.add_argument("--state", default=".qa-state.json")
     p.add_argument("--mode", choices=("quick", "deep"), default="quick")
+    p.add_argument("--limit", type=int)
+    p.add_argument("--focus")
+    p.add_argument("--discard-pending", action="store_true")
+    p = subs.add_parser("next")
+    p.add_argument("bank")
+    p.add_argument("--state", default=".qa-state.json")
+    p.add_argument("--mode", choices=("quick", "deep"))
+    p.add_argument("--limit", type=int)
+    p.add_argument("--focus")
     p = subs.add_parser("answer")
     p.add_argument("bank")
     p.add_argument("--state", default=".qa-state.json")
     p.add_argument("--response", required=True)
     p.add_argument("--confidence", choices=sorted(CONFIDENCES), default="none")
+    p.add_argument("--hint-used", action="store_true")
+    p.add_argument("--misconception")
     p.add_argument("--score", type=float)
     p.add_argument("--reason")
     p = subs.add_parser("report")
     p.add_argument("--state", default=".qa-state.json")
+    p.add_argument("--bank")
     p = subs.add_parser("reset-pending")
     p.add_argument("--state", default=".qa-state.json")
     args = parser.parse_args(argv)
@@ -303,6 +389,8 @@ def main(argv=None):
         if args.cmd == "validate":
             bank, _ = read_bank(args.bank)
             print(json.dumps({"valid": True, "items": len(bank["items"])}, ensure_ascii=False))
+        elif args.cmd == "start":
+            handle_start(args)
         elif args.cmd == "next":
             handle_next(args)
         elif args.cmd == "answer":
