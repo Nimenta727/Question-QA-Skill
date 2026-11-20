@@ -481,6 +481,7 @@ def main(argv=None):
     p.add_argument("--snapshot", help="optional exact snapshot ID; otherwise uses .bak")
     p.add_argument("--acknowledge-audit-rollback", action="store_true",
                    help="explicitly allow restoring an older signed audit chain")
+    p.add_argument("--audit-key-file", help="required to validate a protected rollback snapshot")
     p = subs.add_parser("state-snapshots")
     p.add_argument("--state", default=".qa-state.json")
     p = subs.add_parser("state-export")
@@ -555,21 +556,47 @@ def main(argv=None):
                     print(json.dumps({"pending": False}))
                 elif args.cmd == "state-check":
                     result = state_store.inspect(args.state)
+                    marker = audit_ledger.policy_path(args.state).exists()
+                    enabled = "audit" in read_state(args.state) if result["current"]["valid"] else False
+                    result["audit_policy_present"] = marker
+                    result["audit_metadata_consistent"] = (enabled == marker)
+                    result["audit_cryptographic_verified"] = False
                     print(json.dumps(result, ensure_ascii=True))
-                    if result["current"]["exists"] and not result["current"]["valid"]:
+                    if (result["current"]["exists"] and not result["current"]["valid"]
+                            or not result["audit_metadata_consistent"]):
                         return 2
                 elif args.cmd == "state-recover":
                     if not args.confirm:
                         fail("state-recover requires --confirm (rolls back latest action)")
-                    if read_state(args.state).get("audit") and not args.acknowledge_audit_rollback:
-                        fail("audited state rollback requires --acknowledge-audit-rollback; "
-                             "independent receipts may detect the restored old chain")
+                    secure = ("audit" in read_state(args.state)
+                              or audit_ledger.policy_path(args.state).exists())
+                    if secure:
+                        if not args.acknowledge_audit_rollback or not args.audit_key_file:
+                            fail("audited state rollback requires --acknowledge-audit-rollback "
+                                 "and --audit-key-file; retain external receipts")
+                        secret = audit_ledger.key_from_file(args.audit_key_file)
+                        # Verify the signed destination BEFORE writing any rollback.
+                        source = (state_store.backup_path(args.state) if args.snapshot is None
+                                  else state_store.snapshots_path(args.state)/(args.snapshot+".json"))
+                        if args.snapshot is not None and args.snapshot not in {
+                                x["snapshot_id"] for x in state_store.list_snapshots(args.state)
+                                if x["valid"]}:
+                            fail("invalid signed rollback snapshot")
+                        incoming = json.loads(source.read_text(encoding="utf-8"))
+                        audit_ledger.verify(incoming,secret)
+                        current = read_state(args.state)
+                        if (current.get("audit") is not None and
+                                incoming["audit"]["registry_id"]!=current["audit"]["registry_id"]):
+                            fail("cannot restore a state from a different audit registry")
+                        audit_ledger.verify_policy(args.state,incoming,secret)
                     restored = state_store.recover(args.state, args.snapshot)
                     print(json.dumps({"restored": True,
                                       "answers": len(restored["history"]),
                                       "caution": "One or more recent actions may be lost."}, ensure_ascii=True))
                 elif args.cmd == "state-snapshots":
-                    print(json.dumps(state_store.inspect(args.state), ensure_ascii=True))
+                    result = state_store.inspect(args.state)
+                    result["audit_policy_present"] = audit_ledger.policy_path(args.state).exists()
+                    print(json.dumps(result, ensure_ascii=True))
                 elif args.cmd == "state-export":
                     if args.include_private != args.confirm_private:
                         fail("--include-private requires --confirm-private; neither may be used alone")
@@ -578,20 +605,25 @@ def main(argv=None):
                 elif args.cmd == "state-delete":
                     if args.confirm_delete != "DELETE-LOCAL":
                         fail("state-delete requires --confirm-delete DELETE-LOCAL")
-                    if read_state(args.state).get("audit") and not args.acknowledge_audit_deletion:
+                    if (read_state(args.state).get("audit") or
+                            audit_ledger.policy_path(args.state).exists()) and not args.acknowledge_audit_deletion:
                         fail("audited state deletion requires --acknowledge-audit-deletion; "
                              "external checkpoints and secret keys are not removed")
-                    print(json.dumps(state_store.delete_local(args.state), ensure_ascii=True))
+                    result = state_store.delete_local(args.state)
+                    if audit_ledger.policy_path(args.state).exists():
+                        audit_ledger.policy_path(args.state).unlink()
+                        result["deleted_audit_policy"] = True
+                    print(json.dumps(result, ensure_ascii=True))
                 elif args.cmd == "appeal-open":
                     state = read_state(args.state)
-                    audited = "audit" in state
+                    audited = ("audit" in state or audit_ledger.policy_path(args.state).exists())
                     if audited != bool(args.audit_key_file):
                         fail("audited appeals require --audit-key-file; "
                              "legacy state must not claim authenticated audit")
                     key = None
                     if audited:
                         key = audit_ledger.key_from_file(args.audit_key_file)
-                        audit_ledger.verify(state, key)
+                        audit_ledger.verify(state, key, state_path=args.state)
                     result = appeals.open_appeal(state, args.reason, args.event_id, args.event_index)
                     if audited:
                         result.update(audit_ledger.append(state,key,"open",result))
@@ -605,14 +637,14 @@ def main(argv=None):
                     print(json.dumps(result, ensure_ascii=True))
                 elif args.cmd == "appeal-resolve":
                     state = read_state(args.state)
-                    audited = "audit" in state
+                    audited = ("audit" in state or audit_ledger.policy_path(args.state).exists())
                     credential_args = (args.registry,args.reviewer_id,args.reviewer_token_file)
                     if audited:
                         if not args.audit_key_file or not all(credential_args):
                             fail("protected review requires audit key, registry, reviewer-id "
                                  "and reviewer-token-file; self-declaration cannot bypass")
                         key = audit_ledger.key_from_file(args.audit_key_file)
-                        audit_ledger.verify(state, key)
+                        audit_ledger.verify(state, key, state_path=args.state)
                         verified = reviewer_credentials.authenticate(
                             args.registry,args.reviewer_id,args.reviewer_token_file,
                             state["audit"]["registry_id"])
@@ -643,17 +675,19 @@ def main(argv=None):
                             Path(args.state).resolve(),Path(args.registry).resolve()}:
                         fail("audit secret must not overwrite state or reviewer registry")
                     state = read_state(args.state)
-                    if state.get("appeals") or "audit" in state:
-                        fail("cannot retroactively authenticate earlier appeal records")
+                    if state.get("appeals") or "audit" in state or audit_ledger.policy_path(args.state).exists():
+                        fail("cannot retroactively authenticate earlier appeal records or replace an audit policy")
                     key = audit_ledger.generate_key_file(args.audit_key_output)
                     result = audit_ledger.initialize(state,key,registry["registry_id"])
                     write_state(args.state,state)
+                    audit_ledger.create_policy(args.state,state,key)
                     print(json.dumps(result, ensure_ascii=True))
                 elif args.cmd == "audit-verify":
                     key = audit_ledger.key_from_file(args.audit_key_file)
                     receipt = (json.loads(Path(args.checkpoint).read_text(encoding="utf-8"))
                                if args.checkpoint else None)
-                    result = audit_ledger.verify(read_state(args.state),key,receipt)
+                    result = audit_ledger.verify(read_state(args.state),key,receipt,
+                                                 state_path=args.state)
                     print(json.dumps(result, ensure_ascii=True))
                 elif args.cmd == "audit-checkpoint":
                     state = read_state(args.state)
@@ -661,6 +695,7 @@ def main(argv=None):
                     if Path(args.output).resolve() in {
                             Path(args.state).resolve(),Path(args.audit_key_file).resolve()}:
                         fail("checkpoint must not replace state or audit secret")
+                    audit_ledger.verify(state,key,state_path=args.state)
                     receipt = audit_ledger.receipt_for(state,key)
                     reviewer_credentials._new_file(
                         args.output,(json.dumps(receipt,sort_keys=True,indent=2)+"\n").encode())
