@@ -4,7 +4,7 @@ description: Create source-faithful, fair and diagnostic questions; run adaptive
 license: MIT
 compatibility: Any Agent Skills-compatible assistant; optional offline Python 3.9+ helper tools.
 metadata:
-  version: "0.9.0"
+  version: "1.0.0"
   languages: "zh-CN,en"
 ---
 

@@ -1,5 +1,10 @@
 # Question-QA-Skill v0.8.0 — Installation & usage
 
+## v1.0.0 first: core conversational tutoring
+
+For ordinary quizzes or deep, source-grounded course practice, install/read SKILL.md and see README.md or references/tutoring.md. The AI can begin a one-question-at-a-time session without configuring reviewer admin credentials, audit keys or databases. The CLI is optional: qa.py next offers tutor_intent, answer offers tutor_next_move, and report offers teaching_summary; these are internal guidance, not raw student-facing JSON. Advanced operations remain available on demand via references/operations.md.
+
+
 An Agent Skills-compatible skill plus an independent offline Python CLI (Python 3.9+, standard library, Windows/macOS/Linux). It is not a Python package requiring pip installation.
 
 ## Install

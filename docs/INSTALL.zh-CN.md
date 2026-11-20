@@ -1,5 +1,12 @@
 # Question-QA-Skill v0.8.0 安装与使用
 
+## v1.0.0 核心使用入口（优先阅读）
+
+普通学生快问快答与老师课件深度命题，请直接安装主 SKILL.md 或让AI读取该文件，参照 README.zh-CN.md 和 references/tutoring.md。**不需要**为一次六轮练习安装或配置审阅者管理员、审计密钥、学生数据库。
+
+命令行脚本只是可选的离线辅助；运行 qa.py next 取得题面及内部 tutor_intent，答后 qa.py answer 取得 tutor_next_move，qa.py report 取得 teaching_summary。AI应自行将内部计划转换为简洁反馈和下一道问题。旧安全/申诉/真实实验模块保留于 references/operations.md 的按需索引。
+
+
 本项目是能够被兼容 Agent Skills 协议的助手读取的 Skill，同时包含独立的离线 Python CLI。Python 3.9+，无需额外 pip 依赖，支持 Windows、macOS 和 Linux。
 
 ## 安装
