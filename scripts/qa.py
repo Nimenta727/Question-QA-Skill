@@ -19,7 +19,7 @@ CONFIDENCES = {"sure", "unsure", "guess", "none"}
 SPACING_DAYS = (1, 3, 7, 14, 30)
 SCHEMA = 1
 try:
-    from . import diagnosis, feedback, assessment_engine, evidence_engine, prediction_engine, adaptive_engine, math_equivalence, state_store, appeals, audit_ledger, reviewer_credentials
+    from . import diagnosis, feedback, assessment_engine, evidence_engine, prediction_engine, adaptive_engine, math_equivalence, state_store, appeals, audit_ledger, reviewer_credentials, tutor_core
 except ImportError:
     import diagnosis
     import feedback
@@ -32,6 +32,7 @@ except ImportError:
     import appeals
     import audit_ledger
     import reviewer_credentials
+    import tutor_core
 
 
 def utc_now():
@@ -278,7 +279,9 @@ def handle_next(args):
         if len(part) >= session["limit"]:
             write_state(args.state, state)
             print(json.dumps({"complete": True, "reason": "question_budget_reached",
-                              "session": diagnosis.session_summary(state["history"], session)},
+                              "session": diagnosis.session_summary(state["history"], session),
+                              "teaching_summary": tutor_core.compact_session_report(
+                                  bank["items"], state["history"], session)},
                              ensure_ascii=True))
             return
         q, selection = adaptive_engine.choose(bank["items"], state["history"], session["mode"],
@@ -286,7 +289,9 @@ def handle_next(args):
         if q is None:
             write_state(args.state, state)
             print(json.dumps({"complete": True, "reason": "item_bank_exhausted",
-                              "session": diagnosis.session_summary(state["history"], session)},
+                              "session": diagnosis.session_summary(state["history"], session),
+                              "tutor_next_move": tutor_core.plan(
+                                  bank["items"], state["history"], session)},
                              ensure_ascii=True))
             return
         state["pending"] = {"id": q["id"], "bank_digest": digest,
@@ -296,6 +301,7 @@ def handle_next(args):
     if state.get("pending", {}).get("selection"):
         result["selection"] = state["pending"]["selection"]
     result["session"] = diagnosis.session_summary(state["history"], session)
+    result["tutor_intent"] = tutor_core.plan(bank["items"], state["history"], session, q)
     print(json.dumps(result, ensure_ascii=True))
 
 
@@ -412,6 +418,14 @@ def handle_answer(args):
         result["review_reason"] = args.reason
     elif score == 0 and q["type"] == "short":
         result["note"] = "Exact match only; review equivalent answers before inferring misconceptions."
+    part = [e for e in state["history"] if e.get("session") == session["id"]]
+    next_candidate = None
+    if len(part) < session["limit"]:
+        next_candidate, _ = adaptive_engine.choose(
+            bank["items"], state["history"], session["mode"],
+            session_history=part, focus=session.get("focus"))
+    result["tutor_next_move"] = tutor_core.plan(
+        bank["items"], state["history"], session, next_candidate)
     print(json.dumps(result, ensure_ascii=True))
 
 
@@ -424,11 +438,13 @@ def handle_report(args):
              "next_review": due_date(events)}
             for (c, l), events in sorted(groups.items())]
     by_concept = defaultdict(list)
+    all_items = []
     for event in state["history"]:
         by_concept[event["concept"]].append(event)
     if args.bank:
         bank, _ = read_bank(args.bank)
-        for q in bank["items"]:
+        all_items = bank["items"]
+        for q in all_items:
             by_concept[q["concept"]]
     concepts = [{"concept": concept, **estimate(events),
                  "evidence_profile": evidence_engine.profile(events),
@@ -442,6 +458,8 @@ def handle_report(args):
                            "resolved":sum(a.get("status")=="resolved" for a in state.get("appeals",[]))},
         "session": diagnosis.session_summary(state["history"], state.get("session")),
         "concepts": concepts, "areas": rows,
+        "teaching_summary": tutor_core.compact_session_report(
+            all_items, state["history"], state.get("session")),
         "caution": ("Rate is a descriptive evidence index, NOT a probability of mastery. "
                     "Strong status requires varied independent items, cognitive breadth "
                     "and delayed retrieval. Review timing is not a fitted FSRS model.")
