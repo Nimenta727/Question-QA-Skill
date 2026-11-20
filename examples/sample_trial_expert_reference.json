@@ -1,0 +1,65 @@
+{
+  "expert_reference_self_declared": true,
+  "cases": [
+    {
+      "case_id": "synthetic-case-01",
+      "scores": [
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "case_id": "synthetic-case-02",
+      "scores": [
+        1,
+        0.5
+      ]
+    },
+    {
+      "case_id": "synthetic-case-03",
+      "scores": [
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "case_id": "synthetic-case-04",
+      "scores": [
+        1,
+        0.5
+      ]
+    },
+    {
+      "case_id": "synthetic-case-05",
+      "scores": [
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "case_id": "synthetic-case-06",
+      "scores": [
+        1,
+        0.5
+      ]
+    },
+    {
+      "case_id": "synthetic-case-07",
+      "scores": [
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "case_id": "synthetic-case-08",
+      "scores": [
+        1,
+        0.5
+      ]
+    }
+  ]
+}
