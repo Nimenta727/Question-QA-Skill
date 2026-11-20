@@ -52,3 +52,9 @@ In addition to legacy --score/--reason and --rubric-judgments, manual question a
 Only short-answer questions may declare answer_equivalence with kind rational, or kind polynomial and variables ["x"], ["y"], or ["x","y"]. All expressions are subject to bounded safe exact arithmetic; no arbitrary code or general language grading. Unsupported mathematical syntax remains pending and requires manual review. See docs/MATH_EQUIVALENCE.md.
 
 The local state format remains version 1. Alongside state.json are state.json.lock (persistent advisory lock path; do not unlink while active) and state.json.bak (the previous committed snapshot). Both contain or protect private learning history. See docs/STATE_SAFETY.md. The independent reviewer-study input/output schema is documented at docs/REVIEWER_STUDY.md.
+
+
+## v0.8.0 state and appeal metadata
+Each new response carries a stable opaque event_id. Older history events may be addressed by --event-index once to assign a stable ID. The optional state.appeals array records appeal_id, event_id, item_id, reason_code, status, timestamps, reviewer_confirmation_self_declared, decision, score_before and score_after. No original learner response or reviewer free text is persisted in this audit.
+
+Five prior valid snapshots are retained in state.json.snapshots/ plus state.json.bak. Private full-state export requires two explicit confirmation flags; aggregate-only export is default and may still require privacy precautions. Deletion requires a typed confirmation and unlinks only managed local files, not remote copies. See docs/DATA_LIFECYCLE.md and docs/APPEALS.md.

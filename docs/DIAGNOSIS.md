@@ -56,3 +56,7 @@ See [VALIDATION.md](VALIDATION.md) or [VALIDATION.zh-CN.md](VALIDATION.zh-CN.md)
 
 ## v0.6.0 separation of responsibilities
 The original diagnostic index and item selection strategy are retained unchanged for reproducibility. scripts/evidence_engine.py reports observed item families, UTC days, cognitive coverage and evidence gates, with explicit non-probability warnings. scripts/prediction_engine.py supplies a separate fixed history-only comparison score, not calibrated future correctness or mastery. scripts/adaptive_engine.py provides explanatory reason tags for each question chosen by the historical rule. Details in docs/ARCHITECTURE.md. No causal benefit or IRT/BKT accuracy has been newly established.
+
+
+## v0.8.0 correction propagation
+An explicitly confirmed appeal modifies the effective event score. Subsequent reports, formative evidence, the comparison baseline and rule-based future question selection see the corrected score, not the earlier disputed one. The local appeal audit tracks both before and after values. This does not empirically calibrate mastery probabilities or prove benefits of adaptive learning.

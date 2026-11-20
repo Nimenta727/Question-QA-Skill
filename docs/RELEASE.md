@@ -42,5 +42,9 @@ The CI invokes the question-quality audit for the example bank and requires zero
 The release workflow now includes Ubuntu/Windows/macOS Python3.12 full regression tests and ZIP verification before a separate Ubuntu reproducible build, SHA256 validation and clean-extraction smoke test. The publish job is the only part granted contents:write and checks that the successfully tested commit still equals the current main HEAD. It creates a lightweight v0.6.0 Git tag and Release only if neither exists. A later main commit triggers unversioned CI artifacts, NEVER an in-place replacement of v0.6.0 release assets. Pre-existing tags without a corresponding Release are treated as an error requiring human investigation. Updating source code after publication requires a new version number and tag.
 
 
-## v0.7.0 immutable artifacts
-As with v0.6, the official ZIP is published once to a new immutable tag after Ubuntu/Windows/macOS testing and fresh extraction. v0.7.0 includes the safe math parser, state lock/backup/recovery module, aggregate-only reviewer-study CLI and all regressions. Raw learner state files, backups, lock paths, and private reviewer score sheets must remain outside the release archive. Previous tags/assets are never rewritten.
+## v0.8.0 immutable artifacts
+As with v0.6, the official ZIP is published once to a new immutable tag after Ubuntu/Windows/macOS testing and fresh extraction. v0.8.0 includes the safe math parser, state lock/backup/recovery module, aggregate-only reviewer-study CLI and all regressions. Raw learner state files, backups, lock paths, and private reviewer score sheets must remain outside the release archive. Previous tags/assets are never rewritten.
+
+
+## v0.8.0 immutable release and personal data exclusions
+The v0.8.0 archive requires appeals.py, reviewer_trial.py and state_store.py. All private state.json.snapshots/, .bak/.lock, reviewer packets, authorized participant records, exports and research-plan working folders must remain outside the allowlisted distribution. A synthetic study-plan example is included, not any actual participant data. CI retains six platform/Python combinations and a separate three-platform release gate with checksum and extracted ZIP regression. Never replace older Git tags or assets.

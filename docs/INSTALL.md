@@ -1,9 +1,9 @@
-# Question-QA-Skill v0.7.0 — Installation & usage
+# Question-QA-Skill v0.8.0 — Installation & usage
 
 An Agent Skills-compatible skill plus an independent offline Python CLI (Python 3.9+, standard library, Windows/macOS/Linux). It is not a Python package requiring pip installation.
 
 ## Install
-Download question-qa-skill-0.7.0.zip and SHA256SUMS.txt from GitHub Releases, verify SHA256 and extract. Register/copy the entire extracted directory to the location recognized by your Agent host (exact paths are host-specific). Or run from its directory:
+Download question-qa-skill-0.8.0.zip and SHA256SUMS.txt from GitHub Releases, verify SHA256 and extract. Register/copy the entire extracted directory to the location recognized by your Agent host (exact paths are host-specific). Or run from its directory:
 
     python3 scripts/qa.py validate examples/sample_bank.json
 
@@ -43,7 +43,7 @@ Open the generated HTML in any modern browser. It uses no remote scripts, fonts,
 
     python3 -m unittest discover -s tests -v
     python3 scripts/build_release.py --output dist
-    python3 scripts/build_release.py --verify dist/question-qa-skill-0.7.0.zip
+    python3 scripts/build_release.py --verify dist/question-qa-skill-0.8.0.zip
 
 A deterministic archive is covered by a per-file SHA256 manifest; release also provides SHA256SUMS.txt. See CHANGELOG.md and docs/RELEASE.md.
 
@@ -52,7 +52,7 @@ A deterministic archive is covered by a per-file SHA256 manifest; release also p
 The first real-world FORGET-SE final-exam benchmark did not establish superiority of the heuristic diagnostic index over simple historical-score baselines. No BKT/IRT calibration or latent mastery claim is made. See docs/VALIDATION.md.
 
 
-## New in v0.7.0: question-quality and second-cohort validation
+## New in v0.8.0: question-quality and second-cohort validation
 
     python3 scripts/question_quality.py examples/sample_bank.json
     python3 scripts/question_quality.py examples/sample_bank.json --review-template review.json
@@ -61,11 +61,17 @@ The first real-world FORGET-SE final-exam benchmark did not establish superiorit
 Reviewers must independently check each item rather than automatically approving generated questions. Read docs/QUESTION_QUALITY.md and docs/VALIDATION_ASSIST2015.md; the source mathematics research dataset is governed by its own research-use conditions and is never bundled.
 
 
-## v0.7.0 double-review grading
+## v0.8.0 double-review grading
 For a pending manual item, pass --response-file PRIVATE_ANSWER.txt --independent-reviews @reviews.json. If the reviewers disagree, an additional --adjudication @decisions.json is mandatory; the pending item is not consumed until all disputes are resolved. All sample packets are synthetic. See docs/ASSESSMENT.md for the reviewer and adjudicator formats; docs/ARCHITECTURE.md separates diagnostic evidence, historical score comparison and question-choice reasons.
 
 
-## New in v0.7.0
+## New in v0.8.0
 - Math: opt-in exact arithmetic/polynomial short-answer equivalence only; documentation at docs/MATH_EQUIVALENCE.md.
 - State health: python scripts/qa.py state-check --state .qa-state.json; deliberate previous-version rollback: python scripts/qa.py state-recover --state .qa-state.json --confirm. Private last-good backup is .bak, lock is .lock.
 - Reviewer study: python scripts/reviewer_study.py --input examples/sample_reviewer_study.json --output aggregate.json. The sample is synthetic; no real review study has been performed. See docs/REVIEWER_STUDY.md.
+
+
+## v0.8.0 appeals and retention
+Each recorded answer has event_id. Request a correction with appeal-open --event-id ID --reason rubric_dispute. Reviewers must independently verify the marking evidence before appeal-resolve --appeal-id ID --decision correct --reason rubric_rechecked --reviewer-confirmed and revised scores. Details: docs/APPEALS.md.
+
+State snapshots: state-snapshots, optional state-recover --snapshot ID --confirm. Aggregate-only export: state-export --output qa-export-summary.json. Full private export: additionally supply --include-private --confirm-private. Local deletion: state-delete --confirm-delete DELETE-LOCAL; this does NOT forensically erase external copies. See docs/DATA_LIFECYCLE.md. Trial-preparation tools require real authorization handled outside this software; see docs/REVIEW_TRIAL.md.

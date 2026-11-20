@@ -15,3 +15,7 @@ Omit adjudication when all scores already agree. Sample data is synthetic and mu
 Privacy: --response-file avoids writing the student's answer to command-line arguments but leaves an ordinary local file that the caller must protect and eventually remove if appropriate. Only the final numeric rubric scores, agreement rate and count of disputed criteria are written to the state JSON. Detailed assessment output containing quotations remains temporary, but console logs also need private handling.
 
 Limitations: verbatim matching verifies presence, not semantic validity or relevance. Reviewer identities/independence are self-declared and not independently verified. Matching wrong judgments may agree. Neither agreement nor score is an independently calibrated measure of latent mastery. High-stakes grading requires qualified review and an appeal process.
+
+
+## v0.8.0 correction pathway
+A recorded answer can be appealed through the new event_id and appeal-open/list/resolve commands, with reason codes and explicit reviewer-confirmed corrections. If a manual item already has criterion_scores, the revised rubric vector must match its original dimensions and mean; an arbitrary total score override is rejected. See docs/APPEALS.md. Reviewers' credentials and real-world independence are not authenticated by the CLI.

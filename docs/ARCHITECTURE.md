@@ -13,3 +13,7 @@ FORGET-SE external exam and ASSISTments2015 practice prediction studies did not 
 
 ## v0.7.0 additions
 math_equivalence.py is a limited deterministic equivalence helper, not an adaptive learner model; old diagnosis weights are unmodified. state_store.py provides native filesystem transactional locks and previous committed backups under CLI, but external file editors and networked filesystems are out of scope. reviewer_study.py is a separate aggregate score-agreement utility, not an automatic semantic grading system; its real participant status is unverified.
+
+
+## v0.8.0 revision, retention and study boundaries
+appeals.py stores minimal reason-coded before/after corrections and updates effective response scores for diagnosis, score-history comparison, adaptive questions and the local dashboard. This is not an authenticated teacher approval or cryptographically protected ledger. state_store.py supports at most five valid prior snapshots and ordinary controlled export/deletion; external file copies remain outside its remit. reviewer_trial.py produces randomized pseudonymous tasks for two independent reviewers and freezes first-round aggregate score statistics, but cannot establish real authorization, blindness or educational effectiveness.
