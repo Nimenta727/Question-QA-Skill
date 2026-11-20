@@ -1,0 +1,106 @@
+name: Offline Skill release / 离线正式发行
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/release.yml
+      - scripts/**
+      - tests/**
+      - references/**
+      - examples/**
+      - docs/**
+      - README.md
+      - README.zh-CN.md
+      - SKILL.md
+      - VERSION
+      - CHANGELOG.md
+      - LICENSE
+permissions:
+  contents: write
+concurrency:
+  group: release-v0.4.0
+  cancel-in-progress: false
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate version and run full regression suite
+        shell: bash
+        run: |
+          test "$(cat VERSION)" = "0.4.0"
+          grep -q 'version: "0.4.0"' SKILL.md
+          python3 scripts/qa.py validate examples/sample_bank.json
+          python3 -m unittest discover -s tests -v
+      - name: Build and checksum reproducible release ZIP
+        shell: bash
+        run: |
+          python3 scripts/build_release.py --output dist
+          python3 scripts/build_release.py --verify dist/question-qa-skill-0.4.0.zip
+          python3 scripts/dashboard.py examples/sample_bank.json \
+            --state examples/demo_state.json \
+            --output dist/demo-dashboard.html --lang zh
+          sha256sum dist/question-qa-skill-0.4.0.zip dist/demo-dashboard.html > dist/SHA256SUMS.txt
+          sha256sum --check dist/SHA256SUMS.txt
+      - name: Smoke-test the exact extracted distribution
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import pathlib
+          import subprocess
+          import sys
+          import tempfile
+          import zipfile
+          source = pathlib.Path('dist/question-qa-skill-0.4.0.zip')
+          with tempfile.TemporaryDirectory() as temp:
+              with zipfile.ZipFile(source) as zipped:
+                  zipped.extractall(temp)
+              root = pathlib.Path(temp) / 'question-qa-skill-0.4.0'
+              subprocess.run([sys.executable,'scripts/qa.py','validate',
+                              'examples/sample_bank.json'],cwd=root,check=True)
+              subprocess.run([sys.executable,'-m','unittest','discover',
+                              '-s','tests','-v'],cwd=root,check=True)
+              output = pathlib.Path(temp) / 'preview.html'
+              subprocess.run([sys.executable,'scripts/dashboard.py',
+                              'examples/sample_bank.json',
+                              '--state','examples/demo_state.json',
+                              '--output',str(output),'--lang','en'],
+                             cwd=root,check=True)
+              page = output.read_text(encoding='utf-8')
+              assert 'Concept map' in page and 'Observed response trend' in page
+              assert '<script src=' not in page
+              assert 'HIDDEN_STUDENT_RESPONSE' not in page
+              print('Extracted-package smoke test passed:',len(page),'HTML chars')
+          PY
+      - name: Upload verified ZIP, checksum and synthetic preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: Question-QA-Skill-v0.4.0
+          path: |
+            dist/question-qa-skill-0.4.0.zip
+            dist/SHA256SUMS.txt
+            dist/demo-dashboard.html
+          retention-days: 30
+      - name: Publish v0.4.0 as a GitHub Release
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          if gh release view v0.4.0 >/dev/null 2>&1; then
+            echo "GitHub release v0.4.0 already published; existing assets left unchanged."
+          else
+            gh release create v0.4.0 \
+              dist/question-qa-skill-0.4.0.zip \
+              dist/SHA256SUMS.txt \
+              dist/demo-dashboard.html \
+              --target "$GITHUB_SHA" \
+              --title "Question-QA-Skill v0.4.0" \
+              --notes-file docs/RELEASE_NOTES_v0.4.0.md \
+              --latest
+          fi
