@@ -1,0 +1,73 @@
+{
+  "date": "2026-11-20",
+  "dataset": "ASSISTments2015",
+  "version": "ccbaf37b07e3e7ff7b2415475b2faacb967d54ea",
+  "source_git_blob_sha1": "f6b86c94e2a90316efd4bfd24655526919a817b0",
+  "workflow": "https://github.com/Nimenta727/Question-QA-Skill/actions/runs/44752688312",
+  "seed": 2026,
+  "bootstrap_draws": 100,
+  "raw_rows": 708631,
+  "raw_students": 19917,
+  "skill_count": 100,
+  "requested_sample_students": 1500,
+  "usable_sample_students": 1495,
+  "usable_sample_rows": 50540,
+  "excluded_sample_rows": 1818,
+  "train_learners": 874,
+  "validation_learners": 330,
+  "test_learners": 291,
+  "validation_eligible_prediction_learners": 312,
+  "test_eligible_prediction_learners": 280,
+  "validation_predictions": 6566,
+  "test_predictions": 5728,
+  "validation_pooled_auc": {
+    "global": 0.5,
+    "concept_prior": 0.6154991959035329,
+    "local_history": 0.7060920301375966,
+    "diagnostic_index": 0.6197301165405847
+  },
+  "test_pooled_auc": {
+    "global": 0.5,
+    "concept_prior": 0.6605538417196918,
+    "local_history": 0.7102018015335839,
+    "diagnostic_index": 0.6201723935882127
+  },
+  "validation_within_concept_macro_auc": {
+    "global": 0.5,
+    "concept_prior": 0.5,
+    "local_history": 0.5899069233660826,
+    "diagnostic_index": 0.5887766375930726
+  },
+  "test_within_concept_macro_auc": {
+    "global": 0.5,
+    "concept_prior": 0.5,
+    "local_history": 0.5741339349722618,
+    "diagnostic_index": 0.5620375295991509
+  },
+  "validation_index_minus_local_pooled_auc_ci95": [
+    -0.09922615914783484,
+    -0.07228844385547384
+  ],
+  "test_index_minus_local_pooled_auc_ci95": [
+    -0.10027701432230018,
+    -0.07364490925368283
+  ],
+  "validation_index_minus_local_within_concept_macro_ci95": [
+    -0.006065691008110385,
+    0.03651097890835675
+  ],
+  "test_index_minus_local_within_concept_macro_ci95": [
+    -0.015230274385722886,
+    0.029399048898881452
+  ],
+  "provisionally_strong_test_n": 0,
+  "limitations": [
+    "Next practice response not latent mastery",
+    "log_id is order not validated time",
+    "unknown question IDs and families",
+    "unknown verified cognitive levels",
+    "learner-disjoint holdout but observed practice policy not randomized",
+    "no source data redistribution"
+  ],
+  "decision": "No independent uplift demonstrated; do not add BKT/IRT"
+}
