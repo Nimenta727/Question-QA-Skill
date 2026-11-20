@@ -1,5 +1,13 @@
 # Changelog / 版本记录
 
+## v0.8.0 — 2026-11-20
+
+- Learner grade appeal life cycle, opaque event IDs and lazy legacy-ID migration, reviewer-confirmed corrections with rubric-consistent numeric before/after audit and reports using corrected grade.
+- Rolling five local state snapshots and prior .bak, selected snapshot recovery with explicit confirmation, aggregate-only export by default, doubly confirmed private export, and typed-confirmation deletion of managed local files (not forensic erasure).
+- Separate offline consent-gated reviewer-trial **preparation** utility: pseudonymous and independently randomized A/B assignment packets, frozen-round rubric validation, packet content SHA256 and aggregate agreement/uncertainty. Real authorizations/blinding cannot be verified by software and no real human trial occurred.
+- New security and privacy regression tests; Linux/Windows/macOS × Python 3.9/3.12 verification and immutable checksummed v0.8.0 ZIP. Continues to avoid unvalidated latent-mastery or learning-benefit claims.
+
+
 ## v0.7.0 — 2026-11-20
 
 - Opt-in exact rational/limited polynomial equivalence grading for short answers, bounded AST/Fraction evaluator, conservative unverified-response gate, unchanged legacy key behavior.

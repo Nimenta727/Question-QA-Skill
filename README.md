@@ -115,3 +115,11 @@ New optional answer_equivalence on explicitly numeric or polynomial short answer
 New cross-platform local file locks guard the whole quiz-state transaction, saving the previous valid state atomically as STATE.bak. Use python scripts/qa.py state-check --state .qa-state.json, and for an explicit rollback python scripts/qa.py state-recover --state .qa-state.json --confirm. Backups contain study history, should remain private and may be one successful action behind.
 
 A new private, aggregate-only scripts/reviewer_study.py reports two-reviewer agreement, quadratic weighted Cohen kappa, disagreement and uncertainty from **already-reviewed** rubric score pairs. It is not a real experiment; samples are synthetic and source type is self-declared. See [mathematical equivalence](docs/MATH_EQUIVALENCE.md), [state safety](docs/STATE_SAFETY.md) and [review study protocol](docs/REVIEWER_STUDY.md). Versioned GitHub releases remain immutable.
+
+
+## v0.8.0 — grading appeals, rolling learner-data snapshots and independent-review trial preparation
+- Appeals have stable answer event IDs, distinct open/resolve stages, reviewer-confirmed correction with rubric consistency and reason-coded numeric before/after audit records. Student raw responses are not persisted in appeal metadata. See [appeals](docs/APPEALS.md).
+- Private learner state gains a rolling five-snapshot retention policy, explicit old-version recovery, aggregate-only default export, doubly confirmed private export and typed-confirmation deletion of managed local files. This does **not** cryptographically erase remote copies or cloud backups. See [data lifecycle](docs/DATA_LIFECYCLE.md).
+- An offline reviewer-trial helper prepares separate randomized pseudonymous A/B task packets only after a frozen-rubric protocol, and freezes complete first-round grades to aggregate-only agreement statistics. Real authorization, blindness, guardian/student consent and qualified independent reviewers must be verified outside the software. **No real student study has been conducted.** See [trial protocol](docs/REVIEW_TRIAL.md).
+
+Previously released ZIPs remain immutable; future software quality claims must rely on independent actual student/reviewer data rather than synthetic protocol tests.

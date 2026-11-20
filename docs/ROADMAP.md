@@ -88,3 +88,16 @@ Priorities: accuracy and fairness > observable evidence > maintainability > unne
 2. Accessible user-facing mathematical-expression editor, careful symbol normalization and exact-condition annotation; avoid generic symbolic solvers without independent evaluation.
 3. Multi-snapshot encrypted backup/retention, optional SQLite transaction backend for classroom concurrency, secure deletion/export controls.
 4. New independent external cohort with authentic question identity/timing for diagnostic false-positive and adaptive learning outcome measurement. Do not reuse old held-out tests for hyperparameters.
+
+
+## v0.8.0 — delivered
+- Review-gated grade appeal lifecycle; before/after correction audit, revised learner evidence immediately reflected in reports and rule-based selection, legacy history migration without breaking schema.
+- At most five rolling verified previous local state snapshots, explicit rollback, safe aggregate vs consent-confirmed private export, and user-confirmed deletion of managed files.
+- Pseudonymous independent reviewer trial preparation and first-round freeze tooling with authorization self-declaration gate, exact rubric matching and aggregate-only reliability report; **no genuine human participants have yet been enrolled**.
+- Previous versions remain immutable and historical external test results remain unaffected.
+
+## v0.9.0 candidates (not yet completed)
+1. Implement authenticated reviewer identity and tamper-evident correction ledger; retain school-level appeal rights, not just locally editable JSON.
+2. Under actual education-institution and guardian/student approval, run a prospective blinded two-reviewer pilot with independently adjudicated reference grades; publish aggregate uncertainty, never raw learner records.
+3. Optional encrypted snapshot retention policies and stronger shared-database consistency for classroom-scale deployments, with secure key handling.
+4. New independent longitudinal validation data containing problem identities, actual review timing and checked cognitive levels before calibrating any learner-prediction model.

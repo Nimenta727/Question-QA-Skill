@@ -101,3 +101,11 @@ For explicitly numeric/polynomial short answers, the bank may opt into restricte
 State transactions now require OS-native exclusive locks and save a last-good previous committed state as STATE.bak. Use qa.py state-check and state-recover --confirm only with understanding that the newest action may be rolled back; never publish private state or backups. Consult docs/STATE_SAFETY.zh-CN.md / .md.
 
 A separate aggregate-only reviewer study tool measures rubric-score agreement and weighted kappa, not correctness. Genuine independent reviewers, opt-in/permissions and separate expert criterion validation are required before claiming real study results. See docs/REVIEWER_STUDY.zh-CN.md / .md.
+
+
+## 12. v0.8.0 appeals, private lifecycle and permission-gated review research
+Each new completed response carries a stable event_id. A student may request correction with qa.py appeal-open, and an actual independent reviewer should verify the original answer before appeal-resolve --reviewer-confirmed is declared. Corrected rubric scores must agree with the published criteria, and original grade plus corrected grade remain in reason-coded audit metadata without student raw text. See docs/APPEALS.zh-CN.md / docs/APPEALS.md.
+
+Local state retains up to five prior valid snapshots plus the previous .bak. Explicit snapshot recovery, aggregate/private export and local managed-file deletion are available; private export and deletion require confirmation. Deletion does not securely erase remote or historical copies. See docs/DATA_LIFECYCLE.zh-CN.md / docs/DATA_LIFECYCLE.md.
+
+A pseudonymous two-reviewer study preparation tool can split randomized A/B task lists and freeze completed first-round rating packets, but real reviewer independence, educational authorization and consent must be verified externally. No human-subject study was performed. See docs/REVIEW_TRIAL.zh-CN.md / docs/REVIEW_TRIAL.md.
