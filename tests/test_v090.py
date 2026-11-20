@@ -197,7 +197,7 @@ class SignedAppealAudit(unittest.TestCase):
             self.assertEqual(2,denied.returncode)
             allowed=run(QA,"state-recover","--state",state,
                         "--snapshot",old_snapshot,"--confirm",
-                        "--acknowledge-audit-rollback")
+                        "--acknowledge-audit-rollback","--audit-key-file",key)
             self.assertEqual(0,allowed.returncode,allowed.stderr)
             no_receipt=run(QA,"audit-verify","--state",state,"--audit-key-file",key)
             self.assertEqual(0,no_receipt.returncode,no_receipt.stderr)
@@ -205,6 +205,45 @@ class SignedAppealAudit(unittest.TestCase):
                              "--audit-key-file",key,"--checkpoint",receipt)
             self.assertEqual(2,with_receipt.returncode)
             self.assertIn("checkpoint",with_receipt.stderr)
+
+    def test_stripping_signed_metadata_cannot_downgrade_authentication(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            state,registry,admin,teacher,key,event_id=self.prepare(tmp)
+            self.assertTrue(audit_ledger.policy_path(state).exists())
+            original=json.loads(state.read_text())
+            changed=dict(original)
+            changed.pop("audit")
+            state.write_text(json.dumps(changed))
+            bypass=run(QA,"appeal-open","--state",state,"--event-id",event_id,
+                       "--reason","other")
+            self.assertEqual(2,bypass.returncode)
+            self.assertIn("audit-key-file",bypass.stderr)
+            check=run(QA,"state-check","--state",state)
+            self.assertEqual(2,check.returncode)
+            self.assertFalse(json.loads(check.stdout)["audit_metadata_consistent"])
+            state.write_text(json.dumps(original))
+            # A locally edited policy MAC cannot be used to sign false grades.
+            policy=audit_ledger.policy_path(state)
+            data=json.loads(policy.read_text())
+            data["registry_id"]="attacker-registry"
+            policy.write_text(json.dumps(data))
+            broken=run(QA,"audit-verify","--state",state,"--audit-key-file",key)
+            self.assertEqual(2,broken.returncode)
+            self.assertIn("policy HMAC mismatch",broken.stderr)
+
+    def test_pre_audit_snapshot_cannot_restore_into_protected_state(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            state,registry,admin,teacher,key,event_id=self.prepare(tmp)
+            snapshots=state_store.list_snapshots(state)
+            older=next(x["snapshot_id"] for x in snapshots if
+                       "audit" not in json.loads(
+                           (state_store.snapshots_path(state)/
+                            (x["snapshot_id"]+".json")).read_text()))
+            denied=run(QA,"state-recover","--state",state,"--snapshot",older,
+                       "--confirm","--acknowledge-audit-rollback",
+                       "--audit-key-file",key)
+            self.assertEqual(2,denied.returncode)
+            self.assertTrue(json.loads(state.read_text()).get("audit"))
 
     def test_wrong_key_and_protected_delete_guard(self):
         with tempfile.TemporaryDirectory() as tmp:
