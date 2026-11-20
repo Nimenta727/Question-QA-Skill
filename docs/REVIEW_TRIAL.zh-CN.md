@@ -41,3 +41,18 @@
 研究准备器验证A、B两位审阅者的初评完整性，但**两人一致不意味着评分正确**。在完整冻结首轮评分包之后，应该由没有参与首轮的专业评审者制定独立参照评分，再用 scripts/reviewer_pilot.py 对照，得到：两评阅者各自对参照的逐条一致率、平均绝对偏差、双方一致但仍与参照不同的条目数、按完整答卷案例Bootstrap的差值区间。
 
 操作方法、评分文件格式、原始答案保护和参照正确性仍需外部核验的限制见 [REFERENCE_PILOT.zh-CN.md](REFERENCE_PILOT.zh-CN.md)。不要让同一组评分者在看过研究结果后反向改动“专家标准”；不能把此工具输出直接称为独立确证的AI准确率或正式人类实验。
+
+
+## v0.9.0 第三审阅者C的冻结后仲裁
+
+在A/B评分各自提交并完成首轮freeze后，保留**不再修改**的两份原始评分包。第三审阅者按以下私有JSON格式，仅对原先两人分歧的评分维度仲裁：
+
+    {"adjudicator_id":"reviewer-C","independent_self_declared":true,
+     "decisions":[{"case_id":"anon-01","criterion_index":0,
+                   "score":0.5,"reason_code":"rubric_clarification"}]}
+
+允许的原因代码：rubric_clarification、factual_correction、missing_step、other。任何漏掉、重复或超出分歧范围的决议都必须失败。
+
+    python scripts/reviewer_trial.py finalize --manifest trial-private-demo/private-manifest.json --first-round first-round.json --review-a private-a.json --review-b private-b.json --adjudication private-c.json --output third-round-aggregate.json
+
+finalize先重新计算A/B原评分包SHA256，确认和首轮冻结报告一致，再输出仅汇总的决议完成度、匹配A/B和取第三种允许分值的数量。它不验证真实C是谁、是否独立或是否真的判对。需另有受授权的专家效标核验评分正确性；所有仓库示例与测试仍为合成数据，尚未开展真人实验。

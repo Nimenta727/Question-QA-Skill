@@ -27,3 +27,17 @@ No research participant data is collected or uploaded by these commands. Protect
 Reviewer A/B agreement alone cannot detect shared grading mistakes. After freezing both independent first-round packets, obtain a separate, curriculum-grounded expert reference under appropriate authorization and compare each reviewer with that reference using scripts/reviewer_pilot.py. The analysis includes criterion-level reference agreement, absolute score differences, reviewer consensus that disagrees with the expert and a cluster-bootstrap interval.
 
 See [REFERENCE_PILOT.md](REFERENCE_PILOT.md) for the exact private input contract and the limitations of the benchmark. The supplied expert reference, blindness, reviewer competence, consent and actual educational correctness must all be established independently; this software does not certify them.
+
+
+## v0.9.0 frozen first-round C adjudication
+After preparing pseudonymous A/B assignment and running freeze, store both original A/B score JSON files unchanged. A third adjudicator can submit a separate private JSON packet with format:
+
+    {"adjudicator_id":"reviewer-C","independent_self_declared":true,
+     "decisions":[{"case_id":"anon-01","criterion_index":0,
+                   "score":0.5,"reason_code":"rubric_clarification"}]}
+
+Only criteria on which A and B originally differed may be included; every disputed criterion must be covered exactly once. Accepted reason_code values: rubric_clarification, factual_correction, missing_step, other. Then run:
+
+    python scripts/reviewer_trial.py finalize --manifest trial-private-demo/private-manifest.json --first-round first-round.json --review-a private-a.json --review-b private-b.json --adjudication private-c.json --output third-round-aggregate.json
+
+The program verifies original A/B packet hashes against the already frozen first-round record, rejects modifications, then emits only counts/hashes and aggregate third-party decision categories. It does **not** certify the adjudicator as an independent human or determine that their answer is correct. Source cases, student responses, reviewer identities and full private raw rubric records remain outside release packages. A separate optional declared expert-reference comparison script may be used on appropriately authorized private data; this is not proof that the expert reference is true. **No real participants were enrolled in this version.**

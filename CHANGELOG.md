@@ -1,5 +1,14 @@
 # Changelog / 版本记录
 
+## v0.9.0 — 2026-11-20
+
+- Added stdlib-only, local credential-based reviewer enrollment, authenticated review, revocation and private token-file handling with salted PBKDF2-HMAC verifiers; actual educator identity, professional qualifications and blind-review independence are not verified by software.
+- Added HMAC-linked appeal audit sequence, external signed policy binding, effective-score consistency checks and optional independently stored rollback-detecting checkpoint receipts. High-trust appeal correction requires reviewer credentials plus audit key, and signed-state rollback/deletion has explicit extra confirmation.
+- Added third-party disputed-criteria finalization for previously frozen A/B reviewer study packets. A synthetic expert-reference comparison tool and samples can assess agreement with a declared reference, not prove expert correctness or demonstrate real human participation.
+- Retained legacy local appeal behavior with explicit unauthenticated label, unchanged formative heuristic diagnostics, private data defaults and existing learning-state backward compatibility.
+- Extended synthetic adversarial tests and Linux/Windows/macOS Python3.9/3.12 CI, immutable release ZIP with SHA256 and fresh-extraction smoke test.
+
+
 ## v0.8.0 — 2026-11-20
 
 - Learner grade appeal life cycle, opaque event IDs and lazy legacy-ID migration, reviewer-confirmed corrections with rubric-consistent numeric before/after audit and reports using corrected grade.

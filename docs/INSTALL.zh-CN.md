@@ -88,3 +88,7 @@ CLI 返回综合得分、每条标准的证据与反馈、已达标项、待改�
 完成作答后保留event_id，使用 appeal-open --event-id ID --reason rubric_dispute 申请复核；只有真实独立审阅后才能用 appeal-resolve --reviewer-confirmed 更正分数。见 docs/APPEALS.zh-CN.md。
 
 查看快照：state-snapshots；确认恢复：state-recover --snapshot ID --confirm。默认state-export只导出汇总，私人完整导出要--include-private --confirm-private。彻底解除本地受管文件需要 state-delete --confirm-delete DELETE-LOCAL，但不能保证云端副本或磁盘残留被安全擦除。见 docs/DATA_LIFECYCLE.zh-CN.md。真人双审阅研究必须另行取得合法授权，见 docs/REVIEW_TRIAL.zh-CN.md。
+
+
+## v0.9.0 受保护申诉操作
+先使用 scripts/reviewer_credentials.py 创建本地管理员和审阅者凭据并保护好秘密文件；学习状态尚无历史申诉时，可调用 qa.py audit-init 绑定注册表和独立审计密钥。之后申诉纠错必须提交有效审阅者token、登记簿及审计密钥，不能只声明“审核过”。使用 audit-verify 校验，建议将 audit-checkpoint 收据独立保存以检测合法旧快照回滚。详见 docs/SECURITY_AUDIT.zh-CN.md。凭据不等同于真实教职认证。

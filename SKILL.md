@@ -109,3 +109,11 @@ Each new completed response carries a stable event_id. A student may request cor
 Local state retains up to five prior valid snapshots plus the previous .bak. Explicit snapshot recovery, aggregate/private export and local managed-file deletion are available; private export and deletion require confirmation. Deletion does not securely erase remote or historical copies. See docs/DATA_LIFECYCLE.zh-CN.md / docs/DATA_LIFECYCLE.md.
 
 A pseudonymous two-reviewer study preparation tool can split randomized A/B task lists and freeze completed first-round rating packets, but real reviewer independence, educational authorization and consent must be verified externally. No human-subject study was performed. See docs/REVIEW_TRIAL.zh-CN.md / docs/REVIEW_TRIAL.md.
+
+
+## 13. v0.9.0 — locally authenticated correction and HMAC evidence
+For high-trust local grading correction, enroll reviewer capabilities using scripts/reviewer_credentials.py and enable audit protection in qa.py **before opening any appeals**. A protected appeal must be opened with --audit-key-file and closed only by an active enrolled --reviewer-id/--reviewer-token-file plus a matching --registry and --audit-key-file; --reviewer-confirmed alone is NEVER sufficient on protected state.
+
+Use qa.py audit-verify to verify HMAC links and the externally authenticated .audit-policy marker. Retain independently stored audit-checkpoint receipts to detect replacement by older, valid signed state; the key is never included in learning state or release assets. Reviewer credentials authenticate local secret possession, NOT actual educator identity; controlled storage and external institutional verification are mandatory. Read docs/SECURITY_AUDIT.zh-CN.md or docs/SECURITY_AUDIT.md when using protected appeals.
+
+The private reviewer_trial.py workflow can finalize C decisions only after frozen A/B scores match their original hashes and all disputed rubric criteria are adjudicated. This is NOT proof of genuine independent human participation or consent. Research oversight remains external. See docs/REVIEW_TRIAL.zh-CN.md.

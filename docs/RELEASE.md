@@ -48,3 +48,7 @@ As with v0.6, the official ZIP is published once to a new immutable tag after Ub
 
 ## v0.8.0 immutable release and personal data exclusions
 The v0.8.0 archive requires appeals.py, reviewer_trial.py and state_store.py. All private state.json.snapshots/, .bak/.lock, reviewer packets, authorized participant records, exports and research-plan working folders must remain outside the allowlisted distribution. A synthetic study-plan example is included, not any actual participant data. CI retains six platform/Python combinations and a separate three-platform release gate with checksum and extracted ZIP regression. Never replace older Git tags or assets.
+
+
+## v0.9.0 additional safety gate
+Release ZIP must contain scripts/reviewer_credentials.py and scripts/audit_ledger.py, the previously included scripts/appeals.py and scripts/reviewer_trial.py, plus tests and bilingual safe-use instructions. The package must NEVER include local reviewer registries, administrator/reviewer token files, HMAC audit keys, .audit-policy markers, checkpoint receipts, student response files or private rating packets. This is a reproducible versioned release, not a certified school identity system or real human experiment.

@@ -123,3 +123,12 @@ A new private, aggregate-only scripts/reviewer_study.py reports two-reviewer agr
 - An offline reviewer-trial helper prepares separate randomized pseudonymous A/B task packets only after a frozen-rubric protocol, and freezes complete first-round grades to aggregate-only agreement statistics. Real authorization, blindness, guardian/student consent and qualified independent reviewers must be verified outside the software. **No real student study has been conducted.** See [trial protocol](docs/REVIEW_TRIAL.md).
 
 Previously released ZIPs remain immutable; future software quality claims must rely on independent actual student/reviewer data rather than synthetic protocol tests.
+
+
+## v0.9.0 — authenticated local appeals, tamper-evident audit, completed trial workflow
+- Create local reviewer credentials with scripts/reviewer_credentials.py: high-entropy admin and reviewer tokens (private files only), salted verifiers, credential checks and revocation. Reviewer IDs are **not independently verified real-world names or credentials**.
+- A protected learner state can be bound to a reviewer registry and a separately held HMAC audit key. Each opened/closed appeal has a chained authenticated record; a signed .audit-policy detects simple downgrade attacks. An independently retained checkpoint helps detect rollback to an older valid signed state. Neither the local key nor the checkpoint makes storage absolutely immutable. See [security instructions](docs/SECURITY_AUDIT.md).
+- The synthetic/authorized review-trial helper can also check the frozen A/B packets and finalize only the exact disputed rubric criteria with a separate C adjudication packet; [independent expert-reference comparison](docs/REVIEW_TRIAL.md) remains an optional analysis aid, not proof that a reference is correct.
+- Existing unprotected v0.8 appeals remain supported but are explicitly labeled self-declared, rather than falsely presented as credential-verified.
+
+No genuine human-subject trial has been run by this project; external authorization, qualified reviewers, student/guardian consent when required and protected source data remain prerequisites.

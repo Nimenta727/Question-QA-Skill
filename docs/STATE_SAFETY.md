@@ -9,3 +9,7 @@ CLI:
     python scripts/qa.py state-recover --state .qa-state.json --confirm
 
 The check reports status, counts and hashes only, not source text. Recovery requires explicit confirmation and preserves backup contents. Protect both primary and backup with local account permissions. Do not publish them. A private state file can still contain sensitive learning behavior even though the system does not persist raw student answers. No cloud migration, external write coordination or power-loss consistency on every filesystem is claimed.
+
+
+## v0.9.0 protected rollback and retention
+When learner state has an authenticated appeal audit, restoring an earlier snapshot additionally requires --acknowledge-audit-rollback and --audit-key-file and rejects a snapshot without the same signed reviewer-registry binding. External checkpoint receipts can detect rollback to an older valid signed audit chain. Protected local deletion also requires --acknowledge-audit-deletion. The HMAC key, reviewer credential files, policy marker and independent checkpoints are security-sensitive; see docs/SECURITY_AUDIT.md. This is local authenticity checking, not immutable storage or cloud erasure.

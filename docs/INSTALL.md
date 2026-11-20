@@ -75,3 +75,7 @@ For a pending manual item, pass --response-file PRIVATE_ANSWER.txt --independent
 Each recorded answer has event_id. Request a correction with appeal-open --event-id ID --reason rubric_dispute. Reviewers must independently verify the marking evidence before appeal-resolve --appeal-id ID --decision correct --reason rubric_rechecked --reviewer-confirmed and revised scores. Details: docs/APPEALS.md.
 
 State snapshots: state-snapshots, optional state-recover --snapshot ID --confirm. Aggregate-only export: state-export --output qa-export-summary.json. Full private export: additionally supply --include-private --confirm-private. Local deletion: state-delete --confirm-delete DELETE-LOCAL; this does NOT forensically erase external copies. See docs/DATA_LIFECYCLE.md. Trial-preparation tools require real authorization handled outside this software; see docs/REVIEW_TRIAL.md.
+
+
+## v0.9.0 protected review setup
+To set up credential-gated review, create a private reviewer registry and private admin/reviewer token files with scripts/reviewer_credentials.py. Then enable a protected audit on a local learner state *before opening any appeals* using qa.py audit-init with an administrator token; the tool creates an external HMAC key and state audit-policy marker. Protected appeal-resolve requires registry, reviewer ID, reviewer-token-file and audit-key-file, not only legacy --reviewer-confirmed. Use audit-verify and retain separately protected audit-checkpoint receipts. Read docs/SECURITY_AUDIT.md first; external reviewer identity is not established by tokens alone.

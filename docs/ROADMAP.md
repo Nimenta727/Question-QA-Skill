@@ -101,3 +101,16 @@ Priorities: accuracy and fairness > observable evidence > maintainability > unne
 2. Under actual education-institution and guardian/student approval, run a prospective blinded two-reviewer pilot with independently adjudicated reference grades; publish aggregate uncertainty, never raw learner records.
 3. Optional encrypted snapshot retention policies and stronger shared-database consistency for classroom-scale deployments, with secure key handling.
 4. New independent longitudinal validation data containing problem identities, actual review timing and checked cognitive levels before calibrating any learner-prediction model.
+
+
+## v0.9.0 — delivered and trust boundaries
+- Local high-entropy reviewer capability registration, revocation and credential-gated audited score appeal correction, preserving v0.8 legacy compatibility with explicit self-declared labels.
+- Tamper-evident HMAC correction audit with signed external policy binding and independent checkpoint receipts to help identify old-state rollbacks; keys must be guarded separately and local files remain alterable by holders of sufficient access.
+- Frozen A/B review trial now supports a third C adjudicator on exactly the criteria disputed before first-round freeze. Optional synthetic expert-reference comparisons describe metrics but cannot certify genuine experts.
+- No verified real-world reviewer identity or prospective human-subject classroom trial is claimed.
+
+## v1.0 candidate milestones (not yet delivered)
+1. Institution-integrated reviewer identity, role assignment and independently controlled audit witnesses with reliable trusted timestamps, key rotation and compromise recovery.
+2. Consent-verified prospective blinded educational reliability pilot and independent specialist reference scoring, with uncertainty intervals and learner appeal oversight.
+3. Database-backed authenticated event sourcing for managed multi-user installations, encryption and retention requirements selected by responsible institutions.
+4. New independent longitudinal cohort with verified item IDs/cognitive levels/delayed assessment before any calibrated mastery or learning-benefit claim.
