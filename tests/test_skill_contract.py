@@ -15,7 +15,7 @@ class SkillContractTests(unittest.TestCase):
                          "references/tutoring.md","references/authoring.md",
                          "references/operations.md","tutor_next_move"):
             self.assertIn(expected,text)
-        self.assertLess(text.index("## 2. QUICK"),text.index("references/operations.md"))
+        self.assertLess(text.index("## 2. QUICK"),text.index("## 3. DEEP"))
 
     def test_optional_advanced_tools_remain_available(self):
         for required in ("scripts/qa.py","scripts/tutor_core.py",
