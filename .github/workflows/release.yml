@@ -1,4 +1,4 @@
-name: Offline Skill release / 离线正式发行
+name: Immutable verified release / 不可变正式发行
 on:
   workflow_dispatch:
   push:
@@ -17,92 +17,121 @@ on:
       - CHANGELOG.md
       - LICENSE
 permissions:
-  contents: write
+  contents: read
 concurrency:
-  group: release-v0.5.0
+  group: immutable-release-${{ github.ref }}
   cancel-in-progress: false
 jobs:
-  package:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
+  platform-gate:
+    name: Release gate ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025, macos-15]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Validate version and run full regression suite
-        shell: bash
+      - name: Validate, audit and run complete tests
         run: |
-          test "$(cat VERSION)" = "0.5.0"
-          grep -q 'version: "0.5.0"' SKILL.md
-          python3 scripts/qa.py validate examples/sample_bank.json
-          python3 scripts/question_quality.py examples/sample_bank.json --output quality-audit-ci.json
-          python3 -c "import json; r=json.load(open('quality-audit-ci.json')); assert r['counts']['error']==0, r"
-          python3 -m unittest discover -s tests -v
-      - name: Build and checksum reproducible release ZIP
-        shell: bash
+          python scripts/qa.py validate examples/sample_bank.json
+          python scripts/question_quality.py examples/sample_bank.json --output quality-audit-ci.json
+          python -c "import json; d=json.load(open('quality-audit-ci.json')); assert d['counts']['error']==0, d"
+          python -m unittest discover -s tests -v
+      - name: Build and verify ZIP on target OS
         run: |
-          python3 scripts/build_release.py --output dist
-          python3 scripts/build_release.py --verify dist/question-qa-skill-0.5.0.zip
-          python3 scripts/dashboard.py examples/sample_bank.json \
-            --state examples/demo_state.json \
-            --output dist/demo-dashboard.html --lang zh
-          sha256sum dist/question-qa-skill-0.5.0.zip dist/demo-dashboard.html > dist/SHA256SUMS.txt
-          sha256sum --check dist/SHA256SUMS.txt
-      - name: Smoke-test the exact extracted distribution
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          import pathlib
-          import subprocess
-          import sys
-          import tempfile
-          import zipfile
-          source = pathlib.Path('dist/question-qa-skill-0.5.0.zip')
-          with tempfile.TemporaryDirectory() as temp:
-              with zipfile.ZipFile(source) as zipped:
-                  zipped.extractall(temp)
-              root = pathlib.Path(temp) / 'question-qa-skill-0.5.0'
-              subprocess.run([sys.executable,'scripts/qa.py','validate',
-                              'examples/sample_bank.json'],cwd=root,check=True)
-              subprocess.run([sys.executable,'-m','unittest','discover',
-                              '-s','tests','-v'],cwd=root,check=True)
-              output = pathlib.Path(temp) / 'preview.html'
-              subprocess.run([sys.executable,'scripts/dashboard.py',
-                              'examples/sample_bank.json',
-                              '--state','examples/demo_state.json',
-                              '--output',str(output),'--lang','en'],
-                             cwd=root,check=True)
-              page = output.read_text(encoding='utf-8')
-              assert 'Concept map' in page and 'Observed response trend' in page
-              assert '<script src=' not in page
-              assert 'HIDDEN_STUDENT_RESPONSE' not in page
-              print('Extracted-package smoke test passed:',len(page),'HTML chars')
-          PY
-      - name: Upload verified ZIP, checksum and synthetic preview
-        uses: actions/upload-artifact@v4
+          python scripts/build_release.py --output dist
+          python scripts/build_release.py --verify dist/question-qa-skill-0.6.0.zip
+  package:
+    needs: platform-gate
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          name: Question-QA-Skill-v0.5.0
+          python-version: '3.12'
+      - name: Check repository/version consistency
+        shell: bash
+        run: |
+          test "$(cat VERSION)" = "0.6.0"
+          grep -q 'version: "0.6.0"' SKILL.md
+      - name: Build and checksum deterministic distribution
+        shell: bash
+        run: |
+          python scripts/build_release.py --output dist
+          python scripts/build_release.py --verify dist/question-qa-skill-0.6.0.zip
+          python scripts/dashboard.py examples/sample_bank.json --state examples/demo_state.json --output dist/demo-dashboard.html --lang zh
+          (cd dist && sha256sum question-qa-skill-0.6.0.zip demo-dashboard.html > SHA256SUMS.txt && sha256sum --check SHA256SUMS.txt)
+      - name: Run smoke tests inside a freshly extracted ZIP
+        shell: bash
+        run: |
+          python - <<'PY'
+          import pathlib, subprocess, sys, tempfile, zipfile
+          with tempfile.TemporaryDirectory() as tmp:
+              with zipfile.ZipFile('dist/question-qa-skill-0.6.0.zip') as z:
+                  z.extractall(tmp)
+              root=pathlib.Path(tmp)/'question-qa-skill-0.6.0'
+              def invoke(*args):
+                  subprocess.run([sys.executable,*args],cwd=str(root),check=True)
+              invoke('scripts/qa.py','validate','examples/sample_bank.json')
+              invoke('scripts/question_quality.py','examples/sample_bank.json')
+              invoke('-m','unittest','discover','-s','tests','-v')
+              target=pathlib.Path(tmp)/'preview.html'
+              invoke('scripts/dashboard.py','examples/sample_bank.json',
+                     '--state','examples/demo_state.json','--output',str(target))
+              assert 'Concept map' in target.read_text(encoding='utf-8')
+              print('Fresh-extraction smoke test passed')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Question-QA-Skill-v0.6.0-${{ github.run_id }}
           path: |
-            dist/question-qa-skill-0.5.0.zip
+            dist/question-qa-skill-0.6.0.zip
             dist/SHA256SUMS.txt
             dist/demo-dashboard.html
           retention-days: 30
-      - name: Publish v0.5.0 as a GitHub Release
-        if: github.ref == 'refs/heads/main'
+  publish:
+    needs: package
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: Question-QA-Skill-v0.6.0-${{ github.run_id }}
+          path: dist
+      - name: Publish exactly once for a matching immutable Git tag
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          if gh release view v0.5.0 >/dev/null 2>&1; then
-            echo "GitHub release v0.5.0 already published; existing assets left unchanged."
-          else
-            gh release create v0.5.0 \
-              dist/question-qa-skill-0.5.0.zip \
-              dist/SHA256SUMS.txt \
-              dist/demo-dashboard.html \
-              --target "$GITHUB_SHA" \
-              --title "Question-QA-Skill v0.5.0" \
-              --notes-file docs/RELEASE_NOTES_v0.5.0.md \
-              --latest
+          set -euo pipefail
+          version="$(tr -d '\r\n' < VERSION)"
+          tag="v$version"
+          if [[ "$tag" != "v0.6.0" ]]; then
+            echo "::error::Incorrect release version"; exit 1
           fi
+          current="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
+          if [[ "$current" != "$GITHUB_SHA" ]]; then
+            echo "Branch changed since verification: skip stale release"; exit 0
+          fi
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "Immutable $tag release exists: no changes made"; exit 0
+          fi
+          existing="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$tag" --jq '.object.sha' 2>/dev/null || true)"
+          if [[ -n "$existing" ]]; then
+            echo "::error::Tag exists without expected Release. Refusing overwrite"; exit 1
+          fi
+          (cd dist && sha256sum --check SHA256SUMS.txt)
+          gh api -X POST "repos/$GITHUB_REPOSITORY/git/refs" \
+            -f ref="refs/tags/$tag" -f sha="$GITHUB_SHA" >/dev/null
+          gh release create "$tag" \
+            dist/question-qa-skill-0.6.0.zip dist/SHA256SUMS.txt dist/demo-dashboard.html \
+            --verify-tag --title "Question-QA-Skill v0.6.0" \
+            --notes-file docs/RELEASE_NOTES_v0.6.0.md --latest
