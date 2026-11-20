@@ -177,6 +177,39 @@ class AuditContractTests(unittest.TestCase):
             bad=model_audit.verify(course,self.digest,packet,source,True)
             self.assertIn("source_hash_mismatch",{f["code"] for f in bad["failures"]})
 
+    def test_course_anchor_claim_cannot_downgrade_to_generic_practice(self):
+        packet=completed_packet(self.bank,self.digest)
+        bank=copy.deepcopy(self.bank)
+        bank["items"][0]["source"]="lesson:teacher-week-03"
+        result=model_audit.verify(bank,self.digest,packet)
+        self.assertIn("course_citation_claim_without_course_source",
+                      {x["code"] for x in result["failures"]})
+
+    def test_unlisted_short_answer_alternative_blocks_until_bank_revision(self):
+        packet=completed_packet(self.bank,self.digest)
+        packet["items"]["ALG-003"]["accepted_alternatives"]=["seven"]
+        result=model_audit.verify(self.bank,self.digest,packet)
+        self.assertIn("alternatives_missing_from_actual_grading_key",
+                      {x["code"] for x in result["failures"]})
+        packet=completed_packet(self.bank,self.digest)
+        packet["items"]["ALG-003"]["accepted_alternatives"]=["14/2"]
+        self.assertTrue(model_audit.verify(self.bank,self.digest,packet)
+                        ["can_present_for_formative_practice"])
+
+    def test_single_choice_second_valid_answer_is_rejected(self):
+        packet=completed_packet(self.bank,self.digest)
+        packet["items"]["ALG-001"]["accepted_alternatives"]=["B"]
+        result=model_audit.verify(self.bank,self.digest,packet)
+        self.assertIn("single_choice_cannot_have_other_accepted_keys",
+                      {x["code"] for x in result["failures"]})
+
+    def test_malformed_static_acknowledgment_blocks_instead_of_crashing(self):
+        packet=completed_packet(self.bank,self.digest)
+        packet["items"]["ALG-001"]["acknowledged_static_warnings"]=[{"bad":"object"}]
+        result=model_audit.verify(self.bank,self.digest,packet)
+        self.assertIn("invalid_static_warning_acknowledgment",
+                      {x["code"] for x in result["failures"]})
+
     def test_teacher_course_claim_rejected_without_source(self):
         packet=completed_packet(self.bank,self.digest)
         result=model_audit.verify(self.bank,self.digest,packet,require_course=True)

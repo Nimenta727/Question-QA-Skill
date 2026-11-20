@@ -179,10 +179,16 @@ def verify(bank, digest, audit, source_path=None, require_course=False):
             failures.append(_problem("missing_independent_reasoning", ident))
         if not _answer_matches(q, row["independent_answer"]):
             failures.append(_problem("independent_answer_conflicts_with_key", ident))
-        if not isinstance(row["accepted_alternatives"], list) or not all(
+        alternatives = row["accepted_alternatives"]
+        if not isinstance(alternatives, list) or not all(
                 isinstance(x, str) and x.strip() and len(x) <= 300
-                for x in row["accepted_alternatives"]):
+                for x in alternatives):
             failures.append(_problem("alternatives_unexamined", ident))
+        elif q["type"] == "single" and alternatives:
+            failures.append(_problem("single_choice_cannot_have_other_accepted_keys", ident))
+        elif q["type"] == "short" and any(not _answer_matches(q, alt)
+                                           for alt in alternatives):
+            failures.append(_problem("alternatives_missing_from_actual_grading_key", ident))
         # A reviewer cannot simply check every box: each judgment needs
         # substantive text, and quoted course material must match the
         # independently supplied source byte-for-byte.
@@ -207,6 +213,8 @@ def verify(bank, digest, audit, source_path=None, require_course=False):
                 failures.append(_problem("original_example_not_course_citation", ident))
         elif quote != "":
             failures.append(_problem("general_practice_cannot_claim_source_quote", ident))
+        if mode == "general_practice" and not q["source"].startswith("original-example:"):
+            failures.append(_problem("course_citation_claim_without_course_source", ident))
         if q["type"] == "single":
             d = row["distractor_analyses"]
             if (not isinstance(d, dict) or set(d) != (set("ABCD")-{q["answer"]})
@@ -231,7 +239,8 @@ def verify(bank, digest, audit, source_path=None, require_course=False):
         elif risk:
             failures.append(_problem("unresolved_risks", ident))
         ack = row["acknowledged_static_warnings"]
-        if not isinstance(ack, list) or len(ack) != len(set(map(str, ack))):
+        if (not isinstance(ack, list) or any(not isinstance(x, str) for x in ack)
+                or len(ack) != len(set(ack))):
             failures.append(_problem("invalid_static_warning_acknowledgment", ident))
         elif set(ack) != warnings[ident]:
             failures.append(_problem("static_warnings_unresolved", ident))
