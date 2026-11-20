@@ -19,7 +19,7 @@ CONFIDENCES = {"sure", "unsure", "guess", "none"}
 SPACING_DAYS = (1, 3, 7, 14, 30)
 SCHEMA = 1
 try:
-    from . import diagnosis, feedback, assessment_engine, evidence_engine, prediction_engine, adaptive_engine, math_equivalence, state_store, appeals
+    from . import diagnosis, feedback, assessment_engine, evidence_engine, prediction_engine, adaptive_engine, math_equivalence, state_store, appeals, audit_ledger, reviewer_credentials
 except ImportError:
     import diagnosis
     import feedback
@@ -30,6 +30,8 @@ except ImportError:
     import math_equivalence
     import state_store
     import appeals
+    import audit_ledger
+    import reviewer_credentials
 
 
 def utc_now():
@@ -477,6 +479,8 @@ def main(argv=None):
     p.add_argument("--state", default=".qa-state.json")
     p.add_argument("--confirm", action="store_true", help="explicit rollback")
     p.add_argument("--snapshot", help="optional exact snapshot ID; otherwise uses .bak")
+    p.add_argument("--acknowledge-audit-rollback", action="store_true",
+                   help="explicitly allow restoring an older signed audit chain")
     p = subs.add_parser("state-snapshots")
     p.add_argument("--state", default=".qa-state.json")
     p = subs.add_parser("state-export")
@@ -490,12 +494,15 @@ def main(argv=None):
     p.add_argument("--state", default=".qa-state.json")
     p.add_argument("--confirm-delete", choices=("DELETE-LOCAL",),
                    help="explicitly delete managed state, backup and snapshots")
+    p.add_argument("--acknowledge-audit-deletion", action="store_true",
+                   help="explicitly permit deletion of HMAC-protected appeal audit state")
     p = subs.add_parser("appeal-open")
     p.add_argument("--state", default=".qa-state.json")
     target = p.add_mutually_exclusive_group(required=True)
     target.add_argument("--event-id")
     target.add_argument("--event-index", type=int)
     p.add_argument("--reason", choices=sorted(appeals.OPEN_REASONS), required=True)
+    p.add_argument("--audit-key-file", help="required when this state has HMAC appeal audit enabled")
     p = subs.add_parser("appeal-list")
     p.add_argument("--state", default=".qa-state.json")
     p = subs.add_parser("appeal-resolve")
@@ -507,6 +514,23 @@ def main(argv=None):
                    help="explicit self-declared independent review")
     p.add_argument("--new-score", type=float)
     p.add_argument("--criterion-scores", help="JSON array of revised criterion scores")
+    p.add_argument("--audit-key-file", help="mandatory in protected appeal mode")
+    p.add_argument("--registry", help="local reviewer credential registry for protected appeals")
+    p.add_argument("--reviewer-id", help="locally enrolled credential ID")
+    p.add_argument("--reviewer-token-file", help="private, 0600 reviewer token file")
+    p = subs.add_parser("audit-init")
+    p.add_argument("--state", default=".qa-state.json")
+    p.add_argument("--registry", required=True)
+    p.add_argument("--admin-token-file", required=True)
+    p.add_argument("--audit-key-output", required=True)
+    p = subs.add_parser("audit-verify")
+    p.add_argument("--state", default=".qa-state.json")
+    p.add_argument("--audit-key-file", required=True)
+    p.add_argument("--checkpoint", help="independently stored checkpoint receipt JSON")
+    p = subs.add_parser("audit-checkpoint")
+    p.add_argument("--state", default=".qa-state.json")
+    p.add_argument("--audit-key-file", required=True)
+    p.add_argument("--output", required=True)
     args = parser.parse_args(argv)
     try:
         if args.cmd == "validate":
@@ -537,6 +561,9 @@ def main(argv=None):
                 elif args.cmd == "state-recover":
                     if not args.confirm:
                         fail("state-recover requires --confirm (rolls back latest action)")
+                    if read_state(args.state).get("audit") and not args.acknowledge_audit_rollback:
+                        fail("audited state rollback requires --acknowledge-audit-rollback; "
+                             "independent receipts may detect the restored old chain")
                     restored = state_store.recover(args.state, args.snapshot)
                     print(json.dumps({"restored": True,
                                       "answers": len(restored["history"]),
@@ -551,22 +578,95 @@ def main(argv=None):
                 elif args.cmd == "state-delete":
                     if args.confirm_delete != "DELETE-LOCAL":
                         fail("state-delete requires --confirm-delete DELETE-LOCAL")
+                    if read_state(args.state).get("audit") and not args.acknowledge_audit_deletion:
+                        fail("audited state deletion requires --acknowledge-audit-deletion; "
+                             "external checkpoints and secret keys are not removed")
                     print(json.dumps(state_store.delete_local(args.state), ensure_ascii=True))
                 elif args.cmd == "appeal-open":
                     state = read_state(args.state)
+                    audited = "audit" in state
+                    if audited != bool(args.audit_key_file):
+                        fail("audited appeals require --audit-key-file; "
+                             "legacy state must not claim authenticated audit")
+                    key = None
+                    if audited:
+                        key = audit_ledger.key_from_file(args.audit_key_file)
+                        audit_ledger.verify(state, key)
                     result = appeals.open_appeal(state, args.reason, args.event_id, args.event_index)
+                    if audited:
+                        result.update(audit_ledger.append(state,key,"open",result))
                     write_state(args.state, state)
                     print(json.dumps(result, ensure_ascii=True))
                 elif args.cmd == "appeal-list":
-                    print(json.dumps(appeals.view(read_state(args.state)), ensure_ascii=True))
+                    current = read_state(args.state)
+                    result = appeals.view(current)
+                    result["audit_enabled"] = "audit" in current
+                    result["audit_verified"] = False
+                    print(json.dumps(result, ensure_ascii=True))
                 elif args.cmd == "appeal-resolve":
                     state = read_state(args.state)
+                    audited = "audit" in state
+                    credential_args = (args.registry,args.reviewer_id,args.reviewer_token_file)
+                    if audited:
+                        if not args.audit_key_file or not all(credential_args):
+                            fail("protected review requires audit key, registry, reviewer-id "
+                                 "and reviewer-token-file; self-declaration cannot bypass")
+                        key = audit_ledger.key_from_file(args.audit_key_file)
+                        audit_ledger.verify(state, key)
+                        verified = reviewer_credentials.authenticate(
+                            args.registry,args.reviewer_id,args.reviewer_token_file,
+                            state["audit"]["registry_id"])
+                    else:
+                        if args.audit_key_file or any(credential_args):
+                            fail("legacy state has no protected audit; initialize protection first")
+                        verified = None
                     values = json.loads(args.criterion_scores) if args.criterion_scores else None
                     result = appeals.resolve_appeal(
-                        state, args.appeal_id, args.decision, args.reason,
-                        args.reviewer_confirmed, args.new_score, values)
+                        state,args.appeal_id,args.decision,args.reason,
+                        True if verified else args.reviewer_confirmed,args.new_score,values)
+                    if audited:
+                        stored = next(a for a in state["appeals"] if a["appeal_id"]==args.appeal_id)
+                        stored["credential_reviewer_id"] = verified["reviewer_id"]
+                        stored["reviewer_auth_mode"] = "local_credential"
+                        result = dict(stored)
+                        result.update(audit_ledger.append(state,key,"resolve",stored))
+                    else:
+                        result["reviewer_auth_mode"] = "self_declared_not_authenticated"
                     write_state(args.state, state)
                     print(json.dumps(result, ensure_ascii=True))
+                elif args.cmd == "audit-init":
+                    if not Path(args.state).is_file():
+                        fail("initialize a learner state before enabling audit protection")
+                    registry = reviewer_credentials.read_registry(args.registry)
+                    reviewer_credentials._require_admin(registry,args.admin_token_file)
+                    if Path(args.audit_key_output).resolve() in {
+                            Path(args.state).resolve(),Path(args.registry).resolve()}:
+                        fail("audit secret must not overwrite state or reviewer registry")
+                    state = read_state(args.state)
+                    if state.get("appeals") or "audit" in state:
+                        fail("cannot retroactively authenticate earlier appeal records")
+                    key = audit_ledger.generate_key_file(args.audit_key_output)
+                    result = audit_ledger.initialize(state,key,registry["registry_id"])
+                    write_state(args.state,state)
+                    print(json.dumps(result, ensure_ascii=True))
+                elif args.cmd == "audit-verify":
+                    key = audit_ledger.key_from_file(args.audit_key_file)
+                    receipt = (json.loads(Path(args.checkpoint).read_text(encoding="utf-8"))
+                               if args.checkpoint else None)
+                    result = audit_ledger.verify(read_state(args.state),key,receipt)
+                    print(json.dumps(result, ensure_ascii=True))
+                elif args.cmd == "audit-checkpoint":
+                    state = read_state(args.state)
+                    key = audit_ledger.key_from_file(args.audit_key_file)
+                    if Path(args.output).resolve() in {
+                            Path(args.state).resolve(),Path(args.audit_key_file).resolve()}:
+                        fail("checkpoint must not replace state or audit secret")
+                    receipt = audit_ledger.receipt_for(state,key)
+                    reviewer_credentials._new_file(
+                        args.output,(json.dumps(receipt,sort_keys=True,indent=2)+"\n").encode())
+                    print(json.dumps({"checkpoint_created":str(args.output),
+                                      "entries":receipt["entries"],
+                                      "head":receipt["head"]},ensure_ascii=True))
     except (ValueError, OSError, json.JSONDecodeError) as exc:
         print("error: " + str(exc), file=sys.stderr)
         return 2
