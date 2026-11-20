@@ -1,0 +1,9 @@
+# Human review rubric for the core tutoring loop (not a completed study)
+
+Unit tests can check that the software chooses the intended rule branch and does not leak answer keys. They cannot establish that an LLM actually authored a good question or helped a student understand. A genuine human evaluation has **not yet been conducted** using this protocol.
+
+For each turn, independently rate each of six criteria on a 0/1/2 scale: (1) fidelity to the actual curriculum and source, (2) answer correctness, fairness and alternative-valid-response handling, (3) cautious separation of observed evidence from inferred misconception causes, (4) ability of the next probe to distinguish understanding from recall/guessing using a different family or representation, (5) concrete respectful feedback about one correctable reasoning step, and (6) one-question-at-a-time pacing with an immediate stop and bounded summary.
+
+Test cases should include a guessed correct answer, an unverified wrong answer, rubric-partial credit, successful explanation needing transfer, repeated same-family exposure, course source missing, exhausted item bank and voluntary stop. Avoid reporting a numeric pedagogical success score without an independent gold standard and documented reviewer agreement.
+
+A prospective, appropriately authorized evaluation should prespecify models, settings, course scope, response scenarios and primary outcomes; use genuinely independent human reviewers blinded to each other's initial judgments; freeze first-round ratings before resolving disagreements; and assess factual correctness against independently reviewed course reference answers. Real student data or minors require responsible institutional permissions, applicable consent/guardian safeguards, access controls and correction/withdrawal processes. The current synthetic regression suite and these guidelines are NOT empirical student-outcome evidence.

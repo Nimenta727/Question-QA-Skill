@@ -1,140 +1,49 @@
-# Question-QA-Skill
+# Question-QA-Skill — Rigorous questions and adaptive learning checks
 
-**Source-grounded deep question authoring + evidence-based adaptive quick checks.**
-**中文说明：** [README.zh-CN.md](README.zh-CN.md)
+[简体中文](README.zh-CN.md)
 
-## What it does
-- **DEEP**: generates original, rigorous, fair questions with objectives, source evidence, valid solutions, misconception-aware distractors and marking rubrics.
-- **QUICK**: one question per exchange, adapting to wrong, uncertain and correct answers; finishes with an evidence-aware learning snapshot.
-- **Offline companion**: no-dependency Python engine for validated JSON banks, deterministic item choice, objective grading, recorded rubric scores, local per-skill summaries and spaced-review suggestions.
-- **Low-token design**: tiny SKILL.md entrypoint, mode-specific lazy references and locally computed statistics. No model calls are used by the CLI.
+> **A small Agent Skill that asks better questions, observes reasoning and chooses a useful follow-up.** It is not an examination administration system or a calibrated mastery predictor.
 
-This is an **Agent Skill**, not a deployed website or a psychometrically calibrated CAT. An assistant authors questions; Python selects and scores validated items locally.
+## Use directly in an AI conversation
 
-## Quick start
-Use with an Agent Skills-compatible assistant by installing this repository as a skill, then ask:
+Install as an Agent Skills-compatible skill or have your assistant read SKILL.md, then ask:
 
-- "按照这节课的材料，出5道深入但公允的题，重点考察推理与迁移。"
-- "对一元一次方程进行6轮快问快答，每次只问我一道，并诊断薄弱点。"
+- "Give me a six-turn diagnostic on today's data structures lesson. Ask one question at a time and adapt to my answer."
+- "I confuse stacks and queues. Start with one question, then probe the exact step I may be missing."
+- "Create five deep but fair questions anchored in the instructor's slides. Do not show answers until I submit."
+- "Try another representation instead of repeating the same exercise."
 
-Command-line demo (Python 3.9+, no dependencies):
+QUICK defaults to six one-at-a-time probes. DEEP defaults to five independently checked, scope-aligned questions. The student may stop at any point.
+
+## What the tutor does after an answer
+
+| Observed response | Next pedagogical move |
+|---|---|
+| Incorrect, cause unknown | Clarify the reasoning or test a prerequisite; **do not invent a misconception** |
+| Correct but guessed or helped | Verify independently in a distinct item family, without hints |
+| Correct with a sound explanation | Try transfer, an application or a boundary case |
+| Partly correct on an explicit rubric | Target one missing criterion instead of demanding a full redo |
+| No suitable question remains | Author and validate a new, source-faithful variant before asking |
+
+The short primary workflow lives in [SKILL.md](SKILL.md), with specific adaptive tutoring guidance in [references/tutoring.md](references/tutoring.md) and deep question quality standards in [references/authoring.md](references/authoring.md).
+
+## Optional offline helper, no model API or external dependencies
+
+Python 3.9+:
 
 ~~~bash
 python3 scripts/qa.py validate examples/sample_bank.json
-python3 scripts/qa.py next examples/sample_bank.json --state .qa-state.json --mode quick
-python3 scripts/qa.py answer examples/sample_bank.json --state .qa-state.json --response C --confidence sure
-python3 scripts/qa.py report --state .qa-state.json
-python3 -m unittest discover -s tests -v
+python3 scripts/qa.py next examples/sample_bank.json --state .qa-state.json
+python3 scripts/qa.py answer examples/sample_bank.json --state .qa-state.json --response C
+python3 scripts/qa.py report --state .qa-state.json --bank examples/sample_bank.json
 ~~~
 
-The next command never returns answer keys; answer returns feedback after submission. For open responses use --score and --reason with the rubric. Sample questions are generated demonstrations, not official exam problems.
+next now returns the student-safe question plus an internal tutor_intent; answer returns evidence-grounded feedback plus a tutor_next_move; report supplies a teaching_summary of observed coverage and unresolved evidence. The assistant should translate internal plans into short conversational feedback and exactly one next question—not print the internal JSON at the learner.
 
-## Diagnosis v0.2: more defensible evidence
+The local scorer does not automatically understand arbitrary natural-language responses. Open responses require a reviewed rubric; ambiguous or equivalent answers require clarification or careful review, not a silent zero. The example algebra bank is synthetic and does not claim to represent anyone's actual course material.
 
-The CLI now tracks independent item families, different UTC dates, cognitive depth,
-guessing, hints, confident errors, and reviewed misconception tags. The report
-separates within-session performance from retained performance: strong evidence
-requires independent questions, higher-order application and a later-day probe.
+## Scientific and privacy limits
 
-Adaptive selection responds to mistakes with easier/related probes, to guesses
-with confirmation, and to successful answers with transfer or untested topics.
-Questions are never repeated in one session. Every session has a limit and a
-clear stop reason. These are lightweight heuristics rather than a calibrated
-IRT/CAT/BKT implementation. See [diagnosis details](docs/DIAGNOSIS.md).
+A correct answer, repeated near-duplicate or same-day streak is not proof of durable learning. The existing evidence index is descriptive, **not** a calibrated mastery probability; two earlier external studies did not demonstrate reliable predictive improvement over simpler historical baselines. Behavior tests verify the software chooses the intended tutoring branches but do **not** establish high-quality LLM question generation or improved student learning. See [pedagogical review rubric](docs/TEACHING_EVALUATION.md) and [evidence](docs/VALIDATION.md).
 
-~~~bash
-python3 scripts/qa.py start examples/sample_bank.json --mode quick --limit 6 --focus linear-equations
-python3 scripts/qa.py next examples/sample_bank.json
-python3 scripts/qa.py answer examples/sample_bank.json --response C --confidence guess
-python3 scripts/qa.py report --bank examples/sample_bank.json
-~~~
-
-## v0.4.0 — visual analytics, student answers and offline release
-
-A self-contained local bilingual HTML dashboard now shows knowledge prerequisites, observed cognitive-level scores, reviewer-tagged misconceptions, history, review prompts and rubric criterion scores. Generate a synthetic preview without personal learner data:
-
-    python3 scripts/dashboard.py examples/sample_bank.json --state examples/demo_state.json --output demo-dashboard.html --lang en
-
-Student free-form answers receive **reviewer-supported, criterion-by-criterion scoring** with evidence and actionable feedback. This validates the reviewer assessment structure and does not pretend to automatically understand all text. Short-answer semantic equivalence requires an explicit reviewed override; choice keys cannot be overridden.
-
-A reproducible versioned ZIP with a SHA256 manifest, installation guides and unpacked-package smoke tests completes the P2 distribution workflow. See [English installation/assessment](docs/INSTALL.md), [中文版](docs/INSTALL.zh-CN.md), [release engineering](docs/RELEASE.md) and [changelog](CHANGELOG.md).
-
-## Design constraints
-Every item should be checked for provenance, deep but teachable reasoning, a unique or fully specified answer set, and fair framing. The tracker does **not** infer mastery from a single item. It shows insufficient_evidence until at least three observations from two unique item IDs per concept × cognitive level. Numeric indicators are rough formative signals, not calibrated probabilities.
-
-## Layout
-- SKILL.md — concise activation and operating protocol
-- references/authoring.md — deep item quality and solution audit
-- references/diagnosis.md — six-step quick-check logic
-- references/subjects.md — discipline-specific question design
-- scripts/qa.py — deterministic offline assessment state
-- examples/sample_bank.json — self-contained algebra examples
-- docs/FORMAT.md — bank format, scoring and limits
-- docs/RESEARCH.md — research rationale and links
-- docs/routine/ — dated changes and next-step plans
-- tests/ — standard library unit/integration tests
-
-## Privacy & token cost
-State is written only to a path you choose and ignored by Git. Raw learner responses are not persisted. The assistant loads a mode reference only when relevant and uses the local engine where available. No API key, database or remote telemetry is required.
-
-License: MIT. Contributions welcome; see docs/ROADMAP.md.
-
-## Real-data validation (2026-11-20)
-
-The repeatable FORGET-SE independent final-exam benchmark is implemented. On the held-out set (30 students, 279 student–concept exam outcomes), the current v0.2 evidence index gave **pooled AUC 0.515** versus historical quiz mean **0.700** and concept prior **0.757**. Its within-concept macro AUC was **0.554**, versus quiz mean **0.551**, with a learner-bootstrap difference interval spanning zero. **Predictive improvement is not established; no BKT/IRT model is deployed.** See [English validation report](docs/VALIDATION.md) / [中文报告](docs/VALIDATION.zh-CN.md).
-
-Run your own local benchmark with `python3 scripts/evaluate.py /path/to/answers.csv`, or with publicly licensed FORGET-SE data via `python3 scripts/evaluate_forget_se.py --weekly /path/to/forget_se.csv --exam /path/to/exam.csv`. No raw personal response files are committed.
-
-
-## v0.5.0 — independent item-quality audit and second real cohort
-A new deterministic, offline question checker flags duplicate/near-duplicate stems, unsupported sources, inconsistent answer keys when an exact rational arithmetic witness exists, duplicate reviewer rubrics and other authoring risks. Source, pedagogical scope, ambiguity and fairness require genuinely independent item-by-item human or qualified Agent review; an all-false, bank-SHA256-bound form supports --strict publication gates.
-
-    python3 scripts/question_quality.py examples/sample_bank.json
-    python3 scripts/question_quality.py examples/sample_bank.json --review-template review.json
-    python3 scripts/question_quality.py examples/sample_bank.json --review review.json --strict
-
-No source is automatically certified. The second **real** dataset evaluation uses ASSISTments 2015 mathematics learner practice (held-out 280 learners / 5,728 next-response outcomes). AUC was **0.620** for the v0.2 index versus **0.710** for simple learner history; no demonstrated predictive improvement, so no BKT/IRT model added. See [quality audit guide](docs/QUESTION_QUALITY.md) and [independent mathematics study](docs/VALIDATION_ASSIST2015.md) / [中文](docs/VALIDATION_ASSIST2015.zh-CN.md). The latest release retains the bilingual dashboard and student-response rubric review.
-
-
-## v0.6.0 — independent review, explainable selection and verified cross-platform builds
-
-A double-reviewer assessment contract is now available for manual questions. Two independently prepared rubric score packets (including exact quotations from the actual student response) are checked for agreement. Any scoring disagreement requires a third distinct adjudicator before the answer is recorded. Only numeric grade summaries enter local state; raw responses, reviewer identity and justification do not. Use --response-file to keep the raw answer out of shell history.
-
-    python scripts/qa.py answer BANK.json --state .qa-state.json --response-file student_answer.txt --independent-reviews @reviewers.json --adjudication @arbitration.json
-
-Adjudication is omitted only if all criterion scores agree. External teachers/Agents still have to actually review the answers; the CLI does not automatically understand arbitrary prose or prove the review is independent.
-
-The diagnosis architecture separates observed evidence sufficiency, a fixed uncalibrated score-history baseline, and the same rule-based adaptive selection with traceable reason codes. Previously evaluated v0.2 weights are NOT tuned on either held-out test dataset. See docs/ARCHITECTURE.md and docs/ASSESSMENT.md.
-
-Continuous integration now runs on Linux, Windows and macOS with Python 3.9/3.12. Official artifacts come from a SHA256-verified immutable Git-tagged release, never in-place updates of the existing release. See docs/RELEASE.md.
-
-
-## v0.7.0 — math-equivalence, safe state and reviewer reliability
-New optional answer_equivalence on explicitly numeric or polynomial short answers accepts equivalent expressions under a **strictly bounded exact algebraic subset**, not a general CAS or free-form language grader. Unverifiable answers remain pending for independent review.
-
-New cross-platform local file locks guard the whole quiz-state transaction, saving the previous valid state atomically as STATE.bak. Use python scripts/qa.py state-check --state .qa-state.json, and for an explicit rollback python scripts/qa.py state-recover --state .qa-state.json --confirm. Backups contain study history, should remain private and may be one successful action behind.
-
-A new private, aggregate-only scripts/reviewer_study.py reports two-reviewer agreement, quadratic weighted Cohen kappa, disagreement and uncertainty from **already-reviewed** rubric score pairs. It is not a real experiment; samples are synthetic and source type is self-declared. See [mathematical equivalence](docs/MATH_EQUIVALENCE.md), [state safety](docs/STATE_SAFETY.md) and [review study protocol](docs/REVIEWER_STUDY.md). Versioned GitHub releases remain immutable.
-
-
-## v0.8.0 — grading appeals, rolling learner-data snapshots and independent-review trial preparation
-- Appeals have stable answer event IDs, distinct open/resolve stages, reviewer-confirmed correction with rubric consistency and reason-coded numeric before/after audit records. Student raw responses are not persisted in appeal metadata. See [appeals](docs/APPEALS.md).
-- Private learner state gains a rolling five-snapshot retention policy, explicit old-version recovery, aggregate-only default export, doubly confirmed private export and typed-confirmation deletion of managed local files. This does **not** cryptographically erase remote copies or cloud backups. See [data lifecycle](docs/DATA_LIFECYCLE.md).
-- An offline reviewer-trial helper prepares separate randomized pseudonymous A/B task packets only after a frozen-rubric protocol, and freezes complete first-round grades to aggregate-only agreement statistics. Real authorization, blindness, guardian/student consent and qualified independent reviewers must be verified outside the software. **No real student study has been conducted.** See [trial protocol](docs/REVIEW_TRIAL.md).
-
-Previously released ZIPs remain immutable; future software quality claims must rely on independent actual student/reviewer data rather than synthetic protocol tests.
-
-
-## v0.9.0 — authenticated local appeals, tamper-evident audit, completed trial workflow
-- Create local reviewer credentials with scripts/reviewer_credentials.py: high-entropy admin and reviewer tokens (private files only), salted verifiers, credential checks and revocation. Reviewer IDs are **not independently verified real-world names or credentials**.
-- A protected learner state can be bound to a reviewer registry and a separately held HMAC audit key. Each opened/closed appeal has a chained authenticated record; a signed .audit-policy detects simple downgrade attacks. An independently retained checkpoint helps detect rollback to an older valid signed state. Neither the local key nor the checkpoint makes storage absolutely immutable. See [security instructions](docs/SECURITY_AUDIT.md).
-- The synthetic/authorized review-trial helper can also check the frozen A/B packets and finalize only the exact disputed rubric criteria with a separate C adjudication packet; [independent expert-reference comparison](docs/REVIEW_TRIAL.md) remains an optional analysis aid, not proof that a reference is correct.
-- Existing unprotected v0.8 appeals remain supported but are explicitly labeled self-declared, rather than falsely presented as credential-verified.
-
-No genuine human-subject trial has been run by this project; external authorization, qualified reviewers, student/guardian consent when required and protected source data remain prerequisites.
-
-
-## v0.9.0 — secured local review and expert-reference pilot readiness
-The optional protected mode gives a real administrator tools for enrolling and revoking locally scoped reviewer credentials (random tokens and salted PBKDF2 verifiers), requires valid key possession before protected grading appeals are resolved, and links changes in an HMAC-SHA256 appeal audit. Separately retained, keyed checkpoints can reveal rollback. They do NOT prove a teacher's real identity or make a local JSON file absolutely immutable. See [secure review setup](docs/SECURE_REVIEW.md) and [audit limitations](docs/SECURITY_AUDIT.md).
-
-A new [expert-reference comparison](docs/REFERENCE_PILOT.md) complements two-reviewer agreement by testing how often both reviewers agree with one another yet depart from a separately supplied expert score. It reports only aggregate reference agreement, score differences and case-bootstrap uncertainty, with no student-level records in output. A reproducible eight-case synthetic demo is provided. It is **not** a real human-subject validation experiment.
+Historical tools for double review, correction appeals, data lifecycle, tamper-evident local audits, research preparation and dashboards are preserved but **not required** for ordinary tutoring. See [optional operations](references/operations.md) and [changelog](CHANGELOG.md). MIT licensed, offline by default; protect any real learner data appropriately.
