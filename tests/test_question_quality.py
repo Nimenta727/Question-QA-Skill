@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.question_quality import _number, audit, check_witness, report
+from scripts.question_quality import _number, audit, check_witness, report, review_template
 from scripts.qa import read_bank
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -117,6 +117,25 @@ class QualityReportTests(unittest.TestCase):
                          text=True,capture_output=True)
         self.assertEqual(2,r.returncode)
         self.assertEqual("blocked",json.loads(r.stdout)["quality_status"])
+
+    def test_review_template_does_not_self_certify(self):
+        bank,digest=sample()
+        t=review_template(bank,digest)
+        self.assertEqual(digest,t["bank_sha256"])
+        self.assertTrue(all(record["answer_verified"] is False
+                            for record in t["items"].values()))
+        self.assertEqual("blocked",report(bank,digest,t)["quality_status"])
+
+    def test_generate_template_never_overwrites_review(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            dest=Path(tmp)/"review-template.json"
+            first=subprocess.run([sys.executable,str(QUALITY),str(BANK),
+                                  "--review-template",str(dest)],capture_output=True,text=True)
+            self.assertEqual(0,first.returncode,first.stderr)
+            self.assertTrue(dest.exists())
+            second=subprocess.run([sys.executable,str(QUALITY),str(BANK),
+                                   "--review-template",str(dest)],capture_output=True,text=True)
+            self.assertNotEqual(0,second.returncode)
 
     def test_non_strict_exploratory_audit(self):
         r=subprocess.run([sys.executable,str(QUALITY),str(BANK)],

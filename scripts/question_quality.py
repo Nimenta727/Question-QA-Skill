@@ -186,15 +186,48 @@ def report(bank, digest, review=None):
     }
 
 
+def review_template(bank, digest):
+    """A blank, non-attesting form: no answer key or automatic approvals."""
+    return {
+        "bank_sha256": digest,
+        "items": {
+            q["id"]: {
+                "reviewer": "",
+                "answer_verified": False, "source_verified": False,
+                "scope_checked": False, "ambiguity_checked": False,
+                "fairness_checked": False, "rubric_checked": False,
+                "limitations": ""
+            } for q in bank["items"]
+        },
+        "notice": "All checks must be completed by an independent reviewer. "
+                  "Do not use an AI-generated affirmation as proof of correctness."
+    }
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description="Offline item-quality audit / 命题质量审查")
     p.add_argument("bank")
     p.add_argument("--review", help="bank-digest-bound reviewer attestations JSON")
+    p.add_argument("--review-template", help="write an all-false reviewer template JSON")
     p.add_argument("--strict", action="store_true", help="require review and zero errors")
     p.add_argument("--output", help="save aggregate and item-ID findings JSON")
     args = p.parse_args(argv)
     try:
         bank, digest = read_bank(args.bank)
+        if args.review_template:
+            if args.review or args.strict or args.output:
+                raise ValueError("--review-template cannot be combined with review, strict or output")
+            destination = Path(args.review_template)
+            if destination.exists():
+                raise ValueError("review template destination exists; avoid overwriting human reviews")
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_text(
+                json.dumps(review_template(bank, digest), ensure_ascii=False, indent=2)
+                + "\n", encoding="utf-8")
+            print(json.dumps({"template_created": str(destination),
+                              "items": len(bank["items"]),
+                              "bank_sha256": digest}, ensure_ascii=False))
+            return 0
         review = json.loads(Path(args.review).read_text(encoding="utf-8")) if args.review else None
         result = report(bank, digest, review)
         if args.strict and (not args.review or result["counts"]["error"]):

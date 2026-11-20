@@ -19,7 +19,11 @@
       "claim": "能够使用等式性质求解一元一次方程",
       "evidence": "从等式两边同时减4再除以3，得到x=5",
       "explanation": "3x=15，因此 x=5。",
-      "source": "original-example:basic-algebra"
+      "source": "original-example:basic-algebra",
+      "verification": {
+        "kind": "arithmetic",
+        "expression": "(19-4)/3"
+      }
     },
     {
       "id": "ALG-002",
@@ -51,7 +55,11 @@
       "claim": "将文字数量关系转成方程并求解",
       "evidence": "3x-5=16，由此求得x=7",
       "explanation": "3x=21，所以x=7。",
-      "source": "original-example:basic-algebra"
+      "source": "original-example:basic-algebra",
+      "verification": {
+        "kind": "arithmetic",
+        "expression": "(16+5)/3"
+      }
     },
     {
       "id": "ALG-004",
@@ -136,7 +144,11 @@
       "claim": "识别并使用正比例关系",
       "evidence": "每件3米，7件共21米",
       "explanation": "12÷4=3米/件，3×7=21米。",
-      "source": "original-example:proportions"
+      "source": "original-example:proportions",
+      "verification": {
+        "kind": "arithmetic",
+        "expression": "12/4*7"
+      }
     },
     {
       "id": "ALG-009",
