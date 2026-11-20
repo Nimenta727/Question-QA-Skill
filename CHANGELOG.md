@@ -1,5 +1,14 @@
 # Changelog / 版本记录
 
+## v0.7.0 — 2026-11-20
+
+- Opt-in exact rational/limited polynomial equivalence grading for short answers, bounded AST/Fraction evaluator, conservative unverified-response gate, unchanged legacy key behavior.
+- Cross-platform native local file locks for full state transactions, atomic previous-valid snapshot, explicit integrity checks and confirmed rollback. Backups are private and recovery can lose one transaction.
+- Private, aggregate-only two-reviewer study statistics: rubric agreement, weighted Cohen kappa, case-clustered bootstrap interval, adjudication completeness, synthetic example and protocol; no real human study has been completed.
+- More unit, concurrency, privacy and security regression cases; GitHub CI for Linux/Windows/macOS Python3.9/3.12 and a fresh ZIP smoke test.
+- Continues to refrain from BKT/IRT or other models tuned on previously exposed real-data test cohorts.
+
+
 ## v0.6.0 — 2026-11-20
 
 - Independent double-reviewer manual-answer assessment, mandatory distinct third adjudicator when scores differ, verifiable exact quotations, missing-adjudication no-score gate, numeric-only private state.

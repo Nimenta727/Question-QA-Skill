@@ -55,7 +55,7 @@ class MathematicalEquivalenceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             me.polynomial("x**4*x**4*x",("x",))
         with self.assertRaises(ValueError):
-            me.polynomial("999999999*999999999*999999999*999999999")
+            me.polynomial("*".join(["999999999"]*6))
         with self.assertRaises(ValueError):
             me.polynomial("1+"*22+"1",("x",))
 

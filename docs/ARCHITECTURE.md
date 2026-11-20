@@ -9,3 +9,7 @@ Three separate concerns are now exposed by the CLI while preserving the previous
 The qa.py report and answer output keep legacy rate/status fields for compatibility and also return evidence_profile and prediction_baseline. The qa.py next command returns a cached selection explanation for the active pending question, without exposing the correct answer or rubric before submission.
 
 FORGET-SE external exam and ASSISTments2015 practice prediction studies did not establish index improvement over simple history baselines. We have not tuned the original model on these two used test sets. Reliable evaluation of strong mastery labels still requires real item identities, independent and delayed recalls, expert-reviewed cognitive annotations, and genuinely unseen target assessments. Adaptive benefits require a separate prospective controlled comparison.
+
+
+## v0.7.0 additions
+math_equivalence.py is a limited deterministic equivalence helper, not an adaptive learner model; old diagnosis weights are unmodified. state_store.py provides native filesystem transactional locks and previous committed backups under CLI, but external file editors and networked filesystems are out of scope. reviewer_study.py is a separate aggregate score-agreement utility, not an automatic semantic grading system; its real participant status is unverified.

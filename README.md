@@ -107,3 +107,11 @@ Adjudication is omitted only if all criterion scores agree. External teachers/Ag
 The diagnosis architecture separates observed evidence sufficiency, a fixed uncalibrated score-history baseline, and the same rule-based adaptive selection with traceable reason codes. Previously evaluated v0.2 weights are NOT tuned on either held-out test dataset. See docs/ARCHITECTURE.md and docs/ASSESSMENT.md.
 
 Continuous integration now runs on Linux, Windows and macOS with Python 3.9/3.12. Official artifacts come from a SHA256-verified immutable Git-tagged release, never in-place updates of the existing release. See docs/RELEASE.md.
+
+
+## v0.7.0 — math-equivalence, safe state and reviewer reliability
+New optional answer_equivalence on explicitly numeric or polynomial short answers accepts equivalent expressions under a **strictly bounded exact algebraic subset**, not a general CAS or free-form language grader. Unverifiable answers remain pending for independent review.
+
+New cross-platform local file locks guard the whole quiz-state transaction, saving the previous valid state atomically as STATE.bak. Use python scripts/qa.py state-check --state .qa-state.json, and for an explicit rollback python scripts/qa.py state-recover --state .qa-state.json --confirm. Backups contain study history, should remain private and may be one successful action behind.
+
+A new private, aggregate-only scripts/reviewer_study.py reports two-reviewer agreement, quadratic weighted Cohen kappa, disagreement and uncertainty from **already-reviewed** rubric score pairs. It is not a real experiment; samples are synthetic and source type is self-declared. See [mathematical equivalence](docs/MATH_EQUIVALENCE.md), [state safety](docs/STATE_SAFETY.md) and [review study protocol](docs/REVIEWER_STUDY.md). Versioned GitHub releases remain immutable.

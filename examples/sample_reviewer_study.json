@@ -1,0 +1,89 @@
+{
+  "study_type": "synthetic",
+  "cases": [
+    {
+      "case_id": "synthetic-a",
+      "scores_a": [
+        1,
+        0.5,
+        0
+      ],
+      "scores_b": [
+        1,
+        1,
+        0
+      ],
+      "final": [
+        1,
+        0.5,
+        0
+      ]
+    },
+    {
+      "case_id": "synthetic-b",
+      "scores_a": [
+        1,
+        1
+      ],
+      "scores_b": [
+        1,
+        1
+      ]
+    },
+    {
+      "case_id": "synthetic-c",
+      "scores_a": [
+        0.5,
+        1
+      ],
+      "scores_b": [
+        0,
+        1
+      ],
+      "final": [
+        0.5,
+        1
+      ]
+    },
+    {
+      "case_id": "synthetic-d",
+      "scores_a": [
+        0,
+        0
+      ],
+      "scores_b": [
+        0,
+        0
+      ]
+    },
+    {
+      "case_id": "synthetic-e",
+      "scores_a": [
+        1,
+        0.5
+      ],
+      "scores_b": [
+        1,
+        0.5
+      ]
+    },
+    {
+      "case_id": "synthetic-f",
+      "scores_a": [
+        0.5,
+        0,
+        1
+      ],
+      "scores_b": [
+        0.5,
+        0.5,
+        1
+      ],
+      "final": [
+        0.5,
+        0.5,
+        1
+      ]
+    }
+  ]
+}

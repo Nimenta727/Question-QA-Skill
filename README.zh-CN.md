@@ -96,3 +96,12 @@ MIT 许可证。后续规划见 docs/ROADMAP.md。离线构建：python3 scripts
 无分歧时不传 --adjudication。真实测评应使用真实答卷与审核文件，不应直接拿仓库里的合成示例评分。详见 docs/ASSESSMENT.zh-CN.md。
 
 诊断系统分成观察证据、固定历史成绩对照、可解释选题三个独立模块。保留原始 v0.2 规则与既有报告字段，不在已用过的留出测试集调参；选题理由只能解释规则，不能证明自适应教学收益。正式发行采用新的不可变版本tag流程，并在 Linux / macOS / Windows 对 Python3.9、3.12 执行验证。
+
+
+## v0.7.0｜数学等价答案、并发安全与双人评分研究工具
+
+新增严格受限的数学等价判断：仅题库作者对短答题明确开启answer_equivalence，才允许安全的精确有理数/多项式同值判断；遇到无法解释的学生答题会**保留待答并要求审阅**，不直接记零分。详见 [数学判分边界](docs/MATH_EQUIVALENCE.zh-CN.md)。
+
+答题状态引入Windows/macOS/Linux系统原生文件锁，并自动保存上一个有效状态为.bak文件，减少双进程争用丢记录的风险；支持state-check及明确确认后的state-recover。备份可能比当前状态少最后一次操作，详见 [安全备份与恢复](docs/STATE_SAFETY.zh-CN.md)。
+
+双人评分的一致率、二次加权Kappa、争议和按答卷抽样的不确定区间可由reviewer_study.py在本地生成仅聚合的结果。**工具已完成不等于已组织真实真人实验**，示例是合成案例，详见 [研究协议](docs/REVIEWER_STUDY.zh-CN.md)。软件仍不宣称数学通用解题、自动主观判分或校准掌握概率。

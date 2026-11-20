@@ -4,7 +4,7 @@ description: Design source-grounded, original, rigorous and fair questions; run 
 license: MIT
 compatibility: Any Agent Skills-compatible assistant; Python 3.9+ optional for local state and deterministic grading.
 metadata:
-  version: "0.6.0"
+  version: "0.7.0"
   languages: "zh-CN,en"
 ---
 
@@ -93,3 +93,11 @@ External validation has now been replicated on the independent ASSISTments2015 m
 For student free-form answers, an independently arranged two-reviewer assessment may be supplied to qa.py answer through --independent-reviews @reviews.json. Each reviewer must anchor each rubric judgment in the student's actual answer, with evidence, feedback and a declared independent identity. When the two reviewers disagree, require a distinct adjudicator using --adjudication @decisions.json before scoring. Prefer --response-file PRIVATE.txt over raw answers in command arguments. Details: docs/ASSESSMENT.zh-CN.md or docs/ASSESSMENT.md. The local CLI does NOT call LLMs or independently verify semantic correctness, nor does it cryptographically prove reviewers' independence.
 
 Use separate evidence_engine.py, prediction_engine.py and adaptive_engine.py: a descriptive evidence sufficiency index is not a calibrated probability; the historical-score baseline is uncalibrated and distinct; selecting the next question returns an explanatory rule-code, not a proven causal benefit. See docs/ARCHITECTURE.md. Versioned ZIPs are published once per fixed Git tag, never silently replaced.
+
+
+## 11. v0.7.0 safe math, state and reviewer study
+For explicitly numeric/polynomial short answers, the bank may opt into restricted exact math equivalence with answer_equivalence; never enable this on choice/manual questions, and never run arbitrary student Python source. Unsupported syntax should preserve the pending answer for independent review. Consult docs/MATH_EQUIVALENCE.zh-CN.md / .md when authoring numerical items.
+
+State transactions now require OS-native exclusive locks and save a last-good previous committed state as STATE.bak. Use qa.py state-check and state-recover --confirm only with understanding that the newest action may be rolled back; never publish private state or backups. Consult docs/STATE_SAFETY.zh-CN.md / .md.
+
+A separate aggregate-only reviewer study tool measures rubric-score agreement and weighted kappa, not correctness. Genuine independent reviewers, opt-in/permissions and separate expert criterion validation are required before claiming real study results. See docs/REVIEWER_STUDY.zh-CN.md / .md.

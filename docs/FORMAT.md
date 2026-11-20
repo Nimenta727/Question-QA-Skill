@@ -46,3 +46,9 @@ The review template returned by --review-template contains the complete SHA256 o
 
 ## v0.6.0 optional independent student response adjudication
 In addition to legacy --score/--reason and --rubric-judgments, manual question answers can be evaluated by --independent-reviews @file, optionally paired with --adjudication @file for disagreements. Two separate reviewers supply one score/evidence/feedback/verbatim-quote record per rubric criterion; their identities and independence are self-declared, not externally verified. Disputed scores require third reviewer arbitration before recording. --response-file reads a local answer without leaking raw text in shell arguments. Only numeric criterion scores, agreement rate and dispute count are persisted in state, not answer text, reviewer IDs or quoted evidence. Consult docs/ASSESSMENT.zh-CN.md.
+
+
+## v0.7.0 optional math and state storage
+Only short-answer questions may declare answer_equivalence with kind rational, or kind polynomial and variables ["x"], ["y"], or ["x","y"]. All expressions are subject to bounded safe exact arithmetic; no arbitrary code or general language grading. Unsupported mathematical syntax remains pending and requires manual review. See docs/MATH_EQUIVALENCE.md.
+
+The local state format remains version 1. Alongside state.json are state.json.lock (persistent advisory lock path; do not unlink while active) and state.json.bak (the previous committed snapshot). Both contain or protect private learning history. See docs/STATE_SAFETY.md. The independent reviewer-study input/output schema is documented at docs/REVIEWER_STUDY.md.

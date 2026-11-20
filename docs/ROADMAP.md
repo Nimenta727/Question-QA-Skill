@@ -75,3 +75,16 @@ Priorities: accuracy and fairness > observable evidence > maintainability > unne
 2. Add optional, well-tested mathematics equivalence verification and safe, isolated code-answer unit testing; do NOT run untrusted submissions in the host OS.
 3. Add atomic, private state storage with concurrency-safe locking, backup/recovery and selective deletion.
 4. Collect consented third independent cohort with reviewed problem IDs and authentic time gaps; measure diagnostic mistakes and adaptive policy effectiveness before trying calibrated models.
+
+
+## v0.7.0 — delivered
+- Bounded exact rational and polynomial equivalence on author-opted-in short numeric items; unsupported student input is escalated instead of blindly marked incorrect.
+- Native same-state file locks, one-step last-good backup, atomic snapshots, explicit integrity inspection and opt-in recovery on local filesystems.
+- Aggregate private rubric inter-rater comparison and protocol for a future real, appropriately authorized blinded study; synthetic test cases are not validation evidence.
+- Cross-platform verification maintained; immutable tag v0.7.0 release distinct from prior versions.
+
+## v0.8.0 candidates (not yet implemented)
+1. Consent-based prospective independent reviewer pilot, source-grounded expert adjudication and formal learner correction/appeal mechanisms.
+2. Accessible user-facing mathematical-expression editor, careful symbol normalization and exact-condition annotation; avoid generic symbolic solvers without independent evaluation.
+3. Multi-snapshot encrypted backup/retention, optional SQLite transaction backend for classroom concurrency, secure deletion/export controls.
+4. New independent external cohort with authentic question identity/timing for diagnostic false-positive and adaptive learning outcome measurement. Do not reuse old held-out tests for hyperparameters.

@@ -22,3 +22,11 @@ dist/
 quality-audit*.json
 review.json
 review-template*.json
+
+# Local private transaction state and reviewer-study inputs
+.qa-state.json.lock
+.qa-state.json.bak
+.qa-state*.json.lock
+.qa-state*.json.bak
+reviewer-study-private*.json
+reviewer-study-aggregate*.json
