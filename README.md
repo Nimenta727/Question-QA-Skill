@@ -15,6 +15,12 @@ Install as an Agent Skills-compatible skill or have your assistant read SKILL.md
 
 QUICK defaults to six one-at-a-time probes. DEEP defaults to five independently checked, scope-aligned questions. The student may stop at any point.
 
+## New: rigorous model review before every learner-facing question
+
+The model first independently solves the question **without seeing the author's key**, then attempts to refute the draft against its key, source scope, alternatives, missing assumptions, each distractor or rubric criterion, cognitive alignment, fairness and diagnostic value. A failed or uncertain check blocks presentation. Every revised/new follow-up is re-audited.
+
+[Strict model-audit protocol](references/model_audit.md) · [Offline evidence contract](docs/MODEL_AUDIT.md). The Python checker **does not invoke an LLM** or guarantee semantic truth. A real review must actually be performed, and formal assessment still needs qualified human review.
+
 ## What the tutor does after an answer
 
 | Observed response | Next pedagogical move |

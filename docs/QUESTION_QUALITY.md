@@ -34,3 +34,7 @@ Strict mode fails if any item lacks a completed review, the bank bytes changed, 
 - The checker is not a psychometric or inter-rater agreement study and cannot establish predictive diagnostic validity.
 
 Recommended release pipeline: source-grounded draft, independent solution, static audit, professional item-by-item review, recorded strict gate, then student delivery. Keep the review manifest private when it reveals reviewer identity.
+
+
+## v1.1 separate model audit of full question meaning
+The offline question_quality checker only establishes selected static consistency properties. A distinct model review pass should solve without the key, then challenge the answer, alternatives, source/curriculum alignment, every distractor or rubric criterion, cognitive depth and fairness. Its completed artifact is checked by scripts/model_audit.py (see docs/MODEL_AUDIT.md). A model audit record does not itself prove factual correctness or genuine reviewer independence. High-stakes use requires qualified human review.

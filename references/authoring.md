@@ -33,3 +33,7 @@ For any bank to be issued to learners: run qa.py validate first, then question_q
 
 ## v1.0.0 fair next-question variants
 When an adaptive session requires a new question because no suitable reviewed item is available, treat the generated tutor_core new_item_authoring_brief as **instructions for a draft**, not a trusted answer key. Before presenting the question: (a) confirm its learning objective occurs in the actual course source, (b) avoid merely changing numbers in the same family, (c) solve independently and list valid equivalents and domain assumptions, (d) state one observable criterion that distinguishes understanding from guessing, and (e) check ambiguity, fairness and source anchor. Do not claim the draft has been independently reviewed without a distinct qualified reviewer.
+
+
+## v1.1 strict model audit is a mandatory pre-presentation step
+The authoring agent MUST arrange an independent-solution pass that does not see the author's answer, followed by an adversarial critique of the authored key, alternatives, scope, ambiguity, every distractor/rubric criterion and diagnostic value. Before releasing each newly authored or edited question, check references/model_audit.md; for source-backed local banks use scripts/model_audit.py to verify a complete, bank-and-source-SHA256-bound separate model review. Fail, uncertainty, fabricated citations and second valid choice keys must trigger revision/review, NOT student presentation. A model's self-check is not independently verified reviewer identity; formal exams still need qualified human approval.
