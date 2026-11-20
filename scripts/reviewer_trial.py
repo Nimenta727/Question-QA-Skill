@@ -150,6 +150,92 @@ def freeze(manifest,review_a,review_b,bootstraps=200,seed=2028):
     }
 
 
+def finalize(manifest,round_one,a,b,adjudicator):
+    """Validate third-party dispute decisions AFTER frozen first-round packets."""
+    if (not isinstance(round_one,dict) or round_one.get("stage")!="first_round_frozen"):
+        raise ValueError("first-round freeze record required")
+    if (not isinstance(adjudicator,dict) or
+            set(adjudicator)!={"adjudicator_id","independent_self_declared","decisions"}
+            or not isinstance(adjudicator["adjudicator_id"],str)
+            or not 3<=len(adjudicator["adjudicator_id"])<=64
+            or adjudicator["independent_self_declared"] is not True):
+        raise ValueError("third-party adjudicator identity declaration and decisions required")
+    first=freeze(manifest,a,b,bootstraps=0)
+    if (first["first_round_packet_sha256"]!=round_one.get("first_round_packet_sha256")
+            or first["cases"]!=round_one.get("cases")
+            or first["study_type_self_declared"]!=round_one.get("study_type_self_declared")):
+        raise ValueError("review packets differ from immutable first-round freeze")
+    aa={row["case_id"]:row["scores"] for row in a["cases"]}
+    bb={row["case_id"]:row["scores"] for row in b["cases"]}
+    expected={(case,i) for case in aa
+              for i,(left,right) in enumerate(zip(aa[case],bb[case]))
+              if left!=right}
+    decision_list=adjudicator["decisions"]
+    if not isinstance(decision_list,list):
+        raise ValueError("adjudication decisions must be a list")
+    chosen={}
+    for row in decision_list:
+        if (not isinstance(row,dict)
+                or set(row)!={"case_id","criterion_index","score","reason_code"}
+                or type(row["criterion_index"]) is not int
+                or type(row["score"]) not in (int,float)
+                or row["score"] not in (0,0.5,1)
+                or row["reason_code"] not in (
+                    "rubric_clarification","factual_correction",
+                    "missing_step","other")):
+            raise ValueError("invalid adjudication decision")
+        key=(row["case_id"],row["criterion_index"])
+        if key not in expected or key in chosen:
+            raise ValueError("adjudication must cover only each disputed criterion once")
+        chosen[key]=float(row["score"])
+    if set(chosen)!=expected:
+        raise ValueError("all frozen first-round disagreements require adjudication")
+    combined=[]
+    chosen_a=chosen_b=compromise=0
+    for case in sorted(aa):
+        left=aa[case]
+        right=bb[case]
+        final=[]
+        for i,(x,y) in enumerate(zip(left,right)):
+            if x==y:
+                final.append(x)
+                continue
+            score=chosen[(case,i)]
+            final.append(score)
+            chosen_a+=score==x
+            chosen_b+=score==y
+            compromise+=score not in (x,y)
+        combined.append({"case_id":case,"scores_a":left,
+                         "scores_b":right,"final":final})
+    audited=reviewer_study.read_cases({
+        "study_type":"synthetic" if manifest["study_type"]=="synthetic"
+                     else "real_private_self_declared",
+        "cases":combined})
+    stats=reviewer_study.summarize(audited)
+    if stats["unresolved_cases"]!=0:
+        raise ValueError("unresolved disagreements remain after adjudication")
+    result={
+        "stage":"adjudication_complete",
+        "study_type_self_declared":manifest["study_type"],
+        "cases":len(combined),"disputed_criteria_adjudicated":len(chosen),
+        "decisions_matching_A":chosen_a,"decisions_matching_B":chosen_b,
+        "decisions_other_supported_value":compromise,
+        "unresolved_cases":0,
+        "first_round_packet_sha256":first["first_round_packet_sha256"],
+        "adjudication_packet_sha256":hashlib.sha256(
+            json.dumps(adjudicator,ensure_ascii=True,sort_keys=True)
+            .encode("utf-8")).hexdigest(),
+        "first_round_exact_agreement":stats["exact_agreement"],
+        "human_authorization_verified":False,
+        "independent_adjudicator_identity_verified":False,
+        "score_correctness_established":False,
+        "note":("This proves structured decisions match the frozen score packets, "
+                "not that real human graders were independent or right. "
+                "No pseudonymous case IDs or student responses are exported.")
+    }
+    return result
+
+
 def main(argv=None):
     p=argparse.ArgumentParser(description="Pseudonymous independent-review protocol helper")
     sub=p.add_subparsers(dest="cmd",required=True)
@@ -163,17 +249,32 @@ def main(argv=None):
     b.add_argument("--output",required=True)
     b.add_argument("--bootstraps",type=int,default=200)
     b.add_argument("--seed",type=int,default=2028)
+    c=sub.add_parser("finalize")
+    c.add_argument("--manifest",required=True)
+    c.add_argument("--first-round",required=True)
+    c.add_argument("--review-a",required=True)
+    c.add_argument("--review-b",required=True)
+    c.add_argument("--adjudication",required=True)
+    c.add_argument("--output",required=True)
     args=p.parse_args(argv)
     try:
         if args.cmd=="prepare":
             result=prepare(_read(args.plan),args.output_dir)
-        else:
+        elif args.cmd=="freeze":
             result=freeze(_read(args.manifest),_read(args.review_a),
                           _read(args.review_b),args.bootstraps,args.seed)
             _write_new(args.output,result)
             result={"frozen":True,"output":args.output,
                     "case_count":result["cases"],
                     "human_participation_verified":False}
+        else:
+            result=finalize(_read(args.manifest),_read(args.first_round),
+                            _read(args.review_a),_read(args.review_b),
+                            _read(args.adjudication))
+            _write_new(args.output,result)
+            result={"finalized":True,"output":args.output,
+                    "cases":result["cases"],
+                    "real_human_participation_verified":False}
         print(json.dumps(result,ensure_ascii=True))
         return 0
     except (OSError,ValueError,TypeError,KeyError,json.JSONDecodeError) as exc:
