@@ -95,6 +95,7 @@ class TestIndependentASSIST2015(unittest.TestCase):
             events,audit=assist.load(make_file(d),max_learners=60)
             out=assist.evaluate(events,audit,bootstraps=10)
             self.assertIn("within_concept_macro_auc",out["test"])
+            self.assertIn("index_minus_local_pooled_auc_ci95",out["test"])
             self.assertNotIn('"learner":',json.dumps(out))
             self.assertNotIn('"user_id":',json.dumps(out))
             self.assertEqual("do_not_add_yet",out["readiness"]["bkt_irt_decision"])

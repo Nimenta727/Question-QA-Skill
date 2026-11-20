@@ -117,8 +117,12 @@ def _subset_report(observations, bootstraps, seed):
     within = {key: macro_auc_by_concept(observations, key) for key in keys}
     ci = bootstrap_delta(observations, "diagnostic_index",
                          "local_history", bootstraps, seed, within_concept=True)
+    pooled = bootstrap_delta(observations, "diagnostic_index",
+                             "local_history", bootstraps, seed+1,
+                             within_concept=False)
     return {"within_concept_macro_auc": within,
-            "index_minus_local_within_concept_auc_ci95": ci}
+            "index_minus_local_within_concept_auc_ci95": ci,
+            "index_minus_local_pooled_auc_ci95": pooled}
 
 
 def evaluate(events, audit, seed=2026, min_history=2, bootstraps=150):

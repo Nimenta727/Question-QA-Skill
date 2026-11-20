@@ -75,6 +75,7 @@ jobs:
               print(part,'within-concept macro AUC',d['within_concept_macro_auc'])
               print(part,'within-concept index minus history AUC CI',
                     d['index_minus_local_within_concept_auc_ci95'])
+              print(part,'pooled index minus history AUC CI',d['index_minus_local_pooled_auc_ci95'])
               print(part,'strong-label count',d['diagnostic_labels']['tentatively_strong']['n'])
           print('Decision:',report['readiness'])
           PY
