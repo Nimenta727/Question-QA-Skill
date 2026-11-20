@@ -42,3 +42,14 @@ case_id 及每题评分数量必须与最初注册的任务一致，不允许缺
 - 输出不包括匿名案例ID、学生原文、姓名或单个案例的分数；但私有输入文件、路径和专家参照仍须保密。
 - SHA256仅锁定提供给程序的评分包内容；如果冻结报告与评分包被有权限者一起改写，则程序无法独立发现，需要外部可信检查点。
 - 合成测试只说明工具运行逻辑和隐私边界，**并不是实际人类实验的证据**。
+
+
+## 八例合成演示（无真人数据）
+
+下面三个评分文件与现有 examples/sample_trial_plan.json 完全配套：sample_trial_reviewer_A.json、sample_trial_reviewer_B.json、sample_trial_expert_reference.json。均为人工编造的学习例子，不是学生实际作答或老师评分。
+
+    python scripts/reviewer_trial.py prepare --plan examples/sample_trial_plan.json --output-dir trial-private-demo
+    python scripts/reviewer_trial.py freeze --manifest trial-private-demo/private-manifest.json --review-a examples/sample_trial_reviewer_A.json --review-b examples/sample_trial_reviewer_B.json --output trial-private-demo/frozen.json
+    python scripts/reviewer_pilot.py --manifest trial-private-demo/private-manifest.json --frozen trial-private-demo/frozen.json --review-a examples/sample_trial_reviewer_A.json --review-b examples/sample_trial_reviewer_B.json --expert examples/sample_trial_expert_reference.json --output trial-private-demo/pilot-aggregate.json
+
+这组样例刻意安排了“二人一致但仍偏离参照”的评分。输出统计量仅可解释为流程和数据结构的演示，不能用来证明AI判分准确或师生已经参与真实研究。

@@ -32,3 +32,14 @@ The tool checks that each first-round packet's SHA256 matches the frozen record.
 - Case-cluster bootstrap 95% interval for A minus B reference agreement.
 
 These are **reference agreement measures, not independently established grading accuracy**. Expert ratings may also be wrong. Human permissions, reviewer qualification, actual blind independence and educational effectiveness cannot be inferred from self-declared metadata or synthetic examples. Raw answers, case IDs, individual scores and personal identifiers are not exported.
+
+
+## Fully synthetic eight-case example
+
+The repository includes fabricated score packets compatible with examples/sample_trial_plan.json: sample_trial_reviewer_A.json, sample_trial_reviewer_B.json and sample_trial_expert_reference.json. No original student answers, teachers or human research participants are included.
+
+    python scripts/reviewer_trial.py prepare --plan examples/sample_trial_plan.json --output-dir trial-private-demo
+    python scripts/reviewer_trial.py freeze --manifest trial-private-demo/private-manifest.json --review-a examples/sample_trial_reviewer_A.json --review-b examples/sample_trial_reviewer_B.json --output trial-private-demo/frozen.json
+    python scripts/reviewer_pilot.py --manifest trial-private-demo/private-manifest.json --frozen trial-private-demo/frozen.json --review-a examples/sample_trial_reviewer_A.json --review-b examples/sample_trial_reviewer_B.json --expert examples/sample_trial_expert_reference.json --output trial-private-demo/pilot-aggregate.json
+
+The synthetic scores deliberately include criteria for which both reviewers agree yet differ from the separate reference. This is a pipeline regression example, **not evidence of real human grading accuracy**.
