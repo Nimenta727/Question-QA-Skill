@@ -1,0 +1,45 @@
+name: Development PR handoff / 研发移交门禁
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, edited]
+permissions:
+  contents: read
+jobs:
+  handoff:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Validate PR contract and dated routine log
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import pathlib
+          import re
+          import subprocess
+          import sys
+          event = json.loads(pathlib.Path(os.environ["GITHUB_EVENT_PATH"]).read_text(encoding="utf-8"))
+          pr = event["pull_request"]
+          body = pr.get("body") or ""
+          headings = ["## Objective", "## Builder evidence", "## Audit request", "## Next decision"]
+          missing = [heading for heading in headings if heading not in body]
+          base = pr["base"]["sha"]
+          head = pr["head"]["sha"]
+          changed = subprocess.check_output(
+              ["git", "diff", "--name-only", base, head], text=True
+          ).splitlines()
+          routines = [p for p in changed if re.fullmatch(
+              r"docs/routine/[0-9]{4}-[0-9]{2}-[0-9]{2}-[A-Za-z0-9_.-]+[.]md", p)]
+          if missing:
+              print("Missing PR sections:", ", ".join(missing), file=sys.stderr)
+          if not routines:
+              print("Each PR must include a new dated docs/routine log.", file=sys.stderr)
+          if missing or not routines:
+              sys.exit(1)
+          print("PR handoff structure and dated routine log present.")
+          print("NOTE: CI DOES NOT attest to a separate Agent B review or approve merge.")
+          PY
