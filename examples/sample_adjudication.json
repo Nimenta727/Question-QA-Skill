@@ -1,0 +1,11 @@
+{
+  "adjudicator_id": "synthetic-teacher-C",
+  "decisions": [
+    {
+      "criterion_index": 1,
+      "score": 1,
+      "reason": "示例题rubric只要求指出该情形无解，并未要求完整推导，故按现有条目给满分。",
+      "quote": "如果a=0且b≠0，则无解"
+    }
+  ]
+}

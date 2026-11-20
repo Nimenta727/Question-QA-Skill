@@ -1,0 +1,52 @@
+{
+  "reviews": [
+    {
+      "reviewer_id": "synthetic-teacher-A",
+      "independent": true,
+      "judgments": [
+        {
+          "score": 1,
+          "quote": "唯一解是 x=b/a",
+          "evidence": "指出非零系数的解",
+          "feedback": "演示用反馈；请真实审阅时自行检查理由。"
+        },
+        {
+          "score": 1,
+          "quote": "如果a=0且b≠0，则无解",
+          "evidence": "正确判断无解情形",
+          "feedback": "演示用反馈；请真实审阅时自行检查理由。"
+        },
+        {
+          "score": 1,
+          "quote": "如果a=b=0，所有实数x都满足方程",
+          "evidence": "正确判断恒等式",
+          "feedback": "演示用反馈；请真实审阅时自行检查理由。"
+        }
+      ]
+    },
+    {
+      "reviewer_id": "synthetic-agent-B",
+      "independent": true,
+      "judgments": [
+        {
+          "score": 1,
+          "quote": "唯一解是 x=b/a",
+          "evidence": "正确给出非零系数的解",
+          "feedback": "演示用第二位审阅者意见，非真实独立评分。"
+        },
+        {
+          "score": 0.5,
+          "quote": "如果a=0且b≠0，则无解",
+          "evidence": "有答案但缺详细理由",
+          "feedback": "演示用第二位审阅者意见，非真实独立评分。"
+        },
+        {
+          "score": 1,
+          "quote": "如果a=b=0，所有实数x都满足方程",
+          "evidence": "正确指出任意实数均满足",
+          "feedback": "演示用第二位审阅者意见，非真实独立评分。"
+        }
+      ]
+    }
+  ]
+}
