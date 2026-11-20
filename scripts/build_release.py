@@ -101,7 +101,8 @@ def verify(path):
             raise ValueError("checksum mismatch: " + name)
     if not {"SKILL.md", "LICENSE", "scripts/qa.py", "scripts/dashboard.py",
             "scripts/feedback.py", "scripts/math_equivalence.py",
-            "scripts/state_store.py", "scripts/reviewer_study.py"}.issubset(contents):
+            "scripts/state_store.py", "scripts/reviewer_study.py",
+            "scripts/appeals.py", "scripts/reviewer_trial.py"}.issubset(contents):
         raise ValueError("required Skill modules missing")
     return {"valid": True, "version": VERSION, "files": len(contents),
             "archive_sha256": sha256(Path(path).read_bytes())}

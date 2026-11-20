@@ -30,3 +30,13 @@ review-template*.json
 .qa-state*.json.bak
 reviewer-study-private*.json
 reviewer-study-aggregate*.json
+
+
+# v0.8.0 private learner snapshots and study plan outputs
+*.json.snapshots/
+*.json.bak
+*.json.lock
+qa-export*.json
+trial-private*/
+trial-first-round-*.json
+trial-rating-private*.json
