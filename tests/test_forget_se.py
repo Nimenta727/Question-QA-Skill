@@ -100,6 +100,19 @@ class ExternalCriterionTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "binary"):
                 load(p,e)
 
+    def test_conflicting_anonymous_ids_are_excluded(self):
+        with tempfile.TemporaryDirectory() as d:
+            p, e = Path(d)/"w.csv", Path(d)/"exam.csv"
+            p.write_text("user_id,qid,sequence_id,log_id,correct\nu1,q1,1,100,1\nu2,q1,1,100,0\n")
+            head = "user_id," + ",".join("KC%d" % k for k in range(1,11)) + "\n"
+            e.write_text(head + "u1," + ",".join(["1"]*10) + "\n"
+                         + "u1," + ",".join(["0"]+["1"]*9) + "\n"
+                         + "u2," + ",".join(["1"]*10) + "\n")
+            quiz, exam, audit = load(p,e)
+            self.assertNotIn("u1", exam)
+            self.assertIn("u2", exam)
+            self.assertEqual(1, audit["exam_conflicting_ids_excluded"])
+
 
 if __name__ == "__main__":
     unittest.main()

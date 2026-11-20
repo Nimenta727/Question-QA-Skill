@@ -75,22 +75,37 @@ def load(weekly_path, exam_path):
                 "order": order, "row": n})
             counts["weekly_rows"] += 1
     exam = {}
+    conflicted = set()
+    identical = 0
     with open(exam_path, encoding="utf-8-sig", newline="") as f:
         rd = csv.DictReader(f)
         if not rd.fieldnames or not set(["user_id"] + FIELDS).issubset(rd.fieldnames):
             raise ValueError("FORGET-SE exam CSV headers are invalid")
         for row in rd:
             learner = row["user_id"].strip()
-            if not learner or learner in exam:
-                raise ValueError("invalid/duplicate exam learner")
+            if not learner:
+                raise ValueError("exam record with empty learner ID")
             values = {}
             for i, col in enumerate(FIELDS, 1):
                 y = row[col].strip()
                 if y not in ("0", "1"):
                     raise ValueError("final-exam target must be binary")
                 values[str(i)] = int(y)
-            exam[learner] = values
+            if learner in exam:
+                if exam[learner] != values:
+                    conflicted.add(learner)
+                else:
+                    identical += 1
+            else:
+                exam[learner] = values
             counts["exam_rows"] += 1
+    # Conflicting anonymized IDs cannot safely link quiz histories to exam
+    # outcomes. Exclude every occurrence rather than choosing one by order.
+    for learner in conflicted:
+        del exam[learner]
+    counts["exam_conflicting_ids_excluded"] = len(conflicted)
+    counts["exam_identical_duplicate_rows"] = identical
+    counts["exam_unique_valid_learners"] = len(exam)
     if not quiz or not exam:
         raise ValueError("both weekly and exam data are required")
     for key in quiz:
