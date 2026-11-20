@@ -1,5 +1,14 @@
 # Changelog / 版本记录
 
+## v0.6.0 — 2026-11-20
+
+- Independent double-reviewer manual-answer assessment, mandatory distinct third adjudicator when scores differ, verifiable exact quotations, missing-adjudication no-score gate, numeric-only private state.
+- New --response-file avoids placing original student answers in command-line arguments; legacy grading interfaces remain compatible.
+- Formative evidence sufficiency, fixed uncalibrated historical score comparison and rule-based adaptive-choice explanations separated into independent modules. Existing v0.2 heuristic remains unchanged for fair historical validation.
+- Cross-platform CI on Ubuntu, Windows and macOS (Python 3.9/3.12). New release process verifies all three OSes, builds reproducibly, checks ZIP and SHA256, and publishes one immutable Git-tagged version without replacing old assets.
+- Updated bilingual guide, synthetic arbitration examples, limitations and protocol. No automatic semantic scoring, verified reviewer independence or proven student outcome advantage is claimed.
+
+
 ## v0.5.0 — 2026-11-20
 
 - Added Python standard-library offline question quality auditor with duplicate/near-duplicate and rubric detection, optional exact-rational arithmetic answer witnesses and bank-hash-bound independent review templates. Strict gate refuses missing audits.

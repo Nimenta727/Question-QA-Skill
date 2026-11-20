@@ -52,3 +52,7 @@ For genuine predictive improvement evaluate held-out future response prediction,
 
 ## Validation status / 实证状态
 See [VALIDATION.md](VALIDATION.md) or [VALIDATION.zh-CN.md](VALIDATION.zh-CN.md). The v0.2 index did not demonstrate superior external-exam outcome prediction. FORGET-SE lacks validated cognitive levels and genuine revisit dates, so provisional-strong false-positive rate is currently **not measurable**, rather than zero. Script tests show implementation correctness, not predictive validity.
+
+
+## v0.6.0 separation of responsibilities
+The original diagnostic index and item selection strategy are retained unchanged for reproducibility. scripts/evidence_engine.py reports observed item families, UTC days, cognitive coverage and evidence gates, with explicit non-probability warnings. scripts/prediction_engine.py supplies a separate fixed history-only comparison score, not calibrated future correctness or mastery. scripts/adaptive_engine.py provides explanatory reason tags for each question chosen by the historical rule. Details in docs/ARCHITECTURE.md. No causal benefit or IRT/BKT accuracy has been newly established.

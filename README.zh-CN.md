@@ -85,3 +85,14 @@ MIT 许可证。后续规划见 docs/ROADMAP.md。离线构建：python3 scripts
 请不要直接把自动生成的模板改成“全部通过”；只有逐题核验后才可以填写。详见 [命题质量使用说明](docs/QUESTION_QUALITY.zh-CN.md)。
 
 **第二份真实数据评测**：ASSISTments 2015 数学练习，测试集包含280名有效预测学习者、5728次下一题作答。v0.2诊断指数AUC **0.620**，低于简单历史成绩基线 **0.710**。当前无法证实指数具备预测优势，因此继续不加入 BKT/IRT。详见 [第二队列中文报告](docs/VALIDATION_ASSIST2015.zh-CN.md) / [英文](docs/VALIDATION_ASSIST2015.md)。这不同于此前 FORGET-SE 的期末考试预测任务，不能直接比较两个AUC大小。
+
+
+## v0.6.0｜双评阅者仲裁、诊断分层和跨平台
+
+新增完整的双评阅者主观题评估协议：每位审阅者必须逐项填写得分、回答中逐字引用的证据和建议；若两人意见不同则必须由第三位不同的审阅者仲裁，争议未处理前不能记录成绩。程序能核对所引用文字确实出现在原回答中，但不假称自动验证语义正确性和审阅者真实独立性。
+
+    python scripts/qa.py answer BANK.json --state .qa-state.json --response-file student_answer.txt --independent-reviews @reviewers.json --adjudication @arbitration.json
+
+无分歧时不传 --adjudication。真实测评应使用真实答卷与审核文件，不应直接拿仓库里的合成示例评分。详见 docs/ASSESSMENT.zh-CN.md。
+
+诊断系统分成观察证据、固定历史成绩对照、可解释选题三个独立模块。保留原始 v0.2 规则与既有报告字段，不在已用过的留出测试集调参；选题理由只能解释规则，不能证明自适应教学收益。正式发行采用新的不可变版本tag流程，并在 Linux / macOS / Windows 对 Python3.9、3.12 执行验证。

@@ -4,7 +4,7 @@ description: Design source-grounded, original, rigorous and fair questions; run 
 license: MIT
 compatibility: Any Agent Skills-compatible assistant; Python 3.9+ optional for local state and deterministic grading.
 metadata:
-  version: "0.5.0"
+  version: "0.6.0"
   languages: "zh-CN,en"
 ---
 
@@ -87,3 +87,9 @@ Release v0.4.0 includes an offline bilingual dashboard, criterion-based student 
 Before releasing a newly generated question bank, use python3 scripts/qa.py validate BANK.json followed by python3 scripts/question_quality.py BANK.json. Arithmetic witnesses (when available) check only explicit numeric consistency, not proof of curriculum or fairness. For an independently reviewed bank, generate an all-false review template with --review-template FILE, have the reviewer attest to source, answer, scope, ambiguity, fairness and rubric, then run --review FILE --strict. Do not have the authoring model self-certify every box. Read docs/QUESTION_QUALITY.zh-CN.md or docs/QUESTION_QUALITY.md only when authoring/auditing.
 
 External validation has now been replicated on the independent ASSISTments2015 mathematics practice cohort (docs/VALIDATION_ASSIST2015.md), with no proven index advantage over a simple learner-history baseline. The previous FORGET-SE result remains separate (different prediction task). Never imply item-family/day/cognitive-level data exist when absent. BKT/IRT not yet released.
+
+
+## 10. v0.6.0 formative, reviewer and release workflows
+For student free-form answers, an independently arranged two-reviewer assessment may be supplied to qa.py answer through --independent-reviews @reviews.json. Each reviewer must anchor each rubric judgment in the student's actual answer, with evidence, feedback and a declared independent identity. When the two reviewers disagree, require a distinct adjudicator using --adjudication @decisions.json before scoring. Prefer --response-file PRIVATE.txt over raw answers in command arguments. Details: docs/ASSESSMENT.zh-CN.md or docs/ASSESSMENT.md. The local CLI does NOT call LLMs or independently verify semantic correctness, nor does it cryptographically prove reviewers' independence.
+
+Use separate evidence_engine.py, prediction_engine.py and adaptive_engine.py: a descriptive evidence sufficiency index is not a calibrated probability; the historical-score baseline is uncalibrated and distinct; selecting the next question returns an explanatory rule-code, not a proven causal benefit. See docs/ARCHITECTURE.md. Versioned ZIPs are published once per fixed Git tag, never silently replaced.

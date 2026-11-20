@@ -94,3 +94,16 @@ A new deterministic, offline question checker flags duplicate/near-duplicate ste
     python3 scripts/question_quality.py examples/sample_bank.json --review review.json --strict
 
 No source is automatically certified. The second **real** dataset evaluation uses ASSISTments 2015 mathematics learner practice (held-out 280 learners / 5,728 next-response outcomes). AUC was **0.620** for the v0.2 index versus **0.710** for simple learner history; no demonstrated predictive improvement, so no BKT/IRT model added. See [quality audit guide](docs/QUESTION_QUALITY.md) and [independent mathematics study](docs/VALIDATION_ASSIST2015.md) / [中文](docs/VALIDATION_ASSIST2015.zh-CN.md). The latest release retains the bilingual dashboard and student-response rubric review.
+
+
+## v0.6.0 — independent review, explainable selection and verified cross-platform builds
+
+A double-reviewer assessment contract is now available for manual questions. Two independently prepared rubric score packets (including exact quotations from the actual student response) are checked for agreement. Any scoring disagreement requires a third distinct adjudicator before the answer is recorded. Only numeric grade summaries enter local state; raw responses, reviewer identity and justification do not. Use --response-file to keep the raw answer out of shell history.
+
+    python scripts/qa.py answer BANK.json --state .qa-state.json --response-file student_answer.txt --independent-reviews @reviewers.json --adjudication @arbitration.json
+
+Adjudication is omitted only if all criterion scores agree. External teachers/Agents still have to actually review the answers; the CLI does not automatically understand arbitrary prose or prove the review is independent.
+
+The diagnosis architecture separates observed evidence sufficiency, a fixed uncalibrated score-history baseline, and the same rule-based adaptive selection with traceable reason codes. Previously evaluated v0.2 weights are NOT tuned on either held-out test dataset. See docs/ARCHITECTURE.md and docs/ASSESSMENT.md.
+
+Continuous integration now runs on Linux, Windows and macOS with Python 3.9/3.12. Official artifacts come from a SHA256-verified immutable Git-tagged release, never in-place updates of the existing release. See docs/RELEASE.md.

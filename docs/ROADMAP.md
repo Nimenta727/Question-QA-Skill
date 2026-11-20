@@ -62,3 +62,16 @@ Priorities: accuracy and fairness > observable evidence > maintainability > unne
 - Public ASSISTments2015 real learner evaluation, pinned verified source, no raw student data redistribution, independent per-learner historical prediction.
 - Honest negative/inconclusive findings: AUC 0.620 evidence index vs 0.710 learner history; within-skill confidence interval spans zero. See VALIDATION_ASSIST2015.md.
 - Next: vetted problem identities, two-reviewer disagreement analysis, true delayed response dates, independent course scope alignment, prospective opt-in adaptive policy trials and sample-adequate separate calibrated models only if baseline comparison warrants them.
+
+
+## v0.6.0 — delivered: assessment consensus and explainable architecture
+- Two separate reviewer packets and mandatory third-party adjudication before recording disputed free-form scores, with proof-of-presence for quoted student phrases; still requires genuine semantic assessment.
+- Separately exposed observed evidence, history baseline and adaptive-selection explanation modules without modifying already evaluated v0.2 scoring weights or claims.
+- Privacy-friendly response-file handling and more complete compatibility testing across Linux, macOS, Windows.
+- Immutable, tag-versioned SHA256-verified releases; main branch changes cannot silently replace a published version.
+
+## After v0.6.0
+1. Build real reviewer-blinded validation protocol with provenance and judge agreement outcomes, and a documented appeal/correction process. Synthetic identity declarations alone are not proof.
+2. Add optional, well-tested mathematics equivalence verification and safe, isolated code-answer unit testing; do NOT run untrusted submissions in the host OS.
+3. Add atomic, private state storage with concurrency-safe locking, backup/recovery and selective deletion.
+4. Collect consented third independent cohort with reviewed problem IDs and authentic time gaps; measure diagnostic mistakes and adaptive policy effectiveness before trying calibrated models.
