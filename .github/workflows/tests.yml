@@ -16,5 +16,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Validate demonstration bank
         run: python scripts/qa.py validate examples/sample_bank.json
+      - name: Audit sample question quality (static checks only)
+        run: |
+          python scripts/question_quality.py examples/sample_bank.json --output quality-audit-ci.json
+          python -c "import json; r=json.load(open('quality-audit-ci.json')); assert r['counts']['error']==0, r"
       - name: Run regression tests
         run: python -m unittest discover -s tests -v

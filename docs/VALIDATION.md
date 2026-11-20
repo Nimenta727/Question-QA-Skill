@@ -36,3 +36,7 @@ python3 scripts/evaluate.py /path/answers.csv --format generic
 Generic CSV required fields: `learner_id,concept_id,item_id,correct` (0/1); optional `order,answered_at,family,level,type,difficulty,confidence,hint_used`. Missing timestamps must be missing for all rows rather than mixed. An ASSISTments09 adapter is also supported; use an official corrected collapsed extract, not duplicated per-skill rows.
 
 **Limits:** exam responses are external criteria, not latent mastery truth; historical exposure logs cannot establish causal gains from an adaptive question policy. These outcomes are not necessarily representative of school subjects or other cohorts. Do not tune thresholds on this held-out test split. Next, gather independently reviewed item families/cognitive levels, genuine delayed checks and another consented cohort; pre-register evidence gates and future-error benchmarks; explore BKT/IRT only after adequate calibration data and repeatable comparisons justify the added complexity.
+
+
+## Second independent study
+A separate mathematics practice-data next-response study is now available at [VALIDATION_ASSIST2015.md](VALIDATION_ASSIST2015.md) / [中文版](VALIDATION_ASSIST2015.zh-CN.md). Its held-out test AUC for v0.2 index was 0.620, versus 0.710 for simple smoothed learner history. The study and original FORGET-SE external final-exam study measure different targets; their AUCs must not be compared as though the task were identical. Neither validates true latent mastery labels or adaptive question-choice causal effects.

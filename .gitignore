@@ -17,3 +17,8 @@ benchmark-results/
 learning-dashboard.html
 demo-dashboard.html
 dist/
+
+# Local review attestations / static item-quality output (can contain reviewer identifiers)
+quality-audit*.json
+review.json
+review-template*.json

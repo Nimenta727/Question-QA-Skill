@@ -84,3 +84,13 @@ License: MIT. Contributions welcome; see docs/ROADMAP.md.
 The repeatable FORGET-SE independent final-exam benchmark is implemented. On the held-out set (30 students, 279 student–concept exam outcomes), the current v0.2 evidence index gave **pooled AUC 0.515** versus historical quiz mean **0.700** and concept prior **0.757**. Its within-concept macro AUC was **0.554**, versus quiz mean **0.551**, with a learner-bootstrap difference interval spanning zero. **Predictive improvement is not established; no BKT/IRT model is deployed.** See [English validation report](docs/VALIDATION.md) / [中文报告](docs/VALIDATION.zh-CN.md).
 
 Run your own local benchmark with `python3 scripts/evaluate.py /path/to/answers.csv`, or with publicly licensed FORGET-SE data via `python3 scripts/evaluate_forget_se.py --weekly /path/to/forget_se.csv --exam /path/to/exam.csv`. No raw personal response files are committed.
+
+
+## v0.5.0 — independent item-quality audit and second real cohort
+A new deterministic, offline question checker flags duplicate/near-duplicate stems, unsupported sources, inconsistent answer keys when an exact rational arithmetic witness exists, duplicate reviewer rubrics and other authoring risks. Source, pedagogical scope, ambiguity and fairness require genuinely independent item-by-item human or qualified Agent review; an all-false, bank-SHA256-bound form supports --strict publication gates.
+
+    python3 scripts/question_quality.py examples/sample_bank.json
+    python3 scripts/question_quality.py examples/sample_bank.json --review-template review.json
+    python3 scripts/question_quality.py examples/sample_bank.json --review review.json --strict
+
+No source is automatically certified. The second **real** dataset evaluation uses ASSISTments 2015 mathematics learner practice (held-out 280 learners / 5,728 next-response outcomes). AUC was **0.620** for the v0.2 index versus **0.710** for simple learner history; no demonstrated predictive improvement, so no BKT/IRT model added. See [quality audit guide](docs/QUESTION_QUALITY.md) and [independent mathematics study](docs/VALIDATION_ASSIST2015.md) / [中文](docs/VALIDATION_ASSIST2015.zh-CN.md). The latest release retains the bilingual dashboard and student-response rubric review.

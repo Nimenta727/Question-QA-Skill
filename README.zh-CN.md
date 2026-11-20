@@ -72,3 +72,16 @@ MIT 许可证。后续规划见 docs/ROADMAP.md。离线构建：python3 scripts
 已实现基于 FORGET-SE 独立期末考试的可复现评测。在测试组30名学生、279项学生×知识点期末目标上，v0.2 诊断指数跨知识点 AUC 为 **0.515**，低于周测平均 **0.700** 和知识点先验 **0.757**；同知识点内部指数 AUC **0.554**，周测均分 **0.551**，差值区间包含零。**当前没有证实预测优势，暂不添加 BKT/IRT。** 这不否认形成性追问规则的设计价值，但尚不能宣称其测量效度。
 
 详细依据与局限：[中文验证报告](docs/VALIDATION.zh-CN.md) / [English validation](docs/VALIDATION.md)；原始学生作答没有被提交到本仓库。
+
+
+## v0.5.0｜命题质量验证与第二独立数据实测
+
+新增离线命题检查器：检测重复/高度相似题、错误数字答案键、数值等价选项、主观题评分标准重复、异常来源锚点。数学自动验证只支持安全且范围明确的有理数四则运算，不声称解决所有代数/逻辑证明。来源、歧义、超纲、公平等必须由真正独立的教师或专业审阅者确认；可建立与题库SHA256绑定的审核模板。
+
+    python3 scripts/question_quality.py examples/sample_bank.json
+    python3 scripts/question_quality.py examples/sample_bank.json --review-template review.json
+    python3 scripts/question_quality.py examples/sample_bank.json --review review.json --strict
+
+请不要直接把自动生成的模板改成“全部通过”；只有逐题核验后才可以填写。详见 [命题质量使用说明](docs/QUESTION_QUALITY.zh-CN.md)。
+
+**第二份真实数据评测**：ASSISTments 2015 数学练习，测试集包含280名有效预测学习者、5728次下一题作答。v0.2诊断指数AUC **0.620**，低于简单历史成绩基线 **0.710**。当前无法证实指数具备预测优势，因此继续不加入 BKT/IRT。详见 [第二队列中文报告](docs/VALIDATION_ASSIST2015.zh-CN.md) / [英文](docs/VALIDATION_ASSIST2015.md)。这不同于此前 FORGET-SE 的期末考试预测任务，不能直接比较两个AUC大小。

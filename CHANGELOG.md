@@ -1,5 +1,15 @@
 # Changelog / 版本记录
 
+## v0.5.0 — 2026-11-20
+
+- Added Python standard-library offline question quality auditor with duplicate/near-duplicate and rubric detection, optional exact-rational arithmetic answer witnesses and bank-hash-bound independent review templates. Strict gate refuses missing audits.
+- Added a second licensed-research-data cohort: ASSISTments 2015 real mathematics sequences. Pinned 17.6MB source content hash, de-identified learner-disjoint splits, causal next-response replay, baseline AUC, student-clustered 95% intervals, aggregate-only reports.
+- Held-out ASSIST2015 test: 280 eligible learners, 5,728 forecasts, v0.2 index AUC 0.620 vs smoothed learner history 0.710. Within-concept macro AUC difference uncertainty includes zero. No claim of latent mastery accuracy or causal adaptive learning benefit.
+- Updated bilingual docs, Skill instructions, regression and CI release gates; retains P2 offline dashboard, reviewer-led open-answer feedback, zero-third-party-runtime dependencies.
+- Existing v0.4.0 release remains immutable; this is a new separately versioned release.
+
+
+
 ## v0.4.0 — 2026-11-20
 
 - **P2 offline dashboard**: single-file self-contained bilingual HTML, knowledge/prerequisite map, question coverage, evidence flags, cognitive-level response summaries, reviewed misconception labels, rubric criteria, historical trend and review dates.

@@ -1,10 +1,10 @@
-# Question-QA-Skill v0.4.0 安装与使用
+# Question-QA-Skill v0.5.0 安装与使用
 
 本项目是能够被兼容 Agent Skills 协议的助手读取的 Skill，同时包含独立的离线 Python CLI。Python 3.9+，无需额外 pip 依赖，支持 Windows、macOS 和 Linux。
 
 ## 安装
 
-1. 在 GitHub Releases 下载 question-qa-skill-0.4.0.zip 和 SHA256SUMS.txt。
+1. 在 GitHub Releases 下载 question-qa-skill-0.5.0.zip 和 SHA256SUMS.txt。
 2. 使用系统自带工具核对 SHA256，再解压 ZIP。
 3. 将解压后的整个目录注册或复制至你的 Agent 所支持的 Skill 路径（各宿主路径不同；不是安装 Python 扩展）。
 4. 也可直接使用命令行。进入解压后的目录，执行：
@@ -56,10 +56,19 @@ CLI 返回综合得分、每条标准的证据与反馈、已达标项、待改�
 
     python3 -m unittest discover -s tests -v
     python3 scripts/build_release.py --output dist
-    python3 scripts/build_release.py --verify dist/question-qa-skill-0.4.0.zip
+    python3 scripts/build_release.py --verify dist/question-qa-skill-0.5.0.zip
 
 发行 ZIP 中的 manifest.json 对每个文件记录 SHA256，GitHub Actions 还会上传 SHA256SUMS.txt。参考 docs/RELEASE.md 和 CHANGELOG.md。
 
 ## 诊断可信度说明
 
 公开 FORGET-SE 数据的首轮真实外部效标评测**尚未证明** v0.2 诊断指数优于简单历史成绩基线，因此这里不提供 BKT/IRT 模型，也不宣称能从少量回答准确读取潜在掌握状态。详见 docs/VALIDATION.zh-CN.md。
+
+
+## 新增 v0.5.0 命题质量验证与真实数据复验
+
+    python3 scripts/question_quality.py examples/sample_bank.json
+    python3 scripts/question_quality.py examples/sample_bank.json --review-template review.json
+    python3 scripts/question_quality.py examples/sample_bank.json --review review.json --strict
+
+上述审核文件**必须由独立审阅者逐题核实后填写**，不能让模型自动将所有风险项勾成通过。详情见 docs/QUESTION_QUALITY.zh-CN.md。独立真实数学数据的复验结果和可信度限制见 docs/VALIDATION_ASSIST2015.zh-CN.md。原始 ASSISTments 数据受原作者使用条款约束，项目不会将其打包或上传。

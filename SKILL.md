@@ -4,7 +4,7 @@ description: Design source-grounded, original, rigorous and fair questions; run 
 license: MIT
 compatibility: Any Agent Skills-compatible assistant; Python 3.9+ optional for local state and deterministic grading.
 metadata:
-  version: "0.4.0"
+  version: "0.5.0"
   languages: "zh-CN,en"
 ---
 
@@ -81,3 +81,9 @@ If asked whether the diagnosis is accurate, inspect docs/VALIDATION.md (or docs/
 
 ## 8. Official offline distribution
 Release v0.4.0 includes an offline bilingual dashboard, criterion-based student feedback and SHA256-manifest-verified ZIP. Read docs/INSTALL.zh-CN.md or docs/INSTALL.md for installation and privacy notes, docs/RELEASE.md for reproducibility, and CHANGELOG.md for version changes. Only release files allowlisted by scripts/build_release.py. Never embed student raw responses in the dashboard, demos or release.
+
+
+## 9. Independent item-quality review / 命题质量门槛
+Before releasing a newly generated question bank, use python3 scripts/qa.py validate BANK.json followed by python3 scripts/question_quality.py BANK.json. Arithmetic witnesses (when available) check only explicit numeric consistency, not proof of curriculum or fairness. For an independently reviewed bank, generate an all-false review template with --review-template FILE, have the reviewer attest to source, answer, scope, ambiguity, fairness and rubric, then run --review FILE --strict. Do not have the authoring model self-certify every box. Read docs/QUESTION_QUALITY.zh-CN.md or docs/QUESTION_QUALITY.md only when authoring/auditing.
+
+External validation has now been replicated on the independent ASSISTments2015 mathematics practice cohort (docs/VALIDATION_ASSIST2015.md), with no proven index advantage over a simple learner-history baseline. The previous FORGET-SE result remains separate (different prediction task). Never imply item-family/day/cognitive-level data exist when absent. BKT/IRT not yet released.

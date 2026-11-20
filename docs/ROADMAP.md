@@ -55,3 +55,10 @@ Priorities: accuracy and fairness > observable evidence > maintainability > unne
 2. Second real learner cohort with verified time intervals, author-reviewed item family/cognitive metadata and subject-level analysis.
 3. Accessibility review and multilingual screen-reader checks for the offline dashboard; opt-in aggregate exports only.
 4. Pilot observation of rubric reviewer agreement and score consistency; further model calibration only when independently demonstrated.
+
+
+## v0.5.0 — delivered: item validation + independent mathematics benchmark
+- Safe deterministic item-quality auditor (exact/near duplicate, optional rational witness, provenance/rubric anomalies) with independent reviewer approval gating.
+- Public ASSISTments2015 real learner evaluation, pinned verified source, no raw student data redistribution, independent per-learner historical prediction.
+- Honest negative/inconclusive findings: AUC 0.620 evidence index vs 0.710 learner history; within-skill confidence interval spans zero. See VALIDATION_ASSIST2015.md.
+- Next: vetted problem identities, two-reviewer disagreement analysis, true delayed response dates, independent course scope alignment, prospective opt-in adaptive policy trials and sample-adequate separate calibrated models only if baseline comparison warrants them.

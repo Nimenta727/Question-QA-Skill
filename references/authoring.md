@@ -25,3 +25,7 @@ Questions are "独到" when they illuminate a core mechanism, expose a subtle mi
 
 ## Answer packaging
 For paper mode: output a coherent exam paper first (subject, scope, time, numbered items), and withhold keys until learner submits or explicitly asks. For interactive deep mode: one item at a time. Preserve all instructor content if source-focused.
+
+
+## v0.5.0 offline quality checks and accountable review
+For any bank to be issued to learners: run qa.py validate first, then question_quality.py BANK.json. If the item is a simple numeric objective question, optionally attach a bounded arithmetic witness and independently verify it corresponds to the actual question assumptions. Do NOT claim numeric consistency solves textual ambiguity or validates official curriculum provenance. Generate a blank SHA256-bound form using --review-template, have a distinct reviewer confirm answer/source/scope/ambiguity/fairness/rubric, then use --review FILE --strict to enforce that recorded review. Do not let the same authoring model self-certify. Refer to docs/QUESTION_QUALITY.md or .zh-CN.md when needed.

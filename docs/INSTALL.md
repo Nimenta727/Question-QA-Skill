@@ -1,9 +1,9 @@
-# Question-QA-Skill v0.4.0 — Installation & usage
+# Question-QA-Skill v0.5.0 — Installation & usage
 
 An Agent Skills-compatible skill plus an independent offline Python CLI (Python 3.9+, standard library, Windows/macOS/Linux). It is not a Python package requiring pip installation.
 
 ## Install
-Download question-qa-skill-0.4.0.zip and SHA256SUMS.txt from GitHub Releases, verify SHA256 and extract. Register/copy the entire extracted directory to the location recognized by your Agent host (exact paths are host-specific). Or run from its directory:
+Download question-qa-skill-0.5.0.zip and SHA256SUMS.txt from GitHub Releases, verify SHA256 and extract. Register/copy the entire extracted directory to the location recognized by your Agent host (exact paths are host-specific). Or run from its directory:
 
     python3 scripts/qa.py validate examples/sample_bank.json
 
@@ -43,10 +43,19 @@ Open the generated HTML in any modern browser. It uses no remote scripts, fonts,
 
     python3 -m unittest discover -s tests -v
     python3 scripts/build_release.py --output dist
-    python3 scripts/build_release.py --verify dist/question-qa-skill-0.4.0.zip
+    python3 scripts/build_release.py --verify dist/question-qa-skill-0.5.0.zip
 
 A deterministic archive is covered by a per-file SHA256 manifest; release also provides SHA256SUMS.txt. See CHANGELOG.md and docs/RELEASE.md.
 
 ## Scientific limitation
 
 The first real-world FORGET-SE final-exam benchmark did not establish superiority of the heuristic diagnostic index over simple historical-score baselines. No BKT/IRT calibration or latent mastery claim is made. See docs/VALIDATION.md.
+
+
+## New in v0.5.0: question-quality and second-cohort validation
+
+    python3 scripts/question_quality.py examples/sample_bank.json
+    python3 scripts/question_quality.py examples/sample_bank.json --review-template review.json
+    python3 scripts/question_quality.py examples/sample_bank.json --review review.json --strict
+
+Reviewers must independently check each item rather than automatically approving generated questions. Read docs/QUESTION_QUALITY.md and docs/VALIDATION_ASSIST2015.md; the source mathematics research dataset is governed by its own research-use conditions and is never bundled.
