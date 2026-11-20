@@ -68,3 +68,9 @@ Every item should be checked for provenance, deep but teachable reasoning, a uni
 State is written only to a path you choose and ignored by Git. Raw learner responses are not persisted. The assistant loads a mode reference only when relevant and uses the local engine where available. No API key, database or remote telemetry is required.
 
 License: MIT. Contributions welcome; see docs/ROADMAP.md.
+
+## Real-data validation (2026-11-20)
+
+The repeatable FORGET-SE independent final-exam benchmark is implemented. On the held-out set (30 students, 279 student–concept exam outcomes), the current v0.2 evidence index gave **pooled AUC 0.515** versus historical quiz mean **0.700** and concept prior **0.757**. Its within-concept macro AUC was **0.554**, versus quiz mean **0.551**, with a learner-bootstrap difference interval spanning zero. **Predictive improvement is not established; no BKT/IRT model is deployed.** See [English validation report](docs/VALIDATION.md) / [中文报告](docs/VALIDATION.zh-CN.md).
+
+Run your own local benchmark with `python3 scripts/evaluate.py /path/to/answers.csv`, or with publicly licensed FORGET-SE data via `python3 scripts/evaluate_forget_se.py --weekly /path/to/forget_se.csv --exam /path/to/exam.csv`. No raw personal response files are committed.

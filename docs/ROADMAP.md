@@ -31,3 +31,14 @@ Priorities: accuracy and fairness > observable evidence > maintainability > unne
 - Measure false-strong diagnosis rate, future-answer prediction, calibration and group fairness.
 - Verify real question banks, equivalent answers and source fidelity with human review.
 - Consider optional learned BKT/IRT/FSRS adapters only with calibration evidence and sensible fallback.
+
+## v0.3 evaluation milestone — delivered (2026-11-20)
+- Learner-disjoint next-response replay benchmark with AUC, probability-baseline Brier/ECE, learner bootstrap uncertainty.
+- Fixed-version public FORGET-SE external-criterion benchmark with conflict-ID exclusion; report pooled and within-concept AUC.
+- 61 Python regressions passed across 3.9 and 3.12; published negative/inconclusive findings in [VALIDATION.md](VALIDATION.md).
+
+## Next gate before any BKT/IRT
+1. Acquire a **second independent** and appropriately licensed cohort with reviewed item families, cognitive levels and genuine spaced recalls.
+2. Separate evidence sufficiency/diagnostic follow-up rules from empirically calibrated future-answer forecasting.
+3. Pre-register holdout evaluation, calibration, false-strong risk and fairness criteria. Never tune on the existing held-out test.
+4. Only then compare optional calibrated BKT/IRT to simple baselines. Keep default local skill zero extra API or model-token cost.

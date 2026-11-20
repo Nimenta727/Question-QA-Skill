@@ -68,3 +68,6 @@ Write bank format per examples/sample_bank.json and docs/FORMAT.md. For interpre
 
 ## 6. Completion gate
 Before releasing a question bank check source fidelity; claim/evidence alignment; objective, independent solutions; alternate correct answers; plausible distractors; balanced difficulty; fairness; no leakage; concise feedback; evidence uncertainty. Run python3 -m unittest discover -s tests -v for code changes.
+
+## 7. Evidence and validation gate (load only when needed)
+If asked whether the diagnosis is accurate, inspect docs/VALIDATION.md (or docs/VALIDATION.zh-CN.md). The current formative index has **not** shown robust predictive improvement over historical quiz means on the external FORGET-SE exam benchmark. Never describe `rate` as calibrated mastery probability, call a provisional label a standardized test result, or infer adaptive item-choice causal benefits from observational data. Do not add BKT/IRT to the default loop until sufficient held-out calibration data and evidence exist. For offline evaluation use scripts/evaluate.py or scripts/evaluate_forget_se.py; never commit raw learner records.

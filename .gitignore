@@ -7,3 +7,8 @@ __pycache__/
 *.log
 .env
 .venv/
+
+# Raw research input and locally generated aggregate benchmark files
+forget-se-aggregate.json
+research-data/
+benchmark-results/

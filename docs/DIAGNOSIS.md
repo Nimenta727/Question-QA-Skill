@@ -49,3 +49,6 @@ These optional fields are backward compatible with the v1 schema.
 
 ## Accuracy roadmap / 下一阶段
 For genuine predictive improvement evaluate held-out future response prediction, false-high-confidence decisions, delayed retention, item quality, demographic fairness where appropriate and consented, and scoring consistency. Only add model-based BKT/IRT or FSRS with suitable historical data and validation. Do not market a heuristic score as a calibrated probability.
+
+## Validation status / 实证状态
+See [VALIDATION.md](VALIDATION.md) or [VALIDATION.zh-CN.md](VALIDATION.zh-CN.md). The v0.2 index did not demonstrate superior external-exam outcome prediction. FORGET-SE lacks validated cognitive levels and genuine revisit dates, so provisional-strong false-positive rate is currently **not measurable**, rather than zero. Script tests show implementation correctness, not predictive validity.

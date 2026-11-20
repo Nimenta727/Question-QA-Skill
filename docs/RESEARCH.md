@@ -33,3 +33,6 @@ Compared implementations and their appropriate uses:
 - https://www.tandfonline.com/doi/full/10.1080/2331186X.2026.2743418 — item-bank coverage, fairness and exposure are integral to responsible CAT systems.
 
 What is implemented: deterministic family/day evidence deduplication; cognitive-level gates; weak-confidence/assisted evidence discounting; reviewed misconception labels; branching heuristics and bounded sessions. What is NOT implemented: calibrated BKT/IRT/CAT inference, fitted FSRS, or claimed empirical accuracy improvement. Calibration on held-out student sequences is required before claiming improved prediction.
+
+## Independent criterion study (2026-11-20)
+The public [FORGET-SE](https://github.com/alyssa-sha/FORGET-SE) CC BY 4.0 cohort allows retrospective links between weekly quizzes and concept-level final exams. The analysis excludes 18 conflicting anonymized exam IDs, uses student-disjoint splits, and does not confuse anonymized chronology with real elapsed days. Findings are negative/inconclusive for v0.2 predictive uplift. See [complete bilingual validation](VALIDATION.md).
