@@ -19,7 +19,7 @@ CONFIDENCES = {"sure", "unsure", "guess", "none"}
 SPACING_DAYS = (1, 3, 7, 14, 30)
 SCHEMA = 1
 try:
-    from . import diagnosis, feedback, assessment_engine, evidence_engine, prediction_engine, adaptive_engine, math_equivalence, state_store, appeals, audit_ledger, reviewer_credentials, tutor_core, model_audit
+    from . import diagnosis, feedback, assessment_engine, evidence_engine, prediction_engine, adaptive_engine, math_equivalence, state_store, appeals, audit_ledger, reviewer_credentials, tutor_core
 except ImportError:
     import diagnosis
     import feedback
@@ -33,7 +33,6 @@ except ImportError:
     import audit_ledger
     import reviewer_credentials
     import tutor_core
-    import model_audit
 
 
 def utc_now():
@@ -260,6 +259,12 @@ def handle_next(args):
     if args.require_model_audit and not args.model_audit:
         fail("strict question audit required: provide --model-audit FILE")
     if args.model_audit:
+        # Lazy import prevents qa -> model_audit -> question_quality -> qa
+        # circular imports when CLI modules are invoked as standalone scripts.
+        if __package__:
+            from . import model_audit
+        else:
+            import model_audit
         packet = model_audit._read_json(args.model_audit)
         verdict = model_audit.verify(
             bank, digest, packet, args.audit_source_file,
