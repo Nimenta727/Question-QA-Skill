@@ -12,3 +12,8 @@ __pycache__/
 forget-se-aggregate.json
 research-data/
 benchmark-results/
+
+# Generated offline learning dashboards and ZIP distribution files
+learning-dashboard.html
+demo-dashboard.html
+dist/

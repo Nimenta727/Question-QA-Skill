@@ -42,3 +42,16 @@ Priorities: accuracy and fairness > observable evidence > maintainability > unne
 2. Separate evidence sufficiency/diagnostic follow-up rules from empirically calibrated future-answer forecasting.
 3. Pre-register holdout evaluation, calibration, false-strong risk and fairness criteria. Never tune on the existing held-out test.
 4. Only then compare optional calibrated BKT/IRT to simple baselines. Keep default local skill zero extra API or model-token cost.
+
+
+## v0.4.0 — P2 release and reviewed answer assessment (delivered)
+- **Offline HTML visualization**: knowledge map, coverage, level-based observed scores, reviewer-tagged mistakes, response trends, rubric criteria and suggested review schedule. Works bilingually without any external fonts, scripts or network.
+- **Reviewed student assessment**: per-criterion open-answer scoring with evidence, partial credit and actionable corrections; explicit short-answer equivalence override by reviewer.
+- **Official artifact pipeline**: deterministic, privacy-safe ZIP, embedded SHA256 manifest, standalone install documentation, CI tests against freshly extracted package, and GitHub Release workflow.
+- **Scientific restraint**: v0.2 index still lacks proven predictive uplift; not a calibrated learner model.
+
+## Beyond v0.4.0
+1. Independent question-bank correctness and fairness validator.
+2. Second real learner cohort with verified time intervals, author-reviewed item family/cognitive metadata and subject-level analysis.
+3. Accessibility review and multilingual screen-reader checks for the offline dashboard; opt-in aggregate exports only.
+4. Pilot observation of rubric reviewer agreement and score consistency; further model calibration only when independently demonstrated.

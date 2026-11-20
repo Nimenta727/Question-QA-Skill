@@ -4,7 +4,7 @@ description: Design source-grounded, original, rigorous and fair questions; run 
 license: MIT
 compatibility: Any Agent Skills-compatible assistant; Python 3.9+ optional for local state and deterministic grading.
 metadata:
-  version: "0.1.0"
+  version: "0.4.0"
   languages: "zh-CN,en"
 ---
 
@@ -17,6 +17,8 @@ Purpose: generate deep but fair questions, then diagnose learning through *evide
 - "快问快答/测测掌握/抽查" => QUICK mode; read references/diagnosis.md once.
 - A specified discipline => read ONLY the matching portion of references/subjects.md.
 - "继续/复习/追踪" => read compact report via scripts/qa.py if state and bank exist; otherwise ask for the prior record or begin a new baseline.
+- "可视化/学习报告/知识图谱" => generate offline HTML via scripts/dashboard.py; do not embed student answers or answer keys.
+- "评估学生回答/批改开放题" => use a reviewed per-criterion rubric and structured evidence; read docs/INSTALL.zh-CN.md or docs/INSTALL.md for the assessor format.
 - For a course file or named teacher's material, analyze available source first. If inaccessible, label as general-knowledge questions and do not impersonate that source.
 - No source material? Ask at most one essential question about subject; if subject is known, begin with a defensible general-level baseline.
 - Do not preload all references. Do not generate extra examples until requested.
@@ -47,6 +49,8 @@ Purpose: generate deep but fair questions, then diagnose learning through *evide
 - Coverage and depth are separate axes. Avoid rewarding linguistic fluency when testing math/science reasoning.
 - For open responses, score only against a published rubric; when equivalence or correctness is unclear, return "needs review", do not silently score zero.
 - An estimated mastery indicator is **formative** and not a calibrated test score.
+- Open-answer assessment must cite concrete reasoning evidence for each rubric criterion and provide feedback specific to incomplete criteria. Use human or careful AI review; local code validates the rubric data but does not semantically evaluate student text.
+- For equivalent short answers not explicitly listed in aliases, allow a reviewer-documented equivalence override only after an independent check; objective multiple-choice keys are never overridable.
 
 ## 4. Optional executable local workflow
 Use python3 scripts/qa.py (Python 3.9+, no dependencies):
@@ -56,6 +60,9 @@ Use python3 scripts/qa.py (Python 3.9+, no dependencies):
 - answer BANK.json --state .qa-state.json --response "B" --confidence sure --hint-used (hint flag optional)
 - answer BANK.json --state .qa-state.json --response "..." --score 0.5 --reason "rubric-based evaluation" (manual/open responses only)
 - report --state .qa-state.json --bank BANK.json
+- answer BANK.json --state .qa-state.json --response "..." --reason "reviewed each criterion" --rubric-judgments @review.json (manual items)
+- answer BANK.json --state .qa-state.json --response "equivalent representation" --review-equivalent --reason "verified equivalence" (short-only)
+- dashboard via python3 scripts/dashboard.py BANK.json --state .qa-state.json --output learning-dashboard.html
 
 Write bank format per examples/sample_bank.json and docs/FORMAT.md. For interpretation gates read docs/DIAGNOSIS.md only when needed. Never show the bank JSON to a learner before answering; it contains keys. State is LOCAL and untracked.
 
@@ -71,3 +78,6 @@ Before releasing a question bank check source fidelity; claim/evidence alignment
 
 ## 7. Evidence and validation gate (load only when needed)
 If asked whether the diagnosis is accurate, inspect docs/VALIDATION.md (or docs/VALIDATION.zh-CN.md). The current formative index has **not** shown robust predictive improvement over historical quiz means on the external FORGET-SE exam benchmark. Never describe `rate` as calibrated mastery probability, call a provisional label a standardized test result, or infer adaptive item-choice causal benefits from observational data. Do not add BKT/IRT to the default loop until sufficient held-out calibration data and evidence exist. For offline evaluation use scripts/evaluate.py or scripts/evaluate_forget_se.py; never commit raw learner records.
+
+## 8. Official offline distribution
+Release v0.4.0 includes an offline bilingual dashboard, criterion-based student feedback and SHA256-manifest-verified ZIP. Read docs/INSTALL.zh-CN.md or docs/INSTALL.md for installation and privacy notes, docs/RELEASE.md for reproducibility, and CHANGELOG.md for version changes. Only release files allowlisted by scripts/build_release.py. Never embed student raw responses in the dashboard, demos or release.

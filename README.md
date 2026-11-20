@@ -49,6 +49,16 @@ python3 scripts/qa.py answer examples/sample_bank.json --response C --confidence
 python3 scripts/qa.py report --bank examples/sample_bank.json
 ~~~
 
+## v0.4.0 — visual analytics, student answers and offline release
+
+A self-contained local bilingual HTML dashboard now shows knowledge prerequisites, observed cognitive-level scores, reviewer-tagged misconceptions, history, review prompts and rubric criterion scores. Generate a synthetic preview without personal learner data:
+
+    python3 scripts/dashboard.py examples/sample_bank.json --state examples/demo_state.json --output demo-dashboard.html --lang en
+
+Student free-form answers receive **reviewer-supported, criterion-by-criterion scoring** with evidence and actionable feedback. This validates the reviewer assessment structure and does not pretend to automatically understand all text. Short-answer semantic equivalence requires an explicit reviewed override; choice keys cannot be overridden.
+
+A reproducible versioned ZIP with a SHA256 manifest, installation guides and unpacked-package smoke tests completes the P2 distribution workflow. See [English installation/assessment](docs/INSTALL.md), [中文版](docs/INSTALL.zh-CN.md), [release engineering](docs/RELEASE.md) and [changelog](CHANGELOG.md).
+
 ## Design constraints
 Every item should be checked for provenance, deep but teachable reasoning, a unique or fully specified answer set, and fair framing. The tracker does **not** infer mastery from a single item. It shows insufficient_evidence until at least three observations from two unique item IDs per concept × cognitive level. Numeric indicators are rough formative signals, not calibrated probabilities.
 
