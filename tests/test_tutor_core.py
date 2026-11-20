@@ -98,7 +98,7 @@ class CorePedagogyTests(unittest.TestCase):
     def test_low_level_repeat_does_not_pass_transfer_fit(self):
         q=self.item("ALG-001")
         p=tutor_core.plan(self.items,[event(q)],{"id":"s","limit":6},
-                          self.item("ALG-005"))
+                          self.item("ALG-006"))
         self.assertEqual("review_or_author_better_variant",p["suggestion_fit"])
 
     def test_stop_at_session_budget_even_if_item_remains(self):
