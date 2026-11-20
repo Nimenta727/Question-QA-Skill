@@ -136,6 +136,16 @@ class CorePedagogyTests(unittest.TestCase):
                           stem_source["stem"],stem_source["rubric"][0]):
             self.assertNotIn(protected,blob)
 
+    def test_multiple_partial_scores_must_not_be_called_observed_success(self):
+        base=self.item("ALG-001")
+        variant=self.item("ALG-002")
+        events=[event(base,.5),event(variant,.5)]
+        summary=tutor_core.compact_session_report([base,variant],events,
+                                                   {"id":"s","limit":6})
+        row=summary["concepts"][0]
+        self.assertEqual(2,row["partially_correct"])
+        self.assertEqual("further_independent_probe_needed",row["interpretation"])
+
     def test_cli_next_and_answer_surface_coach_without_grading_changes(self):
         with tempfile.TemporaryDirectory() as tmp:
             bank=Path(tmp)/"bank.json"

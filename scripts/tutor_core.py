@@ -142,15 +142,17 @@ def compact_session_report(items, history, session=None):
     for concept, sample in sorted(groups.items()):
         families = {e.get("family", e.get("id")) for e in sample}
         incorrect = sum(e.get("score", 0) < .5 for e in sample)
+        partial = sum(.5 <= e.get("score", 0) < 1 for e in sample)
         uncertain = sum(e.get("confidence") in ("guess", "unsure") or e.get("hint_used")
                         for e in sample)
         out.append({
             "concept": concept, "observations": len(sample),
             "independent_families": len(families),
             "incorrect_or_unscored": incorrect,
+            "partially_correct": partial,
             "uncertain_or_assisted": uncertain,
             "interpretation": ("further_independent_probe_needed"
-                               if len(families) < 2 or incorrect or uncertain
+                               if len(families) < 2 or incorrect or partial or uncertain
                                else "observed_success_not_long_term_mastery")
         })
     covered = {x["concept"] for x in out}
