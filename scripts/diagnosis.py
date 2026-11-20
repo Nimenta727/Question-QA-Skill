@@ -56,7 +56,7 @@ def estimate(events, now=None):
     higher_success = any(e.get("level") in HIGHER and e["score"] >= 1
                          and not e.get("hint_used")
                          and e.get("confidence") != "guess" for e in reps)
-    recent_miss = reps[-1]["score"] < 0.5
+    recent_miss = events[-1]["score"] < 0.5
     flags = []
     if any(e.get("confidence") == "guess" and e["score"] > 0 for e in reps):
         flags.append("correct_but_guessed")

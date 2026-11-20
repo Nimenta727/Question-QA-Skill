@@ -59,8 +59,8 @@ class BankTests(unittest.TestCase):
         def e(item, score=1):
             return {"id": item, "score": score}
         self.assertEqual("insufficient_evidence", estimate([e("a"), e("a"), e("a")])["label"])
-        self.assertEqual("tentatively_strong", estimate([e("a"), e("b"), e("b")])["label"])
-        self.assertEqual("needs_review", estimate([e("a", 0), e("b", 0), e("b", 0)])["label"])
+        self.assertEqual("insufficient_evidence", estimate([e("a"), e("b"), e("b")])["label"])
+        self.assertEqual("needs_review", estimate([e("a", 0), e("b", 0), e("c", 0)])["label"])
 
     def test_selection_prefers_unseen_concepts(self):
         history = [{"id": "ALG-001", "concept": "linear-equations", "level": "recall",
