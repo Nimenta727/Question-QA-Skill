@@ -224,6 +224,10 @@ def run_cycle(client, topic, subject, out_dir, source_path=None,
         raise ValueError("rounds must be 1..3")
     source = _load_source(source_path)
     path = Path(out_dir)
+    # The release builder includes JSON files under scripts/docs/examples.
+    # Never save real questions or private reviews inside the repository.
+    if path.resolve().is_relative_to(Path(__file__).resolve().parents[1]):
+        raise ValueError("private dual-agent output must be outside the repository")
     path.mkdir(mode=0o700, parents=True, exist_ok=False)
     if os.name != "nt":
         os.chmod(path, 0o700)
@@ -234,8 +238,10 @@ def run_cycle(client, topic, subject, out_dir, source_path=None,
              "item_id": "DA-001"}
     feedback = []
     trace = []
+    model_calls = 0
     for round_num in range(1, rounds + 1):
         label = "%02d" % round_num
+        model_calls += 1
         draft = _as_object(client.ask("author", AUTHOR_SYSTEM,
                           {"brief": brief, "previous_review": feedback,
                            "round": round_num}), "author draft")
@@ -259,6 +265,7 @@ def run_cycle(client, topic, subject, out_dir, source_path=None,
                           "result": "rejected_before_review",
                           "issues": feedback})
             continue
+        model_calls += 1
         blind = _blind_evidence(_as_object(
             client.ask("reviewer", BLIND_SYSTEM,
                        {"question": _blind_view(draft), "subject": subject,
@@ -266,6 +273,7 @@ def run_cycle(client, topic, subject, out_dir, source_path=None,
             "blind review"))
         _private_write(path, "blind-"+label+".json", blind)
         template = model_audit.make_template(bank, digest, source_path, AUTHOR_ID)
+        model_calls += 1
         packet = _as_object(client.ask("reviewer", CRITIC_SYSTEM,
                            {"first_pass": blind, "authored_bank": bank,
                             "audit_template": template,
@@ -301,7 +309,7 @@ def run_cycle(client, topic, subject, out_dir, source_path=None,
             _private_write(path, "approved-audit.json", packet)
             summary = {
                 "result": "recorded_model_review_for_formative_practice",
-                "rounds_used": round_num, "model_calls": 3 * round_num,
+                "rounds_used": round_num, "model_calls": model_calls,
                 "review_procedure": "two_agent_role_isolated_with_blind_first_pass",
                 "author_model": author_model, "reviewer_model": reviewer_model,
                 "distinct_model_names": author_model != reviewer_model,
@@ -316,6 +324,7 @@ def run_cycle(client, topic, subject, out_dir, source_path=None,
             return summary
         feedback = _feedback(packet, verdict, draft["id"])
     summary = {"result": "blocked", "rounds_used": rounds,
+               "model_calls": model_calls,
                "no_approved_question": True,
                "real_world_identity_or_semantic_truth_proven": False,
                "trace": trace}
