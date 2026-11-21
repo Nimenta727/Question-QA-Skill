@@ -126,6 +126,22 @@ class CompactEvalReportTests(unittest.TestCase):
         self.assertNotIn("<img src=x", page)
         self.assertIn(html.escape("<img src=x onerror=alert(1)>"), page)
 
+    def test_block_without_matching_real_defect_is_not_detected(self):
+        d = copy.deepcopy(self.data)
+        d["cases"][0]["caught_actual_defect"] = False
+        s = report.summarize(d)
+        self.assertEqual(4, s["scores"]["defect_detection"]["numerator"])
+        self.assertEqual(1, s["failure_types"]["unmatched_block"])
+
+    def test_blocked_defect_requires_explicit_expert_match(self):
+        d = copy.deepcopy(self.data)
+        d["cases"][0].pop("caught_actual_defect")
+        with tempfile.TemporaryDirectory() as directory:
+            p = Path(directory) / "input.json"
+            p.write_text(json.dumps(d), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "requires independently adjudicated"):
+                report.read_report(p)
+
     def test_real_model_requires_non_synthetic_reference(self):
         d = copy.deepcopy(self.data)
         d["run"]["mode"] = "actual_model"

@@ -17,7 +17,8 @@
       "kind": "audit",
       "truth": "defective",
       "decision": "block",
-      "defect": "wrong_key"
+      "defect": "wrong_key",
+      "caught_actual_defect": true
     },
     {
       "id": "A02",
@@ -35,7 +36,8 @@
       "kind": "audit",
       "truth": "defective",
       "decision": "block",
-      "defect": "source_mismatch"
+      "defect": "source_mismatch",
+      "caught_actual_defect": true
     },
     {
       "id": "A04",
@@ -53,7 +55,8 @@
       "kind": "audit",
       "truth": "defective",
       "decision": "block",
-      "defect": "rubric_defect"
+      "defect": "rubric_defect",
+      "caught_actual_defect": true
     },
     {
       "id": "A06",
@@ -62,7 +65,8 @@
       "kind": "audit",
       "truth": "defective",
       "decision": "block",
-      "defect": "invalid_distractor"
+      "defect": "invalid_distractor",
+      "caught_actual_defect": true
     },
     {
       "id": "A07",
@@ -71,7 +75,8 @@
       "kind": "audit",
       "truth": "defective",
       "decision": "block",
-      "defect": "duplicate_family"
+      "defect": "duplicate_family",
+      "caught_actual_defect": true
     },
     {
       "id": "A08",

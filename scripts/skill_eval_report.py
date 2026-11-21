@@ -22,7 +22,7 @@ DEFECTS = {"wrong_key", "multiple_answers", "ambiguous",
            "scope_error", "duplicate_family", "other"}
 RUN_KEYS = {"id", "mode", "reference", "model", "commit", "dataset", "date"}
 CASE_KEYS = {"id", "test_id", "family", "kind", "truth", "decision",
-             "defect", "expected_action", "selected_action",
+             "defect", "caught_actual_defect", "expected_action", "selected_action",
              "input_tokens", "output_tokens", "latency_ms"}
 TEXT = {
     "zh": {
@@ -106,7 +106,7 @@ def _number(value, field, integer=False):
     if value is None:
         return
     types = (int,) if integer else (int, float)
-    if type(value) not in types or not math.isfinite(value) or value < 0:
+    if type(value) not in types or value < 0 or value > 1_000_000_000_000 or not math.isfinite(value):
         raise ValueError(field + " must be a nonnegative finite number or null")
 
 
@@ -154,10 +154,18 @@ def read_report(path):
                 raise ValueError("invalid audit decision")
             if case.get("defect") is not None and case["defect"] not in DEFECTS:
                 raise ValueError("invalid defect category")
+            caught = case.get("caught_actual_defect")
+            if caught is not None and type(caught) is not bool:
+                raise ValueError("caught_actual_defect must be a boolean")
+            if case.get("truth") == "defective" and case.get("decision") == "block":
+                if type(caught) is not bool:
+                    raise ValueError("blocked defective case requires independently adjudicated defect match")
+            elif caught is not None:
+                raise ValueError("caught_actual_defect only applies to blocked defective cases")
             if case.get("expected_action") is not None or case.get("selected_action") is not None:
                 raise ValueError("audit rows cannot contain tutor actions")
         else:
-            if case.get("truth") is not None or case.get("decision") is not None or case.get("defect") is not None:
+            if any(case.get(k) is not None for k in ("truth", "decision", "defect", "caught_actual_defect")):
                 raise ValueError("tutoring rows cannot contain audit labels")
             if case.get("expected_action") not in ACTIONS | {None}:
                 raise ValueError("invalid reference action")
@@ -203,7 +211,7 @@ def summarize(payload):
                 "sample_size": n}
 
     scores = {
-        "defect_detection": metric(defective, lambda x: x.get("decision") == "block"),
+        "defect_detection": metric(defective, lambda x: x.get("decision") == "block" and x.get("caught_actual_defect") is True),
         "sound_acceptance": metric(sound, lambda x: x.get("decision") == "accept"),
         "tutoring_match": metric(referenced_tutor,
                                  lambda x: x.get("selected_action") == x.get("expected_action"))
@@ -211,7 +219,10 @@ def summarize(payload):
     failures = []
     for c in cases:
         if c["kind"] == "audit":
-            if c.get("truth") == "defective" and c.get("decision") == "accept":
+            if (c.get("truth") == "defective" and c.get("decision") == "block"
+                    and c.get("caught_actual_defect") is False):
+                failures.append(("unmatched_block", c))
+            elif c.get("truth") == "defective" and c.get("decision") == "accept":
                 failures.append(("missed_defect", c))
             elif c.get("truth") == "sound" and c.get("decision") == "block":
                 failures.append(("false_alarm", c))
@@ -272,6 +283,7 @@ def render(payload, summary, lang="zh"):
 
     labels = {
         "missed_defect": "错误题被放行 / Defective accepted",
+        "unmatched_block": "拦截原因不匹配实际缺陷 / Wrong defect reason",
         "false_alarm": "正确题被拦截 / Sound blocked",
         "followup_mismatch": "追问目标不匹配 / Follow-up mismatch",
         "unresolved": "未裁决 / Unresolved",
@@ -292,7 +304,7 @@ def render(payload, summary, lang="zh"):
                          if x["kind"] == "audit" and x.get("truth") == "defective")
     cat_rows = []
     for key, count in categories.most_common(4):
-        caught = sum(c.get("decision") == "block" for c in payload["cases"]
+        caught = sum(c.get("caught_actual_defect") is True for c in payload["cases"]
                      if c["kind"] == "audit" and c.get("truth") == "defective"
                      and (c.get("defect") or "other") == key)
         width = (caught / count * 100) if count else 0
