@@ -1,3 +1,17 @@
+# Architecture overview — current v1.2.0 structure
+
+## A slim Agent interface, not a platform boot sequence
+The normal tutor loads just \`SKILL.md\`. QUICK optionally reads \`references/tutoring.md\`, DEEP reads \`references/authoring.md\`, complicated audit issues read \`references/model_audit.md\`, and subject-specific edge cases consult the corresponding part of \`references/subjects.md\`. These are **progressive disclosures**, not mandatory simultaneous context. A core Skill is fully usable in conversation without any Python or model API infrastructure.
+
+## Release profiles
+- **Core:** short prompt, four references, minimal README/LICENSE/VERSION and SHA256 manifest (no scripts, tests, documents, student information).
+- **Full:** exact same prompt/references plus existing offline source, examples, tests, bilingual documentation, archives and dated engineering records; \`qa.py\` grading and \`model_audit.py\` source/checksum evidence verification are optional tool calls, not hidden model capabilities.
+- User-provided course data is read only when needed, never invented or used as instructions. Neither package stores a long chat history or uses model billing APIs on its own.
+
+## Verification boundaries
+Software regression demonstrates API stability, reproducible packaging and selected fail-closed review gates, NOT calibrated student mastery, pedagogical effectiveness or independent correctness of model-authored explanations. Research and reviewer-administration features remain available only in Full and do not affect normal student context.
+
+---
 # v0.6.0 modular diagnostic architecture
 
 Three separate concerns are now exposed by the CLI while preserving the previously tested v0.2 algorithm:

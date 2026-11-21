@@ -1,5 +1,17 @@
 # Changelog / 版本记录
 
+## v1.2.0 — 2026-11-21 — Lean Core + Full reproducible distributions
+
+- Shipped two distinct install profiles: compact, prompt-only \`question-qa-skill-core-1.2.0.zip\` for ordinary Agent Skill use, and backward-compatible \`question-qa-skill-1.2.0.zip\` for the entire offline Python, test and historical-document toolkit.
+- Reduced \`SKILL.md\` from approximately 4,018 to 1,965 Unicode characters (about 51% shorter). Condensed authoring, tutoring and adversarial model-audit instructions into separately loaded, focused references while preserving all nine critical audit decisions and uncertainty blocking.
+- The lean core profile is a strict allowlist of eight substantive files: SKILL, four topical references, README, LICENSE and VERSION. It cannot embed private learning state, Python scripts or old research data.
+- Both profiles are reproducible, versioned ZIPs with fixed timestamps and SHA256 file manifests; GitHub Release also publishes checksums for both archives and the dashboard. Core ZIP is built and smoke-tested independently while the entire suite runs inside the freshly extracted Full ZIP.
+- Reorganized bilingual README and installation pages, added documentation indexes and token-budget guidance. Historical release and installation notes have been archived rather than deleted. The default reading path now points only to SKILL.md.
+- Legacy \`scripts/qa.py\`, scoring, model review record validation and previous experimental claims are unchanged. Size and source-character reductions are not measured model-token billing or evidence of learner benefit.
+- The separate project **development** two-agent workflow is a distinct unmerged PR, not part of the learner's ordinary Core skill.
+
+
+
 ## v1.1.0 — 2026-11-21 — Strict adversarial model audit before presenting questions
 
 - A model reviewer now has a first-class two-pass audit contract: solve the student-facing task **without** the author's key, then challenge the answer, alternative keys, domain assumptions, actual curriculum citations, each distractor or rubric criterion, diagnostic distinction, level alignment, fairness and semantic novelty. A single failed or uncertain issue blocks adoption.
