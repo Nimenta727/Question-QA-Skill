@@ -2,7 +2,7 @@
 
 **Status: protocol only; no independent model/educator pilot or learner-outcome results have been completed under this plan.**
 
-[Roadmap](ROADMAP.md) · [Model audit](MODEL_AUDIT.md) · [Existing limitations](VALIDATION.md)
+[Roadmap](ROADMAP.md) · [RM-01–RM-12 execution matrix](REAL_MODEL_TESTS.md) · [Status ledger](TEST_STATUS.md) · [Blank report](validation/REPORT_TEMPLATE.md) · [Model audit](MODEL_AUDIT.md) · [Existing limitations](VALIDATION.md)
 
 ## Objectives and study units
 
@@ -42,3 +42,7 @@ For diagnosis, include at least: wrong answer with unknown cause; hinted correct
 3. Run actual author and reviewer models, capture failures and repair/re-audit outcomes.
 4. Compare adaptive next-question decisions against fixed-order and simple-history baselines.
 5. Publish aggregate metrics, confidence intervals, model configuration, costs, and explicit failed gates; update claims only when supported.
+
+## Execution handoff
+
+The numbered [RM-01–RM-12 test matrix](REAL_MODEL_TESTS.md) defines each real call/trial, independent evidence and recorded failure policy. Use the [blank report](validation/REPORT_TEMPLATE.md) and update the [status ledger](TEST_STATUS.md) only after actual independent evidence exists. All RM cases currently remain **NOT RUN**, regardless of how well the GitHub packaging CI performs.

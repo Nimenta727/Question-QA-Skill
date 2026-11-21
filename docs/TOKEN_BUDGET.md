@@ -1,4 +1,4 @@
-# Token footprint and progressive disclosure — v1.2.0
+# Token footprint and progressive disclosure — v1.2.1
 
 The default \`SKILL.md\` was reduced from approximately **4,018 to 1,965 characters** (about **51% less prompt text**). The detailed review reference was shortened from roughly 6,127 to 1,306 characters. The **Core** ZIP now contains only eight substantive files plus a SHA256 manifest; the **Full** ZIP retains the entire offline toolkit and history.
 
@@ -16,3 +16,7 @@ These measurements are **character counts, not model token counts**. Actual toke
 Full is only needed for persistent learning states, bank/schema checks, strict JSON-based audit gates, research and developer workflows.
 
 Verify both release profiles using \`python scripts/build_release.py --all --output dist\`, \`--verify PATH\`, and \`python -m unittest discover -s tests -v\`. Those regressions establish structural controls, **not** a guaranteed billing reduction or measured educational improvement.
+
+## What must still be measured
+
+Actual billed/model input and output tokens, host reference-loading behavior, model call count and response latency are **not yet measured in the RM-10 protocol**. Compare versions with matched task, model, course source and host. See [real-model test matrix](REAL_MODEL_TESTS.md) and [status ledger](TEST_STATUS.md). ZIP size and character counts are not cost evidence.
