@@ -2,6 +2,14 @@
 
 本文件描述**当前维护版本**。更早版本的完整设计说明、实现变更和旧发行页，使用 [Git Tags](https://github.com/Nimenta727/Question-QA-Skill/tags)、[Git History](https://github.com/Nimenta727/Question-QA-Skill/commits/main/) 和正式 GitHub Releases 追溯；不再把大段历史方案当作当前文档。
 
+## v1.2.1 — 2026-11-21 — 发行整理与真实测试交接
+
+- 更新 Core/Full 发行版本与自动化门禁；原 v1.2.0 Tag/发行附件不覆盖。
+- 中英文 README 明确列出待执行的真实课件命题、严格模型审题漏检/误报、自适应追问与固定题序对照、Token和时延、延迟保持及教学公平测试。
+- 新建 `docs/REAL_MODEL_TESTS.*` 的12项真实测试矩阵、`docs/TEST_STATUS.*` 验证状态台账及 `docs/validation/REPORT_TEMPLATE.md` 的空报告模板。
+- 各项真实模型测试均为**未执行**；不能把工程CI通过宣传为模型准确率、掌握概率或教学有效性。
+- 保持现有评分/诊断算法与Skill懒加载约束；发行文件仍执行SHA256和三系统兼容回归。
+
 ## v1.2.0 — 2026-11-21
 
 - Core / Full 双配置发行：轻量 Agent Skill 与完整的离线 Python 研发工具分离，四份参考按需加载，降低默认上下文负担。

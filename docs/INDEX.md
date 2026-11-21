@@ -1,4 +1,4 @@
-# Documentation — current v1.2.0
+# Documentation — current v1.2.1
 
 [Home](../README.md) · [中文](INDEX.zh-CN.md)
 
@@ -17,6 +17,9 @@ This index points to the **current** guides. Do not load all files into an AI co
 - [Diagnostic semantics and offline CLI](DIAGNOSIS.md)
 - [Audit evidence gate](MODEL_AUDIT.md)
 - [Quality validation plan — next phase](QUALITY_VALIDATION.md)
+- [Real-model test matrix (RM-01–RM-12)](REAL_MODEL_TESTS.md)
+- [Current verification status: engineering vs empirical](TEST_STATUS.md)
+- [Blank evidence report template](validation/REPORT_TEMPLATE.md)
 - [Deterministic question-quality checks](QUESTION_QUALITY.md)
 - [Token budget / lazy references](TOKEN_BUDGET.md)
 - [Release integrity and reproducibility](RELEASE.md)
