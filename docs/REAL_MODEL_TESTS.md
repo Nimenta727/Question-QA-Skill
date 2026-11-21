@@ -52,3 +52,7 @@ A test item with a known material answer ambiguity, false citation, second corre
 ## After-test reporting (does not run the study)
 
 Once actual Skill runs and independently adjudicated labels are collected, present privacy-minimal records through the [Full report generator](SKILL_EVAL_REPORT.md). Synthetic reports are **software demonstrations** and do not alter RM-01–RM-12 **NOT RUN** labels.
+
+## Three priority studies in a dedicated workspace
+
+[Real-course question quality](evaluations/course_quality.md) · [Independent audit misses and false alarms](evaluations/audit_detection.md) · [Adaptive versus fixed-order follow-ups](evaluations/adaptive_baseline.md). [Evaluation index](evaluations/README.md). All remain **NOT RUN**.
