@@ -2,7 +2,7 @@
 
 **Source-grounded question writing · one-question-at-a-time diagnosis · evidence-first tutoring**
 
-[简体中文](README.zh-CN.md) · [Documentation](docs/INDEX.md) · [Verified v1.2.0 release](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.0) · [Roadmap](docs/ROADMAP.md)
+[简体中文](README.zh-CN.md) · [Documentation](docs/INDEX.md) · [Verified v1.2.1 release](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.1) · [Roadmap](docs/ROADMAP.md)
 
 Question-QA-Skill helps an assistant ask fewer, better questions: ground each item in material actually supplied, verify its answer and alternatives, observe a learner's reasoning, and choose the next probe based on that evidence. **A correct answer does not establish durable mastery.** It is a reusable Agent Skill, not a hosted education platform or an automatically calibrated diagnostic model.
 
@@ -10,10 +10,10 @@ Question-QA-Skill helps an assistant ask fewer, better questions: ground each it
 
 | Edition | Intended use | Contents |
 | --- | --- | --- |
-| **Core** (recommended) — `question-qa-skill-core-1.2.0.zip` | Normal AI conversations with minimal initial context | `SKILL.md`, four on-demand references, minimal README, LICENSE, VERSION and manifest |
-| **Full** — `question-qa-skill-1.2.0.zip` | Offline question banks, review evidence and developer workflows | Core guidance plus Python 3.9+ standard-library CLI, examples, tests, bilingual documentation and research records |
+| **Core** (recommended) — `question-qa-skill-core-1.2.1.zip` | Normal AI conversations with minimal initial context | `SKILL.md`, four on-demand references, minimal README, LICENSE, VERSION and manifest |
+| **Full** — `question-qa-skill-1.2.1.zip` | Offline question banks, review evidence and developer workflows | Core guidance plus Python 3.9+ standard-library CLI, examples, tests, bilingual documentation and research records |
 
-Both archives and `SHA256SUMS.txt` are available in the **published v1.2.0 GitHub Release**. Verify the downloaded checksums before extraction. The smallest package is not necessarily the cheapest model invocation: read **only `SKILL.md` by default**, and load a reference only when needed. [Installation](docs/INSTALL.md) · [Token policy](docs/TOKEN_BUDGET.md)
+Both archives and `SHA256SUMS.txt` are available in the **published v1.2.1 GitHub Release**. Verify the downloaded checksums before extraction. The smallest package is not necessarily the cheapest model invocation: read **only `SKILL.md` by default**, and load a reference only when needed. [Installation](docs/INSTALL.md) · [Token policy](docs/TOKEN_BUDGET.md)
 
 ## Use the Skill
 
@@ -34,9 +34,23 @@ python scripts/qa.py report --state .qa-state.json --bank examples/sample_bank.j
 
 The offline CLI **does not call an LLM**. `scripts/model_audit.py` verifies the structure and provenance of **an already-completed** model-review record; it does not perform or prove independent semantic review. [Review protocol](docs/MODEL_AUDIT.md) · [Architecture](docs/ARCHITECTURE.md)
 
+## Real tests still required — not yet completed
+
+These are **planned empirical tests**, not software regression tests or already-validated capabilities. The full [RM-01–RM-12 test matrix](docs/REAL_MODEL_TESTS.md), [status ledger](docs/TEST_STATUS.md) and [blank report](docs/validation/REPORT_TEMPLATE.md) define inputs, independent reference labels, metrics, denominators and reporting.
+
+| Priority | Actual independent test still needed | Status |
+| --- | --- | --- |
+| P0 | C/programming **and non-programming** source-grounded question accuracy, citations and cognitive alignment | **NOT RUN** |
+| P0 | Audit missed bad keys, second valid choices, ambiguity, fake citations and rubric defects; measure false alarms on sound items | **NOT RUN** |
+| P0 | Evaluate guessed/hinted/partial/wrong responses and safe adaptive follow-ups against a frozen fixed-sequence baseline | **NOT RUN** |
+| P1 | Measure real model input/output tokens, call count and latency under matched Core/Full conditions | **NOT RUN** |
+| P1 | Authorized delayed retention, independent expert agreement, fairness and learner outcomes | **NOT RUN** |
+
+**Release does not certify these items.** Failed cases and uncertainty must be reported with independent reference labels and eligible denominators. Real learner trials require suitable authorization and privacy safeguards.
+
 ## Evidence, limitations and development status
 
-- **Verified engineering:** v1.2.0 Core/Full distribution and cross-platform regression workflow completed successfully on November 21, 2026. This is software verification, **not** teaching effectiveness.
+- **Verified engineering:** v1.2.1 Core/Full distribution and cross-platform regression workflow completed successfully on November 21, 2026. This is software verification, **not** teaching effectiveness.
 - **Not validated as learning measurement:** published offline tests have not established an advantage of the legacy descriptive index over simple history-based baselines. Do not report heuristic scores as calibrated mastery probabilities or a single correct response as retention. [Research evidence](docs/VALIDATION.md)
 - **Independent item quality still to test:** formal question-authoring accuracy, model-audit miss/false-alarm rates, diagnosis of real reasoning, and adaptive-versus-fixed follow-up benefit remain research priorities. [Evaluation plan](docs/QUALITY_VALIDATION.md)
 - **Separate developer agents:** repository-builder and independent PR-auditor work is distinct from learner interactions; no two-model runtime requirement is implied. Actual reviewer evidence must be recorded before claiming independent review.

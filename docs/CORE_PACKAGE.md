@@ -10,7 +10,7 @@
 
 **必须守住的边界：** 新题与追问题先独立求解、找其他正确答案和反例；来源未核对不可冒称老师课件；仅有同模型自审不能说成独立审核；正确一题不能说明长期掌握。正式考试需要合格真人复核。
 
-要运行离线 `scripts/qa.py`、严格审核JSON门禁、测试或研究脚本，请安装单独的 **Full** 发行包 `question-qa-skill-1.2.0.zip`。Full有当前文档、研发记录与研究结果；更早废弃的文档通过 Git 提交历史查看。压缩包大小不代表精确模型Token用量。
+要运行离线 `scripts/qa.py`、严格审核JSON门禁、测试或研究脚本，请安装单独的 **Full** 发行包 `question-qa-skill-1.2.1.zip`。Full有当前文档、研发记录与研究结果；更早废弃的文档通过 Git 提交历史查看。压缩包大小不代表精确模型Token用量。
 
 **许可证：MIT。** 不上传学生隐私、未经授权的教材或审核凭据。
 
@@ -22,4 +22,4 @@ Core is the smallest self-contained Agent Skill for conversational tutoring. Reg
 
 Example: “Use the course excerpts I provide. Ask one question at a time, check my reasoning, and select a distinct informative follow-up. Withhold the key until I answer.”
 
-Review every newly authored or revised item before showing it. Label missing-course questions as general practice, disclose same-model self-review, and never infer durable mastery from one response. The separate **Full** ZIP (`question-qa-skill-1.2.0.zip`) contains optional Python 3.9+ offline tools and current documentation; superseded instructions remain in Git history. Core itself does not call an LLM or guarantee a fixed billable-token reduction. MIT licensed.
+Review every newly authored or revised item before showing it. Label missing-course questions as general practice, disclose same-model self-review, and never infer durable mastery from one response. The separate **Full** ZIP (`question-qa-skill-1.2.1.zip`) contains optional Python 3.9+ offline tools and current documentation; superseded instructions remain in Git history. Core itself does not call an LLM or guarantee a fixed billable-token reduction. MIT licensed.

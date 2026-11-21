@@ -1,10 +1,10 @@
 # Roadmap / 路线图 — evidence before feature expansion
 
-**Current stable baseline:** v1.2.0 Core + Full officially released 2026-11-21. This document states planned work; no row below implies experimental validation has been completed.
+**Current stable baseline:** v1.2.1 Core + Full officially released 2026-11-21. This document states planned work; no row below implies experimental validation has been completed.
 
-## P0 — consolidate and verify current release (documentation branch)
+## P0 — release readiness and current-documentation convergence (engineering)
 
-- Align bilingual README, installation, architecture, audit, diagnostics and source references with actual v1.2.0 code and release status.
+- Align bilingual README, installation, architecture, audit, diagnostics and source references with actual v1.2.1 code and release status.
 - Remove superseded version-specific narratives from the working tree; preserve historical commits/tags and the dated `docs/routine/` engineering trail.
 - Keep Core prompt short and lazy-loaded, update related tests and code docstrings without altering grading or scoring semantics.
 - **Exit evidence:** PR diff reviewed, local links resolve, current package test and cross-platform CI green, independent reviewer concerns recorded rather than silently bypassed.
@@ -17,7 +17,7 @@
 4. **Outcome claims only after evidence.** Separate implementation tests, reviewer agreement, accurate source attribution, later retention and causal adaptive improvements. No score-label-to-mastery shortcut.
 5. **Token/cost tracking.** Measure actual input tokens and number of review/model invocations under identical source inputs; do not infer savings from compressed ZIP bytes.
 
-See [English study gates](QUALITY_VALIDATION.md) / [中文验收方案](QUALITY_VALIDATION.zh-CN.md) for test design, denominators and failure policy.
+See the [12-case real-model execution matrix](REAL_MODEL_TESTS.md) / [中文测试矩阵](REAL_MODEL_TESTS.zh-CN.md), [verification status ledger](TEST_STATUS.md), and [English study gates](QUALITY_VALIDATION.md) / [中文验收方案](QUALITY_VALIDATION.zh-CN.md) for design, denominators and failure policy. **RM-01–RM-12 are all NOT RUN until real evidence is recorded.**
 
 ## P1 — independent data and domain tools
 

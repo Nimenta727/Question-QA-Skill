@@ -1,4 +1,4 @@
-# Token预算与结构设计｜v1.2.0
+# Token预算与结构设计｜v1.2.1
 
 ## 主要优化
 
@@ -29,9 +29,13 @@
 
 ~~~bash
 python scripts/build_release.py --all --output dist
-python scripts/build_release.py --verify dist/question-qa-skill-core-1.2.0.zip
-python scripts/build_release.py --verify dist/question-qa-skill-1.2.0.zip
+python scripts/build_release.py --verify dist/question-qa-skill-core-1.2.1.zip
+python scripts/build_release.py --verify dist/question-qa-skill-1.2.1.zip
 python -m unittest discover -s tests -v
 ~~~
 
 测试只验证允许名单、构建复现性、上下文字符上限和包完整性，不保证任何模型真实节省了某个固定百分比的付费Token。
+
+## 真实仍需测量的性能
+
+**RM-10 尚未执行。** 必须在相同模型、宿主、课件和任务条件下记录实际输入/输出 Token、模型调用次数、中位与P95延迟以及可得的内存数据，不能只用ZIP大小或字符压缩率宣称成本改善。参见 [真实模型测试矩阵](REAL_MODEL_TESTS.zh-CN.md) 和 [验证状态台账](TEST_STATUS.zh-CN.md)。
