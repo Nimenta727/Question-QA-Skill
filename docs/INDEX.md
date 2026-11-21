@@ -1,38 +1,37 @@
-# Documentation index — Question-QA-Skill v1.2.0
+# Documentation — current v1.2.0
 
-[Home](../README.md) · [简体中文](INDEX.zh-CN.md)
+[Home](../README.md) · [中文](INDEX.zh-CN.md)
 
-**Load SKILL.md only by default.** These resources are on-demand and should not all be sent to a language model.
+This index points to the **current** guides. Do not load all files into an AI context: read `SKILL.md` first, then the one relevant reference. Obsolete installation/release narratives are preserved in Git history, not recommended as live instructions.
 
-## Start here
-- [Core / Full installation](INSTALL.md)
-- [Token budgets and lazy loading](TOKEN_BUDGET.md)
-- [Release integrity and packaging](RELEASE.md)
-- [Version history](../CHANGELOG.md)
+## Everyday learners and authors
+- [Install Core or Full](INSTALL.md)
+- [Question-writing guide](../references/authoring.md)
+- [Adaptive one-at-a-time tutoring](../references/tutoring.md)
+- [Strict item review](../references/model_audit.md)
+- [Discipline-specific safeguards](../references/subjects.md)
+- [Teaching quality evaluation](TEACHING_EVALUATION.md)
 
-## Pedagogy and question review
-- [Deep question authoring](../references/authoring.md)
-- [Adaptive formative tutoring](../references/tutoring.md)
-- [Strict model-review protocol](../references/model_audit.md)
-- [Subject-specific rules](../references/subjects.md)
-- [Audit evidence and failure gates](MODEL_AUDIT.md)
-- [Deterministic question quality checks](QUESTION_QUALITY.md)
-- [Human pedagogy evaluation](TEACHING_EVALUATION.md)
-
-## Full-only advanced tools (not default learner context)
-- [Optional operations index](../references/operations.md)
-- [Local state safety](STATE_SAFETY.md)
-- [Data lifecycle](DATA_LIFECYCLE.md)
-- [Score correction appeals](APPEALS.md)
-- [Reviewer credentials / local HMAC audit](SECURITY_AUDIT.md)
-- [Dual-rater preparation](REVIEW_TRIAL.md)
-
-## Science and history
-- [Empirical limitations](VALIDATION.md)
-- [ASSISTments2015 evaluation](VALIDATION_ASSIST2015.md)
+## Engineering and quality
+- [Architecture and capability boundaries](ARCHITECTURE.md)
+- [Diagnostic semantics and offline CLI](DIAGNOSIS.md)
+- [Audit evidence gate](MODEL_AUDIT.md)
+- [Quality validation plan — next phase](QUALITY_VALIDATION.md)
+- [Deterministic question-quality checks](QUESTION_QUALITY.md)
+- [Token budget / lazy references](TOKEN_BUDGET.md)
+- [Release integrity and reproducibility](RELEASE.md)
 - [Roadmap](ROADMAP.md)
-- [Prior release engineering guide](archive/RELEASE_PRE_V1_2.md)
-- [Prior installation notes](archive/INSTALL_PRE_V1_2.md)
-- [Dated development routine](routine/)
 
-The software audit gate verifies evidence shape and limited objective conditions; it is not independently proven human or model semantic accuracy.
+## Full-only advanced tools
+- [Operations and tools](../references/operations.md)
+- [Local state safety](STATE_SAFETY.md) · [Data lifecycle](DATA_LIFECYCLE.md)
+- [Appeals](APPEALS.md) · [Local security audit](SECURITY_AUDIT.md)
+- [Reviewer trial](REVIEW_TRIAL.md)
+
+## Evidence and history
+- [FORGET-SE validation and limitations](VALIDATION.md)
+- [ASSISTments2015 external comparison](VALIDATION_ASSIST2015.md)
+- [Current-version change summary](../CHANGELOG.md)
+- [Versioned Git history](https://github.com/Nimenta727/Question-QA-Skill/tags) · [Dated routine](routine/)
+
+**Reminder:** test success is not learner-outcome validation; a review-record checksum is not independent proof that an item is correct.

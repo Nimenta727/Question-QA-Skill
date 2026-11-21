@@ -1,16 +1,17 @@
-# Installation — Question-QA-Skill v1.2.0
+# Install and verify v1.2.0
 
-[Home](../README.md) · [Documentation index](INDEX.md)
+[Home](../README.md) · [Documentation](INDEX.md) · [Official release](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.0)
 
-## Core: recommended for the smallest default model context
+## Core — recommended for conversational study
+1. Download `question-qa-skill-core-1.2.0.zip` and `SHA256SUMS.txt` from the **published** v1.2.0 release.
+2. Compare the ZIP's SHA256 with the value in the checksum file using your operating system's SHA256 utility.
+3. Extract and register the Core folder in an Agent Skills-compatible host, or ask the assistant to read its `SKILL.md`.
+4. Load **only SKILL** initially; consult `references/tutoring.md`, `references/authoring.md`, `references/model_audit.md` or `references/subjects.md` only when needed.
 
-Download \`question-qa-skill-core-1.2.0.zip\` and \`SHA256SUMS.txt\` from the official GitHub release. Verify, extract, and install/register the extracted directory with an Agent Skills host (or ask the assistant to read SKILL.md).
+Ask: “Use my supplied C-language lesson to test understanding one question at a time, then probe the reasoning behind each answer.” If the source was not provided or verified, the questions are generic practice.
 
-Only SKILL.md needs to be in normal initial context. Read \`references/tutoring.md\` for deeper QUICK strategies, \`references/authoring.md\` for DEEP questions, \`references/model_audit.md\` for difficult question verification and \`references/subjects.md\` only for the relevant discipline. Do **not** pre-load all source files or research history.
-
-## Full: optional offline Python toolkit
-
-Download \`question-qa-skill-1.2.0.zip\`, extract and use Python 3.9+ (no pip dependencies):
+## Full — optional offline Python toolkit
+Download `question-qa-skill-1.2.0.zip`. Python 3.9+; no third-party packages.
 
 ~~~bash
 python scripts/qa.py validate examples/sample_bank.json
@@ -19,10 +20,9 @@ python scripts/qa.py answer examples/sample_bank.json --state .qa-state.json --r
 python scripts/qa.py report --state .qa-state.json --bank examples/sample_bank.json
 ~~~
 
-Use \`py -3\` on Windows where appropriate. The sample question bank and history are synthetic demonstrations, not a real instructor's curriculum or human student study.
+On Windows, `py -3` may replace `python`. The example data is synthetic. See [model-review evidence](MODEL_AUDIT.md) for optional strict gating: **no model is called by the CLI**, and a schema pass does not certify independent reasoning.
 
-The full archive includes a strict optional \`scripts/model_audit.py\` packet gate: it validates evidence **already written by a genuine reviewer model**, rather than running any LLM. Use [model audit instructions](MODEL_AUDIT.md) when you need it. Legacy review, appeals, cryptographic local audit and research utilities are indexed in [documentation index](INDEX.md).
+## Package, privacy and historical versions
+Each ZIP contains `manifest.json` listing file SHA256 digests; `SHA256SUMS.txt` checks the entire downloaded archive. See [release procedure](RELEASE.md) for deterministic build commands and tests. Do not commit learner state, private course excerpts, reviewer identity credentials or audit secrets.
 
-## Verification and privacy
-
-The downloadable SHA256SUMS.txt authenticates each released ZIP against the published digest; inside each ZIP, manifest.json enumerates file hashes. Packaging CI tests both and runs the full suite on a fresh Full extraction. Do not publish private learner histories, reviewer credentials or unauthorized course text. For older commands consult \`archive/INSTALL_PRE_V1_2.md\`, which is historical rather than recommended.
+Old installation instructions remain retrievable via [Git tags](https://github.com/Nimenta727/Question-QA-Skill/tags) and [repository history](https://github.com/Nimenta727/Question-QA-Skill/commits/main/), rather than active documentation files.
