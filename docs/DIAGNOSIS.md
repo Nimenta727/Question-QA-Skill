@@ -1,68 +1,50 @@
-# Diagnosis v0.2 / 深度学习诊断
+# Formative diagnostic semantics — current v1.2.0
 
-The offline module makes **formative, interpretable judgments**. It does NOT perform statistically calibrated psychometrics.
+[Architecture](ARCHITECTURE.md) · [Research evidence](VALIDATION.md) · [Next evaluation](QUALITY_VALIDATION.md)
 
-## Core data / 记录与证据
-- One event per answered question: item ID, family, concept, cognitive level, difficulty, response type, normalized score, session ID, confidence/hint flag, timestamp and optional reviewed misconception code. Do not store original learner response.
-- Same item family and UTC day: only the most recent event contributes to evidence index; repeating a question/variant does not multiply evidence. Different-day repetition contributes at a sharply reduced weight.
-- Observed evidence is separated by concept and by cognitive level. Reports also include untested concepts if a bank is provided.
-- Correct answers marked guess/unsure or hint-used receive reduced positive evidential weight; they are not relabeled as wrong.
-- Misconceptions are only assigned from reviewed wrong-option mappings or explicit reviewer labels; never inferred from the fact of being wrong alone.
+The Full toolkit records **observations and rule-based follow-up intentions**, not a calibrated psychological or educational estimate of mastery. The descriptive index is historically named “v0.2” in the implementation; this is an algorithm lineage, **not** the current package version.
 
-## Heuristic interpretation / 暂定诊断
-Outputs: rate (smoothed descriptive performance index), count (raw events), unique_items, families, days, levels, effective_evidence (weighted diagnostic exposure), flags and gaps. rate is NOT the probability the student masters the concept.
+## Evidence stored for an answered item
 
-Status interpretation:
-- untested: no observation;
-- insufficient_evidence: fewer than three family/day observations or fewer than two distinct item families;
-- needs_review: weak observed index with at least three observations and two families;
-- developing: evidence exists but is not yet sufficiently broad, retained or consistently strong;
-- tentatively_strong: requires 4 family/day observations, 3 distinct item families, 2 UTC dates, 2 cognitive levels, at least one correct unassisted higher-order item (apply/analyze/transfer), effective evidence >= 2.2, rate >= 0.72 and no latest hard miss.
+An event can include question ID, family, concept, cognitive level, difficulty, format, normalized score, session, self-reported confidence/hint use, time and reviewed error mapping. Original free-text student submissions are not required for the diagnostic index. Treat unreviewed alleged misconceptions as **unconfirmed alternatives**, not diagnoses.
 
-These cutoffs are transparent **engineering assumptions**, not validated clinical, educational placement or official exam cut scores. Crossing UTC midnight does not prove durable learning; use reasonably spaced actual revisits.
+The evidence heuristics limit repeated exposure: same item family on the same UTC date does not generate independent positive evidence, and later exposure contributes at reduced weight. Multiple dates, independent families and higher-level questions are considered, but simply crossing midnight does not demonstrate retention.
 
-## Adaptive item targeting / 选下一题
-1. New session starts broad, unless a named focus concept is supplied.
-2. Wrong answer => a distinct question on the same skill or its explicitly mapped prerequisite; favor approachable difficulty.
-3. Correct but guessed/unsure/hinted => another format or independent item family on the same concept.
-4. Confident correct => higher-order transfer or uncovered concept.
-5. Between candidates, reward untested concepts/levels and unresolved transfer evidence; reduce exposure of seen families and recently asked items.
-6. Never repeat the same item in one session. Stop at budget or item exhaustion, stating which.
-This is **heuristic routing**, NOT calibrated CAT information gain, BKT or IRT.
+## Descriptive output, not probability
 
-## Commands / CLI
+| Field / status | Interpretation |
+| --- | --- |
+| `rate` | Smoothed historical index; **not** P(mastered concept) |
+| `count`, `families`, `days`, `levels` | Observed coverage dimensions; use to identify untested claims |
+| `effective_evidence` | Heuristic weighting of observations, not sample size or confidence interval |
+| `untested` / `insufficient_evidence` | No data or breadth too limited for even a tentative descriptive label |
+| `needs_review` / `developing` | Follow-up may be useful; not a permanent label for the learner |
+| `tentatively_strong` | Multiple families, dates and higher-order successes pass engineering rules; **not** verified long-term retention |
+
+The historical tentative-strong gate requires at least four family/day observations, three distinct families, two UTC dates, two cognitive levels, an unassisted higher-order correct result, effective evidence ≥ 2.2, descriptive rate ≥ 0.72 and no latest severe miss. These are **engineering thresholds**, not validated official cut scores.
+
+## How a question is selected
+
+1. Start with the named focus or coverage gap; choose one reviewable claim and one safe question.
+2. Wrong, unknown cause: clarify the reasoning or a relevant prerequisite; never label a specific misconception without supporting evidence.
+3. Correct but guessed/unsure/hinted: use an **independent family or representation**, with no hint, to rule out chance/exposure.
+4. Partial score: probe the critical missing rubric criterion; reliable explained success: probe a boundary, transfer or uncovered skill.
+5. Avoid the same question again in a session, cap redundant exposure, honor early stop and report unknowns.
+
+This is **heuristic routing**, not calibrated computerized adaptive testing, validated information gain, BKT or IRT. The conversational agent still has to inspect and interpret free-form reasoning separately; the Python scripts cannot independently do that.
+
+## Full CLI example
+
 ~~~bash
-python3 scripts/qa.py validate examples/sample_bank.json
-python3 scripts/qa.py start examples/sample_bank.json --mode quick --limit 6 --focus linear-equations
-python3 scripts/qa.py next examples/sample_bank.json
-python3 scripts/qa.py answer examples/sample_bank.json --response C --confidence guess
-python3 scripts/qa.py report --bank examples/sample_bank.json
+python scripts/qa.py validate examples/sample_bank.json
+python scripts/qa.py start examples/sample_bank.json --mode quick --limit 6 --focus linear-equations
+python scripts/qa.py next examples/sample_bank.json
+python scripts/qa.py answer examples/sample_bank.json --response C --confidence guess
+python scripts/qa.py report --bank examples/sample_bank.json
 ~~~
 
-The default state file is .qa-state.json. start explicitly begins a new session but retains prior history. If a question is pending, the command requires --discard-pending; the pending item is not silently dropped. Use a distinct --state file per student and do not commit local state to Git.
+Default local state is `.qa-state.json`; use separate files for separate learners and never commit them. `qa.py next` can expose an internal `tutor_intent`; `answer` returns `tutor_next_move`; `report` provides `teaching_summary`. These are **assistant planning metadata**, not proof of answer reasoning or student-facing scores. A strict model-review evidence gate is optional in Full; see [audit](MODEL_AUDIT.md).
 
-## Extending item banks / 题库扩展
-- family: stable, nonempty string for near-duplicate items; default item ID.
-- prerequisites: list of known concept IDs (not the item ID), excluding itself.
-- misconceptions: option-code -> reviewed error label for incorrect single-choice options only.
-These optional fields are backward compatible with the v1 schema.
+## Scientific limitation
 
-## Accuracy roadmap / 下一阶段
-For genuine predictive improvement evaluate held-out future response prediction, false-high-confidence decisions, delayed retention, item quality, demographic fairness where appropriate and consented, and scoring consistency. Only add model-based BKT/IRT or FSRS with suitable historical data and validation. Do not market a heuristic score as a calibrated probability.
-
-## Validation status / 实证状态
-See [VALIDATION.md](VALIDATION.md) or [VALIDATION.zh-CN.md](VALIDATION.zh-CN.md). The v0.2 index did not demonstrate superior external-exam outcome prediction. FORGET-SE lacks validated cognitive levels and genuine revisit dates, so provisional-strong false-positive rate is currently **not measurable**, rather than zero. Script tests show implementation correctness, not predictive validity.
-
-
-## v0.6.0 separation of responsibilities
-The original diagnostic index and item selection strategy are retained unchanged for reproducibility. scripts/evidence_engine.py reports observed item families, UTC days, cognitive coverage and evidence gates, with explicit non-probability warnings. scripts/prediction_engine.py supplies a separate fixed history-only comparison score, not calibrated future correctness or mastery. scripts/adaptive_engine.py provides explanatory reason tags for each question chosen by the historical rule. Details in docs/ARCHITECTURE.md. No causal benefit or IRT/BKT accuracy has been newly established.
-
-
-## v0.8.0 correction propagation
-An explicitly confirmed appeal modifies the effective event score. Subsequent reports, formative evidence, the comparison baseline and rule-based future question selection see the corrected score, not the earlier disputed one. The local appeal audit tracks both before and after values. This does not empirically calibrate mastery probabilities or prove benefits of adaptive learning.
-
-
-## v1.0.0 answer-to-probe pedagogical decisions
-The descriptive evidence diagnosis remains unchanged, but the AI tutor now receives an **instructional next-move plan**, not merely a label. Wrong answer without verified cause prompts clarification; optional explicit prerequisites guide repair; guessed/assisted correct responses prompt independent-family rechecks; valid unassisted successes lead to transfer; partial-credit responses demand targeted criterion repair; end-of-budget sessions must stop. This is testable rule behavior and not a calibrated probability or proof of student improvement.
-
-CLI JSON: next.tutor_intent, answer.tutor_next_move and report.teaching_summary. No student free-text answer or unpublished key appears inside these fields. For the conversational loop see references/tutoring.md.
+Held-out evaluation on FORGET-SE did not show an advantage of the historical index over simple score-history baselines; the separately evaluated ASSISTments2015 task also favored a simple baseline. The targets differ across datasets and cannot be compared as if identical. Missing reliable cognitive-level and revisit-time evidence prevents estimating the “tentatively strong” label's true false-positive rate. No causal learning gain, durable retention or calibrated proficiency has been established. [Validation](VALIDATION.md).

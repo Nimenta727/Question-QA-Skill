@@ -1,54 +1,36 @@
-# Roadmap / 路线图 — 核心AI教学优先
+# Roadmap / 路线图 — evidence before feature expansion
 
-项目方向：**高质量命题 → 学生回答 → 可核验理解证据 → 最有信息量的下一问 → 清晰的学习漏洞与复习建议**。
+**Current stable baseline:** v1.2.0 Core + Full officially released 2026-11-21. This document states planned work; no row below implies experimental validation has been completed.
 
-本文件重新聚焦当前和未来教学路线；历史 v0.1–v0.9 发行进度和更早规划保留于 CHANGELOG.md、docs/routine/ 和 Git commit 历史。安全、研究与发行工具仍存在，但不是日常六轮教学的依赖。
+## P0 — consolidate and verify current release (documentation branch)
 
-## v1.0.0 — 教学主线重构（本版）
+- Align bilingual README, installation, architecture, audit, diagnostics and source references with actual v1.2.0 code and release status.
+- Remove superseded version-specific narratives from the working tree; preserve historical commits/tags and the dated `docs/routine/` engineering trail.
+- Keep Core prompt short and lazy-loaded, update related tests and code docstrings without altering grading or scoring semantics.
+- **Exit evidence:** PR diff reviewed, local links resolve, current package test and cross-platform CI green, independent reviewer concerns recorded rather than silently bypassed.
 
-- 以精简 SKILL.md 描述 QUICK 一题一问、DEEP 源于课件的深度命题、答案等价/开放题审阅与学习证据边界。
-- 引入 tutor_core.py 的教学追问目标：基础错误→澄清或先修；猜对/提示正确→独立题族复核；可靠正确→边界与迁移；部分得分→集中补缺；会话上限→结束。
-- 题库已耗尽时生成**需要审核的新题设计要求**，不自动把临时生成的题和答案当成“已审核”。
-- qa.py 的 next、answer、report 输出新教学计划与本轮理解证据概要，不变更已有判分、鉴别性不足的诊断公式和状态兼容。
-- 建立六维人工命题/追问质量评审规则与合成教学场景软件回归；两者都不是独立课堂效果实验。
-- 复杂审计、身份、备份、研究等功能保留，但不进入默认 Agent 上下文。
+## P0 — v1.3 quality-evidence pilot (NOT completed)
 
-## 下一步 P0：真正提升题目与追问质量
+1. **Verified curriculum blueprint.** Obtain permissioned source excerpts for at least one concrete course; record knowledge claims, source locations, expected reasoning, independent item families and misconceptions *as hypotheses*.
+2. **Independent authored-item review.** Blind solve before opening the author's key; use nine-field adversarial review; label deliberately flawed items and correct ones; report actual catch, miss, false-alarm and unresolved rates by defect category.
+3. **Observed-learning diagnosis.** On consented or clearly synthetic responses, test wrong-with-unknown-cause, hinted success, guessed success, partial credit, justified success and stop conditions. Compare follow-up plans with a preregistered fixed-sequence baseline.
+4. **Outcome claims only after evidence.** Separate implementation tests, reviewer agreement, accurate source attribution, later retention and causal adaptive improvements. No score-label-to-mastery shortcut.
+5. **Token/cost tracking.** Measure actual input tokens and number of review/model invocations under identical source inputs; do not infer savings from compressed ZIP bytes.
 
-1. 面向**真实课程文件**构建命题蓝图：知识点、定义/前置、推理机制、代表性错误、迁移边界和来源页码，一题一个可观察知识断言。
-2. 对新生成题实施专家盲审，比较解答准确、课程对齐、区分理解与死记、对等价答案的宽容以及对学生语言表达偏差的公平性。
-3. 将诊断追问针对具体漏步进行语义复核：文本解释、过程题和学生自我修正前后，必须保留未经证实的其他解释，不能凭答对率贴能力标签。
-4. 低成本交互评估：对同一已获授权课程情景比较一题一问策略与固定题序的实际信息量，统计无效重复提问和不必要的上下文开销。
+See [English study gates](QUALITY_VALIDATION.md) / [中文验收方案](QUALITY_VALIDATION.zh-CN.md) for test design, denominators and failure policy.
 
-## P1：教育实证与可验证解释
+## P1 — independent data and domain tools
 
-- 合规取得独立真实教师评阅和适用参与者/监护许可后，预注册测评的命题质量、知识漏洞判断准确性和学生反馈改善指标。
-- 获取第三组真正独立、有题目身份、题族、真实时间、可靠认知标注及延迟回忆的新数据；旧 FORGET-SE 与 ASSISTments2015 不能继续用作新参数的独立留出集。
-- 掌握概率、BKT/IRT与学习收益声明只有在独立外部研究支持后才能引入，不能让启发式指数越权。
+- Verify genuine alternative solutions and equivalent answers in mathematics and C/programming with controlled domain-specific execution where available; preserve uncertainty otherwise.
+- Acquire a truly unseen cohort with item identity, question family, timing, source permissions, blinded expert standards and delayed follow-ups if ethically authorized.
+- Pre-register metrics, baselines and cutoffs before opening holdout results. Previous FORGET-SE and ASSISTments2015 evaluation splits are **not new untouched test sets**.
+- Explore calibrated BKT/IRT or similar models **only** if appropriate data, calibration evidence and incremental baselines support them.
 
-## P2：可选平台级功能
+## P2 — optional tooling, not part of normal tutoring
 
-- 既有本地数据安全、双评阅、申诉、HMAC审计和研究工具继续维护兼容与安全缺陷；不应默认加进教学循环。
-- 需要真正机构级身份、加密数据库、远程见证等部署场景时才启动相应独立项目，不应绑架核心 Skill 的简洁性。
+- Maintain appeals, security controls, state recovery, investigator scripts and separate development-agent/PR review workflow as optional Full capabilities.
+- Treat feature requests as modular additions. Do not force external model calls, student-data storage or multi-agent overhead into the default Core loop.
 
+## Non-negotiable claims boundary
 
-## v1.1.0 — 模型严格审题门槛
-
-- 已建立审题模型独立解答→对照原答案做逆向挑战→检查全部选项与评分rubric→核对课程引文→阻断未解决题目的标准工作流。
-- 新增与题库/来源SHA256绑定的审阅证据结构，必要九维逐项理由；课程源缺失时必须标记通用练习，不能伪称原课程授权题。
-- qa.py next增加可选择的严格审核门禁；未审核的旧调用虽保留兼容，但必须明确not_checked_legacy_mode，核心Skill默认不展示未经审查的题目。
-- 对真实模型审题的正确率、专家与模型分歧率、改题后复审成效仍需独立评估；合成CI不是模型审题实际准确率。
-
-### 接下来需要评估的真实能力
-1. 利用真实课件及人类校验的标准答案做独立模型审题，测量模型发现故意设置的错答案、歧义、多解和超纲的召回率及误报率。
-2. 记录审核失败到修订再通过的轨迹，并由独立专家评阅；特别评估模型是否在不查证的情况下泛泛地填好九项而漏掉明显错误。
-3. 对复杂数学推导、程序代码、史地事实与证据性材料分别建立领域专用核验工具，而非用形式检查替代事实验证。
-
-
-## v1.2.0 — Token与发行结构收敛
-
-- 改为“轻量Core默认安装，完整Full按需使用”两种可重复构建发行。Core不携带历史研究和代码，避免宿主误把所有工程文档加载为模型上下文。
-- 主SKILL减少约51%字符并保持QUICK/DEEP、独立审题与证据克制；深入命题、追问、模型审计、学科规则以明确的references按需读取。
-- 双语首页、安装、发行校验文档聚焦本版；历史开发说明单独归档，完整源码与逐提交日志仍留在Full和Git仓库。
-- 新回归校验Core内容允许名单、完整Full兼容、ZIP复现性/摘要、解压后的Skill可用性及文档链接。
-- **下一P0不是扩张功能**：用真实获许可课程资料与独立专家效标，度量题目审计漏检/误报及学习诊断真正的区分力。不能用此版软件测试宣称教学效果。
+A successful CI run proves the engineered checks ran; it does not demonstrate learning gain. An LLM self-review cannot be presented as an independent specialist endorsement. A heuristic `rate` or `tentatively_strong` label cannot be reported as a validated probability or a definitive student ability judgment. High-stakes assessment requires independent qualified human review.

@@ -1,38 +1,25 @@
-# v1.1.0 模型严格审题
+# 严格审题与证据门禁｜当前 v1.2.0
 
-目标是让AI对每道题进行独立求解、主动找错和课程来源核对，而不是“所有检查项勾选通过”。
+[深度命题规则](../references/authoring.md) · [模型执行协议](../references/model_audit.md) · [下一阶段验证方案](QUALITY_VALIDATION.zh-CN.md)
 
-## 必查九项
-1. 课程来源与适用范围：教材真实出处、逐字引文、有没有超出实际课件。
-2. 独立解答：先隐藏命题者答案，审阅模型独立推导、计算和寻找反例。
-3. 答案与等价形式：找第二个正确选项、其他合法解法或合理表达。
-4. 歧义与条件：定义域、单位、量纲、边界、前提是否完整。
-5. 干扰项或rubric：单选三个错误选项逐个说明错误及区分力；开放题每条rubric独立审查。
-6. 诊断价值：是否能区分真正理解与猜对/重复记忆。
-7. 认知层次：题目标注的理解、分析或迁移是否真实要求该层推理。
-8. 公平性：偏怪、误导性语言、无关文化背景或隐含先修要求。
-9. 题族独立性：避免换数字、改写题干却不增加新证据。
+**所有新题、修改后的题以及追问题**都需要先独立求解、主动找错，确认无未解决关键问题后才能展示给学生。没有真正独立的审核过程，不能声称“已由独立审核模型确认”。
 
-任何关键项 fail/uncertain 或证据不足，都不能向学生声称已核验。修改后需要重新审计。
+## 两阶段审题
 
-## 两阶段审阅
-第一阶段：审核模型只看到实际课件、学生题面和选项，隐藏命题者答案与rubric结论。它先自行解题，枚举等价解、反例和边界条件；结果应在打开标准答案前保存。
+1. **先盲解：** 审阅者获得学生题面、选项和已经实际核对的课程资料，**隐藏命题者答案与评分细则**；独立解答并寻找不同合法答案、漏条件、多解、反例、来源不符及歧义，保留首轮证据。
+2. **再逆向审查：** 打开作者标准答案，对每个选项或 rubric 条目逐一质疑，同时核实原文引用、范围、认知层次、公平性和题族独立性。修改题面或答案后必须重新审题。
 
-第二阶段：打开命题者答案、解析和评分细则，逐题质疑，并填写每项具体审查理由、课程引文、独立答案、干扰项解释和遗留风险。不要凭泛泛“这道题很好”就通过。
+每题九项必查：`source_scope` 来源与范围、`independent_solution` 独立解答、`answer_and_equivalents` 等价及多解、`ambiguity_and_conditions` 条件与歧义、`options_or_rubric` 逐项干扰项或评分细则、`diagnostic_value` 诊断价值、`cognitive_alignment` 认知层次、`fairness_and_accessibility` 公平与可及性、`novelty` 题族独立性。任何关键项 **fail、uncertain、证据不足或未解决风险都必须拦截**，修订后重新审。
 
-## 离线工具（真正审核由AI执行）
+## Full 版离线门禁（不自动调用模型）
 
-    python3 scripts/qa.py validate BANK.json
-    python3 scripts/question_quality.py BANK.json
-    python3 scripts/model_audit.py BANK.json --template audit.json --source-file COURSE.txt --author-id author-agent
+~~~bash
+python scripts/model_audit.py BANK.json --template audit.json --source-file COURSE.txt --author-id author-agent
+# 必须由实际独立审核者先盲解并填写审阅记录
+python scripts/model_audit.py BANK.json --review audit.json --source-file COURSE.txt --require-course
+python scripts/qa.py next BANK.json --state .qa-state.json --require-model-audit --model-audit audit.json --audit-source-file COURSE.txt --require-course-audit
+~~~
 
-模板初始全部为未审核。交给真实另一次运行的模型执行独立复核并填写后：
+`COURSE.txt` 必须来自有权使用并实际读取的 UTF-8 教材内容，保留可追溯出处。验证器检查题库与来源 SHA256、引文存在、记录结构、有限客观答案一致性以及未处理风险；修改题库或来源会使旧审核失效。没有真实课件时只允许标注 `general_practice` 通用练习，不能伪造老师课件出处。
 
-    python3 scripts/model_audit.py BANK.json --review audit.json --source-file COURSE.txt --require-course
-    python3 scripts/qa.py next BANK.json --state .qa-state.json --require-model-audit --model-audit audit.json --audit-source-file COURSE.txt --require-course-audit
-
-课程source文件应从已读取的课件中提取授权的UTF-8文本，保留页码等定位。来源摘要和题库内容通过SHA256绑定；题目或来源一旦变化旧审核失效。无课件只能按general_practice处理，不能冒称老师的课程题。
-
-CLI并没有自动调用语言模型。只有Agent真的执行过审题才能形成真实模型审阅记录。两个不同审核ID只是自我声明，不是独立身份证明；同一模型自查也不等于外部独立审核。正式考试、成绩认定仍需有专业能力的真人核验。仅有形状完整的审计JSON，不证明里面的推理正确。
-
-完整执行指令参见 references/model_audit.md。
+**不能混淆的边界：** SHA256 只能证明文件字节匹配；作者/审核者 ID 是自我声明，不能证明独立身份；填写完整的 JSON 仍可能有错误推理。同一模型自审必须如实说明，高风险正式考试还需具备资质的独立真人审核。
