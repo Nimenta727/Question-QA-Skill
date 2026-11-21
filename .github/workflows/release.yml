@@ -87,14 +87,14 @@ jobs:
                      '--state','examples/demo_state.json','--output',str(target))
               assert 'Concept map' in target.read_text(encoding='utf-8')
               with tempfile.TemporaryDirectory() as core_tmp:
-              with zipfile.ZipFile('dist/question-qa-skill-core-1.2.0.zip') as z:
-                  z.extractall(core_tmp)
-              core = pathlib.Path(core_tmp)/'question-qa-skill-core-1.2.0'
-              assert (core/'SKILL.md').is_file()
-              assert (core/'references'/'model_audit.md').is_file()
-              assert len((core/'SKILL.md').read_text(encoding='utf-8')) <= 3500
-              assert len([p for p in core.rglob('*') if p.is_file()]) == 9
-              assert not (core/'scripts').exists()
+                  with zipfile.ZipFile('dist/question-qa-skill-core-1.2.0.zip') as z:
+                      z.extractall(core_tmp)
+                  core = pathlib.Path(core_tmp)/'question-qa-skill-core-1.2.0'
+                  assert (core/'SKILL.md').is_file()
+                  assert (core/'references'/'model_audit.md').is_file()
+                  assert len((core/'SKILL.md').read_text(encoding='utf-8')) <= 3500
+                  assert len([p for p in core.rglob('*') if p.is_file()]) == 9
+                  assert not (core/'scripts').exists()
           print('Fresh-extraction smoke tests passed for Full and Core')
           PY
       - uses: actions/upload-artifact@v4
