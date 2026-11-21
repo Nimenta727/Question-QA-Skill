@@ -1,9 +1,9 @@
-# Install and verify v1.2.1
+# Install and verify v1.2.2
 
-[Home](../README.md) · [Documentation](INDEX.md) · [Official release](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.1)
+[Home](../README.md) · [Documentation](INDEX.md) · [Official release](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.2)
 
 ## Core — recommended for conversational study
-1. Download `question-qa-skill-core-1.2.1.zip` and `SHA256SUMS.txt` from the **published** v1.2.1 release.
+1. Download `question-qa-skill-core-1.2.2.zip` and `SHA256SUMS.txt` from the **published** v1.2.2 release.
 2. Compare the ZIP's SHA256 with the value in the checksum file using your operating system's SHA256 utility.
 3. Extract and register the Core folder in an Agent Skills-compatible host, or ask the assistant to read its `SKILL.md`.
 4. Load **only SKILL** initially; consult `references/tutoring.md`, `references/authoring.md`, `references/model_audit.md` or `references/subjects.md` only when needed.
@@ -11,7 +11,7 @@
 Ask: “Use my supplied C-language lesson to test understanding one question at a time, then probe the reasoning behind each answer.” If the source was not provided or verified, the questions are generic practice.
 
 ## Full — optional offline Python toolkit
-Download `question-qa-skill-1.2.1.zip`. Python 3.9+; no third-party packages.
+Download `question-qa-skill-1.2.2.zip`. Python 3.9+; no third-party packages.
 
 ~~~bash
 python scripts/qa.py validate examples/sample_bank.json
@@ -26,3 +26,7 @@ On Windows, `py -3` may replace `python`. The example data is synthetic. See [mo
 Each ZIP contains `manifest.json` listing file SHA256 digests; `SHA256SUMS.txt` checks the entire downloaded archive. See [release procedure](RELEASE.md) for deterministic build commands and tests. Do not commit learner state, private course excerpts, reviewer identity credentials or audit secrets.
 
 Old installation instructions remain retrievable via [Git tags](https://github.com/Nimenta727/Question-QA-Skill/tags) and [repository history](https://github.com/Nimenta727/Question-QA-Skill/commits/main/), rather than active documentation files.
+
+## Optional compact post-run report (Full)
+
+A synthetic example: `python scripts/skill_eval_report.py examples/synthetic_skill_eval.json --output dist/skill-eval-demo.html`. This **does not perform real model evaluation**. For actual work, first run the Skill on frozen cases and obtain adjudicated labels. See the [report guide](SKILL_EVAL_REPORT.md).
