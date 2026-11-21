@@ -2,7 +2,7 @@
 
 **状态：仅为研究与验收协议；尚未按本方案完成独立模型/教师试验，更没有经证实的真实学生学习效果结果。**
 
-[路线图](ROADMAP.md) · [审题机制](MODEL_AUDIT.zh-CN.md) · [已有实证限制](VALIDATION.zh-CN.md)
+[路线图](ROADMAP.md) · [12项真实测试矩阵](REAL_MODEL_TESTS.zh-CN.md) · [状态台账](TEST_STATUS.zh-CN.md) · [空白结果报告](validation/REPORT_TEMPLATE.md) · [审题机制](MODEL_AUDIT.zh-CN.md) · [已有实证限制](VALIDATION.zh-CN.md)
 
 ## 必须分开的三个问题
 
@@ -42,3 +42,7 @@ A. AI 命题是否真的正确、有课程依据？B. 审题模型能否找出�
 3. 真正运行命题模型和审核模型，保存漏检、误报、修订与再次审核轨迹。
 4. 与固定顺序、简单历史成绩基线比较诊断追问。
 5. 公布聚合统计、不确定性、成本与失败项；仅在有证据时调整产品能力声明。
+
+## 执行交接与状态
+
+具体可执行的 [RM-01～RM-12 测试矩阵](REAL_MODEL_TESTS.zh-CN.md) 列出每项需要真正调用/试验的输入、独立结果核对方法、失败条件与数据边界。完成后使用 [空白结果模板](validation/REPORT_TEMPLATE.md) 登记，并以可复核的分子分母、模型版本和审阅证据更新 [状态台账](TEST_STATUS.zh-CN.md)。**目前12项均未执行**，无论发行CI是否全绿。

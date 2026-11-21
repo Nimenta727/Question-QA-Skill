@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | v1.2.0 正式发行 | [Tag与四类附件均已发布](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.0) | 不等于命题/教学效果已证实 |
 | 上次主分支文档重整 | [六平台组合测试已通过](https://github.com/Nimenta727/Question-QA-Skill/actions/runs/44864077661) | CI 不能证明语义正确或审阅身份独立 |
-| v1.2.1 本次维护发行 | **待正式发布和独立核对附件**，查 [Actions](https://github.com/Nimenta727/Question-QA-Skill/actions/workflows/release.yml) | 只通过 PR 不能叫正式发行 |
+| v1.2.1 本次维护发行 | 需核对 [v1.2.1实际发行及附件](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.1) 与 [Actions](https://github.com/Nimenta727/Question-QA-Skill/actions/workflows/release.yml)；本页并非实时状态 | 只通过 PR 不能叫正式发行 |
 | 真实模型命题及来源核验 | **未执行 RM-01、02、05** | 没有真实模型命题准确率 |
 | 模型严格审题漏检、误报 | **未执行 RM-03、04、06** | 没有实际审核召回率/特异度 |
 | 学生推理诊断与追问对照 | **未执行 RM-07、08、09** | 没有诊断策略优越性或学习因果增益 |

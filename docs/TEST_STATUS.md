@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | v1.2.0 publication | [Published tag and four assets](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.0) | No model correctness or teaching-effect proof |
 | Main-branch docs consolidation | [Successful cross-platform workflow](https://github.com/Nimenta727/Question-QA-Skill/actions/runs/44864077661) | CI cannot validate independent review semantics |
-| v1.2.1 maintenance release | **PENDING publication and independent asset verification**; follow [Actions](https://github.com/Nimenta727/Question-QA-Skill/actions/workflows/release.yml) | Do not call it released solely because a PR passes |
+| v1.2.1 maintenance release | Check the [live v1.2.1 release and assets](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.1) plus [Actions](https://github.com/Nimenta727/Question-QA-Skill/actions/workflows/release.yml) for publication evidence; this ledger is not live | Do not call it released solely because a PR passes |
 | Actual model question writing and source grounding | **NOT RUN:** RM-01, RM-02, RM-05 | No verified authored-item accuracy |
 | Adversarial reviewer defect detection and valid-item acceptance | **NOT RUN:** RM-03, RM-04, RM-06 | No measured recall/specificity/miss rate |
 | Student response reasoning and adaptive comparisons | **NOT RUN:** RM-07, RM-08, RM-09 | No proven diagnostic advantage or causal learning benefit |

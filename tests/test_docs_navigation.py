@@ -12,6 +12,9 @@ ACTIVE_PAGES = (
     "docs/ARCHITECTURE.md", "docs/ROADMAP.md", "docs/DIAGNOSIS.md",
     "docs/MODEL_AUDIT.md", "docs/MODEL_AUDIT.zh-CN.md",
     "docs/QUALITY_VALIDATION.md", "docs/QUALITY_VALIDATION.zh-CN.md",
+    "docs/REAL_MODEL_TESTS.md", "docs/REAL_MODEL_TESTS.zh-CN.md",
+    "docs/TEST_STATUS.md", "docs/TEST_STATUS.zh-CN.md",
+    "docs/RELEASE_NOTES_v1.2.1.md", "docs/validation/REPORT_TEMPLATE.md",
 )
 LINKS = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
 OBSOLETE_NOTES = (
