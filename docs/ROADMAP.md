@@ -1,6 +1,6 @@
 # Roadmap / 路线图 — evidence before feature expansion
 
-**Current source target:** v1.2.2 Core + Full. Verify actual release tag/assets before claiming publication; v1.2.1 remains the prior verified release. This document states planned work; no row below implies experimental validation has been completed.
+**Current source target:** v1.2.3 Core + Full. Verify actual release tag/assets before claiming publication; v1.2.1 remains the prior verified release. This document states planned work; no row below implies experimental validation has been completed.
 
 ## P0 — release readiness and current-documentation convergence (engineering)
 
@@ -35,8 +35,12 @@ See the [12-case real-model execution matrix](REAL_MODEL_TESTS.md) / [中文测�
 
 A successful CI run proves the engineered checks ran; it does not demonstrate learning gain. An LLM self-review cannot be presented as an independent specialist endorsement. A heuristic `rate` or `tentatively_strong` label cannot be reported as a validated probability or a definitive student ability judgment. High-stakes assessment requires independent qualified human review.
 
-## v1.2.2 — post-Skill evidence reporting (engineering)
+## v1.2.3 — post-Skill evidence reporting (engineering)
 
 - Ship a Full-only offline HTML report for **already recorded** Skill evaluations; Core stays lean.
 - Give ratios with defensible denominators and conditional intervals, at most one useful defect visualization, and failures first. Clearly mark synthetic demos.
 - Do not mark RM-01–RM-12 complete until genuine model calls and independent adjudicated labels exist. [Report method](SKILL_EVAL_REPORT.md) · [Status](TEST_STATUS.md).
+
+## v1.2.3 — dedicated empirical evaluation workspace
+
+Three still-unrun protocols are now organized in [docs/evaluations](evaluations/README.md): licensed real-course item quality, independently adjudicated auditing misses/false alarms, and paired adaptive-vs-fixed-order question selection. Next obtain authorized materials, freeze reference labels and fixed-order baseline, actually run the Skill, then publish privacy-safe denominated aggregates. Offline replay is not a causal learning-gain study.

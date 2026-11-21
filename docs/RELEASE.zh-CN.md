@@ -1,11 +1,11 @@
-# 正式发行与完整性校验｜v1.2.2
+# 正式发行与完整性校验｜v1.2.3
 
-[文档导航](INDEX.zh-CN.md) · [正式发行](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.2) · [Token策略](TOKEN_BUDGET.zh-CN.md)
+[文档导航](INDEX.zh-CN.md) · [正式发行](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.3) · [Token策略](TOKEN_BUDGET.zh-CN.md)
 
-**v1.2.2 维护版发行：** GitHub Actions 需要先通过跨平台测试、双包可重复构建、全新解压和 SHA256 校验，才会创建不可变 Tag。是否发布成功应核实 GitHub Release 的真实附件；预期包含：
+**v1.2.3 维护版发行：** GitHub Actions 需要先通过跨平台测试、双包可重复构建、全新解压和 SHA256 校验，才会创建不可变 Tag。是否发布成功应核实 GitHub Release 的真实附件；预期包含：
 
-- `question-qa-skill-core-1.2.2.zip`：轻量提示 Skill、4 份按需参考及基本清单。
-- `question-qa-skill-1.2.2.zip`：兼容的 Python 3.9+ 离线题库、审核和研发工具。
+- `question-qa-skill-core-1.2.3.zip`：轻量提示 Skill、4 份按需参考及基本清单。
+- `question-qa-skill-1.2.3.zip`：兼容的 Python 3.9+ 离线题库、审核和研发工具。
 - `SHA256SUMS.txt`：两个 ZIP、`demo-dashboard.html` 和 `skill-eval-demo.html` 的外部 SHA256 校验记录。
 - `skill-eval-demo.html`：**合成数据**的Skill精简测试后报告演示，不代表真实模型准确率。
 - `demo-dashboard.html`：合成示例的离线可视化，**不是已证实的教学有效性报告**。
@@ -14,8 +14,8 @@
 
 ~~~bash
 python scripts/build_release.py --all --output dist
-python scripts/build_release.py --verify dist/question-qa-skill-core-1.2.2.zip
-python scripts/build_release.py --verify dist/question-qa-skill-1.2.2.zip
+python scripts/build_release.py --verify dist/question-qa-skill-core-1.2.3.zip
+python scripts/build_release.py --verify dist/question-qa-skill-1.2.3.zip
 python -m unittest discover -s tests -v
 ~~~
 
@@ -25,7 +25,7 @@ python -m unittest discover -s tests -v
 
 ## 隐私与历史
 
-禁止在公开发行中包含真实学生信息、未授权的课程原文、审核者凭据/密钥与私人审题包。默认 Core 只加载 `SKILL.md`，不应把全部研发资料塞入普通课堂对话。更早版本的安装与发行方案查阅 [Git Tags](https://github.com/Nimenta727/Question-QA-Skill/tags) 和 [Git 提交历史](https://github.com/Nimenta727/Question-QA-Skill/commits/main/)；本次主分支文档更新**不会修改已发布 v1.2.2 的 ZIP**。
+禁止在公开发行中包含真实学生信息、未授权的课程原文、审核者凭据/密钥与私人审题包。默认 Core 只加载 `SKILL.md`，不应把全部研发资料塞入普通课堂对话。更早版本的安装与发行方案查阅 [Git Tags](https://github.com/Nimenta727/Question-QA-Skill/tags) 和 [Git 提交历史](https://github.com/Nimenta727/Question-QA-Skill/commits/main/)；本次主分支文档更新**不会修改已发布 v1.2.3 的 ZIP**。
 
 ## 真实模型测试与发行CI分开
 

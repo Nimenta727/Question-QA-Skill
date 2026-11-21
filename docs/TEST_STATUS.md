@@ -21,3 +21,5 @@
 An auditor should replace a **NOT RUN** label only with a dated report using the [blank report template](validation/REPORT_TEMPLATE.md), exact commit and run identifier, real model configuration, evaluator identity class (without personal secrets), denominator and uncertainty intervals. Record **FAIL/UNCERTAIN** results instead of removing them. Do not store real learner submissions or permission-restricted course excerpts in this public repository.
 
 The legacy [FORGET-SE](VALIDATION.md) and [ASSISTments2015](VALIDATION_ASSIST2015.md) evaluations are real comparisons with negative/limited evidence; they **do not** count as completed RM tests.
+
+| v1.2.3 evaluation workspace | [Three NOT RUN protocols](evaluations/README.md); verify actual release separately | No real-course, independent model audit or adaptive learning study performed |
