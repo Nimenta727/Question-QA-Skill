@@ -1,4 +1,4 @@
-# Documentation — current v1.2.2
+# Documentation — current v1.2.3
 
 [Home](../README.md) · [中文](INDEX.zh-CN.md)
 
@@ -39,3 +39,5 @@ This index points to the **current** guides. Do not load all files into an AI co
 - [Versioned Git history](https://github.com/Nimenta727/Question-QA-Skill/tags) · [Dated routine](routine/)
 
 **Reminder:** test success is not learner-outcome validation; a review-record checksum is not independent proof that an item is correct.
+
+- [Independent evaluation workspace — three pending studies](evaluations/README.md)

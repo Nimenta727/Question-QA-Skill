@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "status": "NOT_RUN",
+  "study_id": "REPLACE_ME",
+  "protocol": "REPLACE_WITH_ONE_OF_THREE_PROTOCOLS",
+  "source_permission": "NOT_CONFIRMED",
+  "skill_commit": null,
+  "model_id": null,
+  "model_configuration_hash": null,
+  "source_registry_hash": null,
+  "reference_labels_frozen": false,
+  "independent_review": "NOT_STARTED",
+  "run_date": null,
+  "case_count": null,
+  "primary_numerator": null,
+  "primary_denominator": null,
+  "notes": "Blank template; no real model execution or learner data."
+}

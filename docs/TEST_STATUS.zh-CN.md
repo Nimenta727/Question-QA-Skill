@@ -21,3 +21,5 @@
 完成实验后，应使用 [报告模板](validation/REPORT_TEMPLATE.md)，记录日期、精确代码提交、模型版本、独立评阅方式、每个指标的**分子/分母**、区间和失败项目。必须保留 **FAIL/UNCERTAIN**，不能因结果不好就删掉记录。禁止在公开仓库保存真实未成年学生回答、未经授权教师材料或审核凭证。
 
 此前 [FORGET-SE](VALIDATION.zh-CN.md) 和 [ASSISTments2015](VALIDATION_ASSIST2015.zh-CN.md) 的外部评估有真实且不理想的比较结果，但**不代表本次 RM 测试已完成**。
+
+| v1.2.3 真实评测专区 | [三项NOT RUN协议](evaluations/README.zh-CN.md)；正式发行另行核验 | 尚无真实课程、独立审题或自适应教学研究结果 |

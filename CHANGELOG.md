@@ -2,6 +2,12 @@
 
 本文件描述**当前维护版本**。更早版本的完整设计说明、实现变更和旧发行页，使用 [Git Tags](https://github.com/Nimenta727/Question-QA-Skill/tags)、[Git History](https://github.com/Nimenta727/Question-QA-Skill/commits/main/) 和正式 GitHub Releases 追溯；不再把大段历史方案当作当前文档。
 
+## v1.2.3 — 2026-11-21 — 独立真实评测专区
+
+- Full 新增 `docs/evaluations/`，分设真实课程命题质量、独立审题漏检/误报、自适应追问与固定题序对照的三项协议。
+- 增加中英文总览、NOT RUN 空白清单、结果隐私存放规范；没有虚构课程数据、真实模型调用或学生结果。
+- 保留原有Full精简报告和明确合成的HTML演示；Core仍保持轻量，旧Tag及资产不可覆盖。
+
 ## v1.2.2 — 2026-11-21 — Skill测试后精简报告（仅Full）
 
 - 新增 `scripts/skill_eval_report.py`，将**已记录**的模型/专家测试结果生成为离线单页HTML。最多三项带分子分母的条件指标、一组最多四类别可视化、优先风险与折叠的详情。

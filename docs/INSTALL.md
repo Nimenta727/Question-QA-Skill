@@ -1,9 +1,9 @@
-# Install and verify v1.2.2
+# Install and verify v1.2.3
 
-[Home](../README.md) · [Documentation](INDEX.md) · [Official release](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.2)
+[Home](../README.md) · [Documentation](INDEX.md) · [Official release](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.3)
 
 ## Core — recommended for conversational study
-1. Download `question-qa-skill-core-1.2.2.zip` and `SHA256SUMS.txt` from the **published** v1.2.2 release.
+1. Download `question-qa-skill-core-1.2.3.zip` and `SHA256SUMS.txt` from the **published** v1.2.3 release.
 2. Compare the ZIP's SHA256 with the value in the checksum file using your operating system's SHA256 utility.
 3. Extract and register the Core folder in an Agent Skills-compatible host, or ask the assistant to read its `SKILL.md`.
 4. Load **only SKILL** initially; consult `references/tutoring.md`, `references/authoring.md`, `references/model_audit.md` or `references/subjects.md` only when needed.
@@ -11,7 +11,7 @@
 Ask: “Use my supplied C-language lesson to test understanding one question at a time, then probe the reasoning behind each answer.” If the source was not provided or verified, the questions are generic practice.
 
 ## Full — optional offline Python toolkit
-Download `question-qa-skill-1.2.2.zip`. Python 3.9+; no third-party packages.
+Download `question-qa-skill-1.2.3.zip`. Python 3.9+; no third-party packages.
 
 ~~~bash
 python scripts/qa.py validate examples/sample_bank.json

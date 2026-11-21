@@ -1,9 +1,9 @@
-# 安装与校验｜v1.2.2
+# 安装与校验｜v1.2.3
 
-[首页](../README.zh-CN.md) · [文档目录](INDEX.zh-CN.md) · [正式发行](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.2)
+[首页](../README.zh-CN.md) · [文档目录](INDEX.zh-CN.md) · [正式发行](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.3)
 
 ## Core：日常学习推荐
-1. 在**已发布**的 v1.2.2 Release 中下载 `question-qa-skill-core-1.2.2.zip` 和 `SHA256SUMS.txt`。
+1. 在**已发布**的 v1.2.3 Release 中下载 `question-qa-skill-core-1.2.3.zip` 和 `SHA256SUMS.txt`。
 2. 使用系统 SHA256 校验工具核对 ZIP 与清单中的摘要。
 3. 解压并在兼容 Agent Skills 的助手中注册目录，或要求助手读取 `SKILL.md`。
 4. **初始只读取 SKILL**；只有需要追问、深度命题、复杂审题或特殊学科时才分别读取对应 `references/` 文件。
@@ -11,7 +11,7 @@
 示例：“依据我提供的 C 语言课件，一次问一道理解题，回答后检查我的思路再追问。” 未提供或未核对课件时，只能标注通用练习。
 
 ## Full：可选离线 Python 工具
-下载 `question-qa-skill-1.2.2.zip`。使用 Python 3.9+，无额外 pip 依赖：
+下载 `question-qa-skill-1.2.3.zip`。使用 Python 3.9+，无额外 pip 依赖：
 
 ~~~bash
 python scripts/qa.py validate examples/sample_bank.json

@@ -1,11 +1,11 @@
-# Release engineering and integrity — v1.2.2
+# Release engineering and integrity — v1.2.3
 
-[Documentation](INDEX.md) · [Published release](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.2) · [Token guidance](TOKEN_BUDGET.md)
+[Documentation](INDEX.md) · [Published release](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.3) · [Token guidance](TOKEN_BUDGET.md)
 
-**v1.2.2 maintenance publication:** release automation must pass the versioned cross-platform regression suite, reproducible ZIP and fresh-extraction smoke gates before creating an immutable tag. Verify the actual GitHub release assets before claiming the package is published. Expected attachments:
+**v1.2.3 maintenance publication:** release automation must pass the versioned cross-platform regression suite, reproducible ZIP and fresh-extraction smoke gates before creating an immutable tag. Verify the actual GitHub release assets before claiming the package is published. Expected attachments:
 
-- `question-qa-skill-core-1.2.2.zip`: prompt-only Skill with four lazy references, README/LICENSE/VERSION and hash manifest.
-- `question-qa-skill-1.2.2.zip`: compatible Python 3.9+ offline toolkit and documentation.
+- `question-qa-skill-core-1.2.3.zip`: prompt-only Skill with four lazy references, README/LICENSE/VERSION and hash manifest.
+- `question-qa-skill-1.2.3.zip`: compatible Python 3.9+ offline toolkit and documentation.
 - `SHA256SUMS.txt`: SHA256 for both archives, `demo-dashboard.html` and `skill-eval-demo.html`.
 - `skill-eval-demo.html`: **synthetic-only** example of the compact post-Skill evaluation report; not real model accuracy.
 - `demo-dashboard.html`: synthetic offline example visualization, **not** demonstrated student effectiveness.
@@ -14,8 +14,8 @@
 
 ~~~bash
 python scripts/build_release.py --all --output dist
-python scripts/build_release.py --verify dist/question-qa-skill-core-1.2.2.zip
-python scripts/build_release.py --verify dist/question-qa-skill-1.2.2.zip
+python scripts/build_release.py --verify dist/question-qa-skill-core-1.2.3.zip
+python scripts/build_release.py --verify dist/question-qa-skill-1.2.3.zip
 python -m unittest discover -s tests -v
 ~~~
 
@@ -25,7 +25,7 @@ For **downloads**, compare each archive's SHA256 against the release's separatel
 
 ## Privacy and historical guidance
 
-Never bundle real learner data, unauthorized course extracts, reviewer secrets or real audit packets. Do not force Python or long research history into normal Core conversations. Version-specific old guides and former release plans are available through [Git tags](https://github.com/Nimenta727/Question-QA-Skill/tags) and [Git history](https://github.com/Nimenta727/Question-QA-Skill/commits/main/), rather than active installation links. New main-branch documentation changes do **not** retroactively mutate the already published v1.2.2 release assets.
+Never bundle real learner data, unauthorized course extracts, reviewer secrets or real audit packets. Do not force Python or long research history into normal Core conversations. Version-specific old guides and former release plans are available through [Git tags](https://github.com/Nimenta727/Question-QA-Skill/tags) and [Git history](https://github.com/Nimenta727/Question-QA-Skill/commits/main/), rather than active installation links. New main-branch documentation changes do **not** retroactively mutate the already published v1.2.3 release assets.
 
 ## Empirical testing remains separate from release CI
 

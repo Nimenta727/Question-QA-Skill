@@ -2,7 +2,7 @@
 
 **Source-grounded question writing · one-question-at-a-time diagnosis · evidence-first tutoring**
 
-[简体中文](README.zh-CN.md) · [Documentation](docs/INDEX.md) · [v1.2.2 release / verification](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.2) · [Roadmap](docs/ROADMAP.md)
+[简体中文](README.zh-CN.md) · [Documentation](docs/INDEX.md) · [v1.2.3 release / verification](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.3) · [Roadmap](docs/ROADMAP.md)
 
 Question-QA-Skill helps an assistant ask fewer, better questions: ground each item in material actually supplied, verify its answer and alternatives, observe a learner's reasoning, and choose the next probe based on that evidence. **A correct answer does not establish durable mastery.** It is a reusable Agent Skill, not a hosted education platform or an automatically calibrated diagnostic model.
 
@@ -10,10 +10,10 @@ Question-QA-Skill helps an assistant ask fewer, better questions: ground each it
 
 | Edition | Intended use | Contents |
 | --- | --- | --- |
-| **Core** (recommended) — `question-qa-skill-core-1.2.2.zip` | Normal AI conversations with minimal initial context | `SKILL.md`, four on-demand references, minimal README, LICENSE, VERSION and manifest |
-| **Full** — `question-qa-skill-1.2.2.zip` | Offline question banks, review evidence and developer workflows | Core guidance plus Python 3.9+ standard-library CLI, examples, tests, bilingual documentation and research records |
+| **Core** (recommended) — `question-qa-skill-core-1.2.3.zip` | Normal AI conversations with minimal initial context | `SKILL.md`, four on-demand references, minimal README, LICENSE, VERSION and manifest |
+| **Full** — `question-qa-skill-1.2.3.zip` | Offline question banks, review evidence and developer workflows | Core guidance plus Python 3.9+ standard-library CLI, examples, tests, bilingual documentation and research records |
 
-Both archives and `SHA256SUMS.txt` are available in the **published v1.2.2 GitHub Release**. Verify the downloaded checksums before extraction. The smallest package is not necessarily the cheapest model invocation: read **only `SKILL.md` by default**, and load a reference only when needed. [Installation](docs/INSTALL.md) · [Token policy](docs/TOKEN_BUDGET.md)
+Both archives and `SHA256SUMS.txt` are available in the **published v1.2.3 GitHub Release**. Verify the downloaded checksums before extraction. The smallest package is not necessarily the cheapest model invocation: read **only `SKILL.md` by default**, and load a reference only when needed. [Installation](docs/INSTALL.md) · [Token policy](docs/TOKEN_BUDGET.md)
 
 ## Use the Skill
 
@@ -60,7 +60,7 @@ These are **planned empirical tests**, not software regression tests or already-
 
 ## Evidence, limitations and development status
 
-- **Verified engineering:** v1.2.2 Core/Full distribution and cross-platform regression workflow completed successfully on November 21, 2026. This is software verification, **not** teaching effectiveness.
+- **Verified engineering:** v1.2.3 Core/Full distribution and cross-platform regression workflow completed successfully on November 21, 2026. This is software verification, **not** teaching effectiveness.
 - **Not validated as learning measurement:** published offline tests have not established an advantage of the legacy descriptive index over simple history-based baselines. Do not report heuristic scores as calibrated mastery probabilities or a single correct response as retention. [Research evidence](docs/VALIDATION.md)
 - **Independent item quality still to test:** formal question-authoring accuracy, model-audit miss/false-alarm rates, diagnosis of real reasoning, and adaptive-versus-fixed follow-up benefit remain research priorities. [Evaluation plan](docs/QUALITY_VALIDATION.md)
 - **Separate developer agents:** repository-builder and independent PR-auditor work is distinct from learner interactions; no two-model runtime requirement is implied. Actual reviewer evidence must be recorded before claiming independent review.
@@ -68,3 +68,7 @@ These are **planned empirical tests**, not software regression tests or already-
 See the [documentation index](docs/INDEX.md) for the active guides and [Git history](https://github.com/Nimenta727/Question-QA-Skill/commits/main/) / [tags](https://github.com/Nimenta727/Question-QA-Skill/tags) for superseded designs. Dated changes remain in `docs/routine/`.
 
 **License:** MIT. Do not commit private learner state, unauthorized course text, reviewer credentials or private audit packets. Official high-stakes assessments require qualified human review.
+
+## Dedicated independent evaluation workspace (Full only)
+
+[Three study protocols](docs/evaluations/README.md) now separate **real-course question quality**, **independent auditor misses/false alarms**, and **adaptive-vs-fixed-order follow-up comparisons**. All remain **NOT RUN** pending licensed inputs, actual model runs and independent reference adjudication. The existing synthetic report is not empirical evidence.

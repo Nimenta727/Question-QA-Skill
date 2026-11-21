@@ -48,3 +48,7 @@
 ## 真实测试结束后才使用面板
 
 只有获得真实Skill运行与独立评审数据后，才可使用 [Full精简报告](SKILL_EVAL_REPORT.zh-CN.md) 呈现。合成演示仅证明渲染器可用，不能将RM-01～12任何**未执行**标成已完成。
+
+## 三项优先研究专区
+
+[真实课程命题质量](evaluations/course_quality.md) · [独立审题漏检与误报](evaluations/audit_detection.md) · [自适应追问与固定题序](evaluations/adaptive_baseline.md)。[专区总览](evaluations/README.zh-CN.md)。目前均**未执行**。
