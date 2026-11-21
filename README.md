@@ -1,55 +1,50 @@
-# Question-QA-Skill — Rigorous questions and adaptive learning checks
+# Question-QA-Skill — Rigorous questions and adaptive formative tutoring
 
-[简体中文](README.zh-CN.md)
+[简体中文](README.zh-CN.md) · [Documentation index](docs/INDEX.md) · [Changelog](CHANGELOG.md)
 
-> **A small Agent Skill that asks better questions, observes reasoning and chooses a useful follow-up.** It is not an examination administration system or a calibrated mastery predictor.
+**Purpose:** Ask a small number of accurate, source-grounded questions; inspect the learner's observed reasoning; choose one informative follow-up at a time. A correct response is not proof of long-term mastery.
 
-## Use directly in an AI conversation
+## Choose the package
 
-Install as an Agent Skills-compatible skill or have your assistant read SKILL.md, then ask:
+| Edition | Contents | Recommended for |
+|---|---|---|
+| **Core — lightweight (recommended)** \`question-qa-skill-core-1.2.0.zip\` | Short SKILL.md + four **on-demand** teaching references, no scripts/tests/research history | Everyday AI conversation, lowest default context |
+| **Full** \`question-qa-skill-1.2.0.zip\` | Same pedagogical guidance plus offline Python CLI, source-bound review gate, tests, bilingual docs and history | Local banks, learning records, tooling or development |
 
-- "Give me a six-turn diagnostic on today's data structures lesson. Ask one question at a time and adapt to my answer."
-- "I confuse stacks and queues. Start with one question, then probe the exact step I may be missing."
-- "Create five deep but fair questions anchored in the instructor's slides. Do not show answers until I submit."
-- "Try another representation instead of repeating the same exercise."
+Both archives have SHA256 manifests. Archive byte size is **not** equal to inference token usage; host Skill loading and source/question context determine actual usage. Read only SKILL.md by default, then the relevant reference. See [token budget and design](docs/TOKEN_BUDGET.md).
 
-QUICK defaults to six one-at-a-time probes. DEEP defaults to five independently checked, scope-aligned questions. The student may stop at any point.
+## Get started
 
-## New: rigorous model review before every learner-facing question
+1. Obtain either ZIP and SHA256SUMS.txt from [Releases](https://github.com/Nimenta727/Question-QA-Skill/releases).
+2. Verify the archive checksum, extract and register the folder with an Agent Skills-compatible assistant (or explicitly ask your assistant to read SKILL.md).
+3. Provide the actual course materials and ask: "Test my understanding with one question at a time, then choose each follow-up from my observed reasoning. Do not show the answer before I respond."
 
-The model first independently solves the question **without seeing the author's key**, then attempts to refute the draft against its key, source scope, alternatives, missing assumptions, each distractor or rubric criterion, cognitive alignment, fairness and diagnostic value. A failed or uncertain check blocks presentation. Every revised/new follow-up is re-audited.
+Alternative prompts: "Create five rigorous but fair course-aligned questions; withhold keys until submission." / "Use at most six questions to find my C pointer reasoning gaps."
 
-[Strict model-audit protocol](references/model_audit.md) · [Offline evidence contract](docs/MODEL_AUDIT.md). The Python checker **does not invoke an LLM** or guarantee semantic truth. A real review must actually be performed, and formal assessment still needs qualified human review.
+## Teaching and audit commitments
 
-## What the tutor does after an answer
+- **QUICK:** wrong but cause unknown → clarify reasoning; guessed or hinted correct → new independent item family; partial credit → one missing criterion; justified success → transfer/boundary probe.
+- **DEEP:** select specific curriculum claims; verify solutions, equivalents, cognitive alignment, fair grading and scope.
+- **Pre-question audit:** independently solve before comparing the draft key; check second answers, counterexamples, source citations, distractors/rubrics and unresolved risks. A failed or uncertain question is revised or withheld. Same-model self-review is not independent review.
+- **Scientific limits:** heuristic indices are not calibrated mastery probabilities; passing synthetic regressions is not evidence of improved learning or actual LLM semantic accuracy. High-stakes exams require qualified human review.
 
-| Observed response | Next pedagogical move |
-|---|---|
-| Incorrect, cause unknown | Clarify the reasoning or test a prerequisite; **do not invent a misconception** |
-| Correct but guessed or helped | Verify independently in a distinct item family, without hints |
-| Correct with a sound explanation | Try transfer, an application or a boundary case |
-| Partly correct on an explicit rubric | Target one missing criterion instead of demanding a full redo |
-| No suitable question remains | Author and validate a new, source-faithful variant before asking |
+On-demand detailed guides: \`references/tutoring.md\`, \`references/authoring.md\`, \`references/model_audit.md\`.
 
-The short primary workflow lives in [SKILL.md](SKILL.md), with specific adaptive tutoring guidance in [references/tutoring.md](references/tutoring.md) and deep question quality standards in [references/authoring.md](references/authoring.md).
+## Full edition: optional offline CLI
 
-## Optional offline helper, no model API or external dependencies
-
-Python 3.9+:
+Python 3.9+, no pip dependency and no automatic model API calls:
 
 ~~~bash
-python3 scripts/qa.py validate examples/sample_bank.json
-python3 scripts/qa.py next examples/sample_bank.json --state .qa-state.json
-python3 scripts/qa.py answer examples/sample_bank.json --state .qa-state.json --response C
-python3 scripts/qa.py report --state .qa-state.json --bank examples/sample_bank.json
+python scripts/qa.py validate examples/sample_bank.json
+python scripts/qa.py next examples/sample_bank.json --state .qa-state.json
+python scripts/qa.py answer examples/sample_bank.json --state .qa-state.json --response C
+python scripts/qa.py report --state .qa-state.json --bank examples/sample_bank.json
 ~~~
 
-next now returns the student-safe question plus an internal tutor_intent; answer returns evidence-grounded feedback plus a tutor_next_move; report supplies a teaching_summary of observed coverage and unresolved evidence. The assistant should translate internal plans into short conversational feedback and exactly one next question—not print the internal JSON at the learner.
+\`scripts/model_audit.py\` checks the structure, source/hash binding and certain objective answer consistency of **an actual reviewer-produced record**; it does not run an LLM or prove semantic correctness. See [install guide](docs/INSTALL.md) and [model audit](docs/MODEL_AUDIT.md).
 
-The local scorer does not automatically understand arbitrary natural-language responses. Open responses require a reviewed rubric; ambiguous or equivalent answers require clarification or careful review, not a silent zero. The example algebra bank is synthetic and does not claim to represent anyone's actual course material.
+## Project status
 
-## Scientific and privacy limits
+The Skill has software regression coverage, but its performance on real curriculum questions, diagnostic accuracy and learner outcomes **still need independent empirical assessment**. A separate project-development two-agent PR does not require two extra models for each learner interaction, and unperformed independent reviews are not claimed.
 
-A correct answer, repeated near-duplicate or same-day streak is not proof of durable learning. The existing evidence index is descriptive, **not** a calibrated mastery probability; two earlier external studies did not demonstrate reliable predictive improvement over simpler historical baselines. Behavior tests verify the software chooses the intended tutoring branches but do **not** establish high-quality LLM question generation or improved student learning. See [pedagogical review rubric](docs/TEACHING_EVALUATION.md) and [evidence](docs/VALIDATION.md).
-
-Historical tools for double review, correction appeals, data lifecycle, tamper-evident local audits, research preparation and dashboards are preserved but **not required** for ordinary tutoring. See [optional operations](references/operations.md) and [changelog](CHANGELOG.md). MIT licensed, offline by default; protect any real learner data appropriately.
+MIT licensed. Keep actual learner records, unauthorized lesson excerpts and reviewer secrets out of public repositories.

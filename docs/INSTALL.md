@@ -1,94 +1,28 @@
-# Question-QA-Skill v0.8.0 — Installation & usage
+# Installation — Question-QA-Skill v1.2.0
 
-## v1.0.0 first: core conversational tutoring
+[Home](../README.md) · [Documentation index](INDEX.md)
 
-For ordinary quizzes or deep, source-grounded course practice, install/read SKILL.md and see README.md or references/tutoring.md. The AI can begin a one-question-at-a-time session without configuring reviewer admin credentials, audit keys or databases. The CLI is optional: qa.py next offers tutor_intent, answer offers tutor_next_move, and report offers teaching_summary; these are internal guidance, not raw student-facing JSON. Advanced operations remain available on demand via references/operations.md.
+## Core: recommended for the smallest default model context
 
+Download \`question-qa-skill-core-1.2.0.zip\` and \`SHA256SUMS.txt\` from the official GitHub release. Verify, extract, and install/register the extracted directory with an Agent Skills host (or ask the assistant to read SKILL.md).
 
-An Agent Skills-compatible skill plus an independent offline Python CLI (Python 3.9+, standard library, Windows/macOS/Linux). It is not a Python package requiring pip installation.
+Only SKILL.md needs to be in normal initial context. Read \`references/tutoring.md\` for deeper QUICK strategies, \`references/authoring.md\` for DEEP questions, \`references/model_audit.md\` for difficult question verification and \`references/subjects.md\` only for the relevant discipline. Do **not** pre-load all source files or research history.
 
-## Install
-Download question-qa-skill-0.8.0.zip and SHA256SUMS.txt from GitHub Releases, verify SHA256 and extract. Register/copy the entire extracted directory to the location recognized by your Agent host (exact paths are host-specific). Or run from its directory:
+## Full: optional offline Python toolkit
 
-    python3 scripts/qa.py validate examples/sample_bank.json
+Download \`question-qa-skill-1.2.0.zip\`, extract and use Python 3.9+ (no pip dependencies):
 
-On Windows, py -3 may be available in place of python3.
+~~~bash
+python scripts/qa.py validate examples/sample_bank.json
+python scripts/qa.py next examples/sample_bank.json --state .qa-state.json
+python scripts/qa.py answer examples/sample_bank.json --state .qa-state.json --response C
+python scripts/qa.py report --state .qa-state.json --bank examples/sample_bank.json
+~~~
 
-## Adaptive quiz and diagnosis
+Use \`py -3\` on Windows where appropriate. The sample question bank and history are synthetic demonstrations, not a real instructor's curriculum or human student study.
 
-    python3 scripts/qa.py start examples/sample_bank.json --state .qa-state.json --mode quick --limit 6
-    python3 scripts/qa.py next examples/sample_bank.json --state .qa-state.json
-    python3 scripts/qa.py answer examples/sample_bank.json --state .qa-state.json --response C --confidence unsure
-    python3 scripts/qa.py report --state .qa-state.json --bank examples/sample_bank.json
+The full archive includes a strict optional \`scripts/model_audit.py\` packet gate: it validates evidence **already written by a genuine reviewer model**, rather than running any LLM. Use [model audit instructions](MODEL_AUDIT.md) when you need it. Legacy review, appeals, cryptographic local audit and research utilities are indexed in [documentation index](INDEX.md).
 
-The next command never reveals keys; review responses after submitting an answer. Never expose the whole bank to the learner during a quiz.
+## Verification and privacy
 
-## Student answer assessment
-
-Objective single-choice answers are checked against the explicit key. Short answers use exact normalized matching; an independent reviewer may mark an equivalent string with --review-equivalent and a defensible --reason. Unchecked synonyms or mathematically equivalent forms are not automatically treated as conceptual failures.
-
-Open/manual responses require a teacher or Agent reviewer to inspect the actual answer against each rubric criterion. **The local script does not automatically understand arbitrary natural-language responses.** Create an array of score/evidence/feedback objects in a JSON file (see examples/sample_review.json for format only, NOT a rubric to reuse unchanged). Each score must be 0, 0.5 or 1. Example:
-
-    python3 scripts/qa.py answer examples/sample_bank.json --state .qa-state.json --response "student response" --reason "criterion-by-criterion review" --rubric-judgments @review.json
-
-Returns per-criterion strengths, incomplete points, overall score, actionable feedback, and a suggested next probe. Only numeric criterion scores are persisted in the state, not raw student answers or narrative feedback. Older --score and --reason manual grading remains supported.
-
-CLI argument values can be visible in shell history and process listings; avoid entering identifying student data. Keep local state files private.
-
-## Offline dashboard
-
-    python3 scripts/dashboard.py examples/sample_bank.json --state .qa-state.json --output learning-dashboard.html --lang en
-    python3 scripts/dashboard.py examples/sample_bank.json --state examples/demo_state.json --output demo-dashboard.html --lang zh
-
-Open the generated HTML in any modern browser. It uses no remote scripts, fonts, services or models. Visualizations include prerequisite map, evidence coverage, cognitive-level observed scores, reviewer-tagged misconceptions, rubric criterion summaries, daily trends and review suggestions. Toggle English/Chinese, print or export to PDF in the browser.
-
-**The displayed indicators are descriptive study evidence, NOT calibrated proficiency probabilities.**
-
-## Verify/rebuild the release
-
-    python3 -m unittest discover -s tests -v
-    python3 scripts/build_release.py --output dist
-    python3 scripts/build_release.py --verify dist/question-qa-skill-0.8.0.zip
-
-A deterministic archive is covered by a per-file SHA256 manifest; release also provides SHA256SUMS.txt. See CHANGELOG.md and docs/RELEASE.md.
-
-## Scientific limitation
-
-The first real-world FORGET-SE final-exam benchmark did not establish superiority of the heuristic diagnostic index over simple historical-score baselines. No BKT/IRT calibration or latent mastery claim is made. See docs/VALIDATION.md.
-
-
-## New in v0.8.0: question-quality and second-cohort validation
-
-    python3 scripts/question_quality.py examples/sample_bank.json
-    python3 scripts/question_quality.py examples/sample_bank.json --review-template review.json
-    python3 scripts/question_quality.py examples/sample_bank.json --review review.json --strict
-
-Reviewers must independently check each item rather than automatically approving generated questions. Read docs/QUESTION_QUALITY.md and docs/VALIDATION_ASSIST2015.md; the source mathematics research dataset is governed by its own research-use conditions and is never bundled.
-
-
-## v0.8.0 double-review grading
-For a pending manual item, pass --response-file PRIVATE_ANSWER.txt --independent-reviews @reviews.json. If the reviewers disagree, an additional --adjudication @decisions.json is mandatory; the pending item is not consumed until all disputes are resolved. All sample packets are synthetic. See docs/ASSESSMENT.md for the reviewer and adjudicator formats; docs/ARCHITECTURE.md separates diagnostic evidence, historical score comparison and question-choice reasons.
-
-
-## New in v0.8.0
-- Math: opt-in exact arithmetic/polynomial short-answer equivalence only; documentation at docs/MATH_EQUIVALENCE.md.
-- State health: python scripts/qa.py state-check --state .qa-state.json; deliberate previous-version rollback: python scripts/qa.py state-recover --state .qa-state.json --confirm. Private last-good backup is .bak, lock is .lock.
-- Reviewer study: python scripts/reviewer_study.py --input examples/sample_reviewer_study.json --output aggregate.json. The sample is synthetic; no real review study has been performed. See docs/REVIEWER_STUDY.md.
-
-
-## v0.8.0 appeals and retention
-Each recorded answer has event_id. Request a correction with appeal-open --event-id ID --reason rubric_dispute. Reviewers must independently verify the marking evidence before appeal-resolve --appeal-id ID --decision correct --reason rubric_rechecked --reviewer-confirmed and revised scores. Details: docs/APPEALS.md.
-
-State snapshots: state-snapshots, optional state-recover --snapshot ID --confirm. Aggregate-only export: state-export --output qa-export-summary.json. Full private export: additionally supply --include-private --confirm-private. Local deletion: state-delete --confirm-delete DELETE-LOCAL; this does NOT forensically erase external copies. See docs/DATA_LIFECYCLE.md. Trial-preparation tools require real authorization handled outside this software; see docs/REVIEW_TRIAL.md.
-
-
-## v0.9.0 protected review setup
-To set up credential-gated review, create a private reviewer registry and private admin/reviewer token files with scripts/reviewer_credentials.py. Then enable a protected audit on a local learner state *before opening any appeals* using qa.py audit-init with an administrator token; the tool creates an external HMAC key and state audit-policy marker. Protected appeal-resolve requires registry, reviewer ID, reviewer-token-file and audit-key-file, not only legacy --reviewer-confirmed. Use audit-verify and retain separately protected audit-checkpoint receipts. Read docs/SECURITY_AUDIT.md first; external reviewer identity is not established by tokens alone.
-
-
-## v0.9.0 protected reviewer mode and independent reference scoring
-Use scripts/reviewer_credentials.py to initialize the local registry, enroll/revoke teachers under administrator control, and scripts/qa.py audit-init to protect a fresh learner state. Protected appeal corrections require the valid reviewer token, registry and independently secured HMAC key. Retain audit-checkpoint receipts separately to compare against rollback. Full protocol: docs/SECURE_REVIEW.md and docs/SECURITY_AUDIT.md. For a future externally authorized pilot, use the frozen A/B score packets and scripts/reviewer_pilot.py with a separate expert reference; docs/REFERENCE_PILOT.md includes a fully synthetic demonstration.
-
-
-## v1.1.0 strict model review before learner-facing questions
-Read actual source material and have the reviewing model independently solve every item before seeing the author's proposed answer. Then conduct a thorough adversarial review. Generate a blank evidence packet via scripts/model_audit.py BANK.json --template audit.json --source-file COURSE_EXTRACT.txt, have a genuinely separate reviewing model complete it, and validate with --review audit.json --source-file COURSE_EXTRACT.txt --require-course. Use qa.py next BANK.json --require-model-audit --model-audit audit.json --audit-source-file COURSE_EXTRACT.txt --require-course-audit to block stale or unresolved questions before display. The verifier is offline, does not invoke an LLM and cannot certify true semantic correctness; see docs/MODEL_AUDIT.md.
+The downloadable SHA256SUMS.txt authenticates each released ZIP against the published digest; inside each ZIP, manifest.json enumerates file hashes. Packaging CI tests both and runs the full suite on a fresh Full extraction. Do not publish private learner histories, reviewer credentials or unauthorized course text. For older commands consult \`archive/INSTALL_PRE_V1_2.md\`, which is historical rather than recommended.

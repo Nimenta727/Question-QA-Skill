@@ -1,66 +1,27 @@
-# Release engineering / 发行与完整性说明
+# Release engineering — v1.2.0 / 发行与完整性
 
-## What is officially shipped
-- Version: 0.6.0; Agent Skill root contains SKILL.md.
-- Archive: question-qa-skill-0.6.0.zip, plus SHA256SUMS.txt.
-- A reproducible SHA256 manifest is embedded as manifest.json.
-- GitHub CI verifies the bank, runs full unit tests, builds the archive, checks file hashes, extracts it into a fresh directory and performs command-line smoke tests including dashboard generation.
+[Documentation](INDEX.md) · [Token optimization](TOKEN_BUDGET.md) · [Historical release notes](archive/RELEASE_PRE_V1_2.md)
 
-## Security and scope
-- Only files from an explicit allowlist are released (SKILL, READMEs, LICENSE, VERSION, CHANGELOG, references, scripts, examples, docs and tests).
-- .env, Git metadata, private state files, research-data, cached files, raw student text, and external downloaded datasets are not distributed.
-- No external online dependencies, model APIs, built-in browser extension or automatic LLM scoring is required.
-- The publicly shipped demo history is synthetic and intentionally has no real learner identifying fields.
-- Only author-approved/checked response reviews may use the criterion scoring tool. For semantic equivalence, a reviewer must explicitly authorize the override with a rationale.
-- No validated predictive advantage or mastery probability is claimed by the release.
+## Two supported artifacts
 
-## Installation
-See docs/INSTALL.zh-CN.md or docs/INSTALL.md. Release sources are MIT licensed; public FORGET-SE research inputs are separately licensed upstream (CC BY 4.0) and are not redistributed.
+- **Core (recommended for normal Agent Skill installation):** \`question-qa-skill-core-1.2.0.zip\` contains a short SKILL, four on-demand references, an installation README, LICENSE, VERSION and manifest. No Python, tests, researcher notes, private learner data or external API.
+- **Full (offline developer / teacher toolkit):** \`question-qa-skill-1.2.0.zip\` retains scripts, tests, references, bilingual docs, examples, dated development records and historical reports.
 
-## Publishing and reproducibility
-The release workflow builds the package from main and (if GitHub Actions has contents:write permission) creates v0.6.0 on GitHub Releases after all tests and smoke checks pass. If repository policy blocks publication, the validated ZIP is still uploaded as a workflow artifact and the release must be published by a repository maintainer with suitable permission. Never claim the release exists without checking the result.
+Both profiles are immutable, reproducibly sorted archives with frozen metadata timestamps. Every file has a digest in \`manifest.json\`; the separately released \`SHA256SUMS.txt\` authenticates the Core ZIP, Full ZIP and generated demo dashboard.
 
-Rebuild and verify:
+## Reproducible build and verification
 
-    python3 scripts/build_release.py --output dist
-    python3 scripts/build_release.py --verify dist/question-qa-skill-0.6.0.zip
+~~~bash
+python scripts/build_release.py --all --output dist
+python scripts/build_release.py --verify dist/question-qa-skill-core-1.2.0.zip
+python scripts/build_release.py --verify dist/question-qa-skill-1.2.0.zip
+python -m unittest discover -s tests -v
+~~~
 
-Compare the ZIP digest to SHA256SUMS.txt. The ZIP has a deterministic directory structure and frozen metadata timestamps, allowing byte-for-byte repeat builds from the same Git revision.
+Core verifies an exact eight-file allowlist and its SKILL character budget. Full verifies the required evaluator, audit and state modules. Validation rejects unsafe ZIP paths, duplicate entries, profile mismatches and SHA256 inconsistencies. The release workflow runs three-OS gates, builds both profiles, checks the digest list and tests a fresh Full extraction and a Core smoke test before creating an immutable new tag.
 
-## Post-release next steps
-1. Independently review question-bank quality and semantic-equivalence scoring for more subjects.
-2. Collect consent-based, privacy-preserving, independently labeled learning sequences for diagnosis calibration; keep the test set untouched.
-3. Extend dashboard with optional export of aggregate-only summaries (not student raw text) and accessibility testing.
-4. Consider optional, separately validated BKT/IRT only after robust real-data comparisons.
+## Privacy / provenance boundaries
 
+The public archive includes only synthetic example questions and student histories. Exclude raw learner submissions, private educational sources, reviewer registries/tokens, audit keys and actual review packets. A checksum validates *bytes*, not correctness of generated questions or genuine independent model review. Tests do not establish learning gains.
 
-## v0.6.0 additional gate
-The CI invokes the question-quality audit for the example bank and requires zero **hard errors** in schema/duplicate/numeric witness checks. It does NOT auto-certify the example bank's curriculum correctness: professional review remains required before a real exam. ASSISTments2015 is evaluated separately from FORGET-SE; no student-level rows enter release assets.
-
-
-## v0.6.0 immutable release contract
-The release workflow now includes Ubuntu/Windows/macOS Python3.12 full regression tests and ZIP verification before a separate Ubuntu reproducible build, SHA256 validation and clean-extraction smoke test. The publish job is the only part granted contents:write and checks that the successfully tested commit still equals the current main HEAD. It creates a lightweight v0.6.0 Git tag and Release only if neither exists. A later main commit triggers unversioned CI artifacts, NEVER an in-place replacement of v0.6.0 release assets. Pre-existing tags without a corresponding Release are treated as an error requiring human investigation. Updating source code after publication requires a new version number and tag.
-
-
-## v0.8.0 immutable artifacts
-As with v0.6, the official ZIP is published once to a new immutable tag after Ubuntu/Windows/macOS testing and fresh extraction. v0.8.0 includes the safe math parser, state lock/backup/recovery module, aggregate-only reviewer-study CLI and all regressions. Raw learner state files, backups, lock paths, and private reviewer score sheets must remain outside the release archive. Previous tags/assets are never rewritten.
-
-
-## v0.8.0 immutable release and personal data exclusions
-The v0.8.0 archive requires appeals.py, reviewer_trial.py and state_store.py. All private state.json.snapshots/, .bak/.lock, reviewer packets, authorized participant records, exports and research-plan working folders must remain outside the allowlisted distribution. A synthetic study-plan example is included, not any actual participant data. CI retains six platform/Python combinations and a separate three-platform release gate with checksum and extracted ZIP regression. Never replace older Git tags or assets.
-
-
-## v0.9.0 additional safety gate
-Release ZIP must contain scripts/reviewer_credentials.py and scripts/audit_ledger.py, the previously included scripts/appeals.py and scripts/reviewer_trial.py, plus tests and bilingual safe-use instructions. The package must NEVER include local reviewer registries, administrator/reviewer token files, HMAC audit keys, .audit-policy markers, checkpoint receipts, student response files or private rating packets. This is a reproducible versioned release, not a certified school identity system or real human experiment.
-
-
-## v0.9.0 reviewer-security and research packaging
-The distribution must contain reviewer_credentials.py, audit_ledger.py and reviewer_pilot.py; the first two require externally held private credentials/audit secrets, while the third accepts pseudonymous private rating packets. No admin/reviewer token, audit key, external receipt, policy sidecar, actual student submission or human research record is part of the official archive. Synthetic public example packets are intentionally shipped for regression. Use the SHA256 manifest, three-OS tests and immutable Git tag to verify source/package identity. The local audit is not a qualified digital signature or a tamper-proof institutional ledger.
-
-
-## v1.0.0 — core-skill delivery vs optional advanced tooling
-The primary SKILL.md is now intentionally short and routes ordinary tutors only to the adaptive tutoring/authoring references. Other modules remain packaged in the full offline reproducible ZIP but are not preloaded as model context. v1.0.0 additionally requires scripts/tutor_core.py, references/tutoring.md and references/operations.md, plus the complete synthetic tutoring regression suite. This change neither creates a general LLM model endpoint nor verifies human teaching outcomes. The main repository/tag and checksum policy remain immutable and exact-commit-bound.
-
-
-## v1.1.0 model audit shipping requirements
-The distributed Skill now requires scripts/model_audit.py, references/model_audit.md and both docs/MODEL_AUDIT language variants. All source extracts and actual model reviewer packets are private and should be stored outside the project. The release validator excludes explicitly named model-audit packets and course/source extracts when accidentally placed under examples/, without removing genuinely synthetic demonstration files. Build/verify checks remain SHA256 manifest-bound, independently tested on Windows, macOS and Linux, and re-executed after fresh ZIP extraction. Note that these CI suites use deliberately synthetic evidence and DO NOT prove a real independent AI model was invoked, or that the audited questions are semantically correct.
+A GitHub Release is published only when the tested commit is still current main and the new tag does not exist; older tags/assets are never replaced. If publication permissions or independent review requirements cannot be met, retain the validated PR and CI artifacts rather than claiming a release exists.
