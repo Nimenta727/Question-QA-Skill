@@ -1,6 +1,6 @@
 # Roadmap / 路线图 — evidence before feature expansion
 
-**Current stable baseline:** v1.2.1 Core + Full officially released 2026-11-21. This document states planned work; no row below implies experimental validation has been completed.
+**Current source target:** v1.2.2 Core + Full. Verify actual release tag/assets before claiming publication; v1.2.1 remains the prior verified release. This document states planned work; no row below implies experimental validation has been completed.
 
 ## P0 — release readiness and current-documentation convergence (engineering)
 
@@ -34,3 +34,9 @@ See the [12-case real-model execution matrix](REAL_MODEL_TESTS.md) / [中文测�
 ## Non-negotiable claims boundary
 
 A successful CI run proves the engineered checks ran; it does not demonstrate learning gain. An LLM self-review cannot be presented as an independent specialist endorsement. A heuristic `rate` or `tentatively_strong` label cannot be reported as a validated probability or a definitive student ability judgment. High-stakes assessment requires independent qualified human review.
+
+## v1.2.2 — post-Skill evidence reporting (engineering)
+
+- Ship a Full-only offline HTML report for **already recorded** Skill evaluations; Core stays lean.
+- Give ratios with defensible denominators and conditional intervals, at most one useful defect visualization, and failures first. Clearly mark synthetic demos.
+- Do not mark RM-01–RM-12 complete until genuine model calls and independent adjudicated labels exist. [Report method](SKILL_EVAL_REPORT.md) · [Status](TEST_STATUS.md).

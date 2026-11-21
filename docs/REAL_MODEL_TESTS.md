@@ -48,3 +48,7 @@ A test item with a known material answer ambiguity, false citation, second corre
 - The v1.2.0 distribution was released with cross-platform CI, deterministic ZIP/SHA256 and extraction tests; v1.2.1 needs its own run and published release verification.
 - Legacy descriptive diagnosis index did not demonstrate superiority to simple history baselines; see [FORGET-SE](VALIDATION.md) and [ASSISTments2015](VALIDATION_ASSIST2015.md).
 - **Do not relabel prior tests as results for RM-01–RM-12.**
+
+## After-test reporting (does not run the study)
+
+Once actual Skill runs and independently adjudicated labels are collected, present privacy-minimal records through the [Full report generator](SKILL_EVAL_REPORT.md). Synthetic reports are **software demonstrations** and do not alter RM-01–RM-12 **NOT RUN** labels.
