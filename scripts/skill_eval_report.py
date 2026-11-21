@@ -186,7 +186,11 @@ def wilson(success, total):
     denominator = 1 + z * z / total
     center = (p + z * z / (2 * total)) / denominator
     margin = z * math.sqrt(p * (1 - p) / total + z * z / (4 * total * total)) / denominator
-    return max(0.0, center - margin), min(1.0, center + margin)
+    # Floating-point cancellation at k=0/n gives tiny positive lower bounds;
+    # the exact binomial boundary of the Wilson formula is zero/one.
+    lo = 0.0 if success == 0 else max(0.0, center - margin)
+    hi = 1.0 if success == total else min(1.0, center + margin)
+    return lo, hi
 
 
 def summarize(payload):
