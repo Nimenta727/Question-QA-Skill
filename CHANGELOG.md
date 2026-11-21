@@ -2,6 +2,13 @@
 
 本文件描述**当前维护版本**。更早版本的完整设计说明、实现变更和旧发行页，使用 [Git Tags](https://github.com/Nimenta727/Question-QA-Skill/tags)、[Git History](https://github.com/Nimenta727/Question-QA-Skill/commits/main/) 和正式 GitHub Releases 追溯；不再把大段历史方案当作当前文档。
 
+## v1.2.2 — 2026-11-21 — Skill测试后精简报告（仅Full）
+
+- 新增 `scripts/skill_eval_report.py`，将**已记录**的模型/专家测试结果生成为离线单页HTML。最多三项带分子分母的条件指标、一组最多四类别可视化、优先风险与折叠的详情。
+- 真正检出错误必须与独立标注的实际缺陷相匹配；没有独立参考不显示质量准确率，少于5例不显示百分比，同题族重复不显示独立样本Wilson区间。
+- 附带全合成、显式标注的 `skill-eval-demo.html` 演示以及输入安全和统计测试；默认Core依旧轻量，无法自行调用模型完成真实评测。
+- RM-01～12的真实模型、教师与学生效果验证仍未执行。正式发行要以CI/Tag/五种附件及SHA256实际核验为准，不覆盖旧版本。
+
 ## v1.2.1 — 2026-11-21 — 发行整理与真实测试交接
 
 - 更新 Core/Full 发行版本与自动化门禁；原 v1.2.0 Tag/发行附件不覆盖。
