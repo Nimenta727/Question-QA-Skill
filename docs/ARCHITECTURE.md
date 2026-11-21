@@ -1,4 +1,4 @@
-# Current architecture — Question-QA-Skill v1.2.1
+# Current architecture — Question-QA-Skill v1.2.2
 
 [Documentation](INDEX.md) · [中文首页](../README.zh-CN.md) · [Validation plan](QUALITY_VALIDATION.md)
 
@@ -52,3 +52,7 @@ For prior implementations and superseded architecture narratives, consult [Git t
 ## Real-model validation handoff (not completed)
 
 Actual curriculum-grounded author accuracy, independent audit miss and false-alarm rates, diagnostic follow-up correctness, fixed-sequence comparisons, billed tokens, delayed retention and fairness have **not** been validated by offline Python or CI. See [RM-01–RM-12 matrix](REAL_MODEL_TESTS.md) and [status ledger](TEST_STATUS.md); the evidence requirements must be satisfied before making performance claims.
+
+## Optional evidence-limited report (Full)
+
+`scripts/skill_eval_report.py` renders a static HTML report from **previously recorded** model/evaluator decisions. It never invokes an LLM. Three conditional metrics include explicit denominators and defect-match evidence; only one compact visualization and collapsible traces are shown. The synthetic example does not validate learning outcomes. No changes to the tutoring algorithm or Core prompt. See [methodology](SKILL_EVAL_REPORT.md).

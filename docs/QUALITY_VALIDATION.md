@@ -46,3 +46,7 @@ For diagnosis, include at least: wrong answer with unknown cause; hinted correct
 ## Execution handoff
 
 The numbered [RM-01–RM-12 test matrix](REAL_MODEL_TESTS.md) defines each real call/trial, independent evidence and recorded failure policy. Use the [blank report](validation/REPORT_TEMPLATE.md) and update the [status ledger](TEST_STATUS.md) only after actual independent evidence exists. All RM cases currently remain **NOT RUN**, regardless of how well the GitHub packaging CI performs.
+
+## Evidence-aware visualization
+
+[Compact Full report](SKILL_EVAL_REPORT.md) shows only denominated, reference-grounded measures; model-only reference labels suppress apparent accuracy. Synthetic fixtures are code tests, not empirical learner or model outcome studies.

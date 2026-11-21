@@ -1,4 +1,4 @@
-# Documentation — current v1.2.1
+# Documentation — current v1.2.2
 
 [Home](../README.md) · [中文](INDEX.zh-CN.md)
 
@@ -21,6 +21,7 @@ This index points to the **current** guides. Do not load all files into an AI co
 - [Current verification status: engineering vs empirical](TEST_STATUS.md)
 - [Blank evidence report template](validation/REPORT_TEMPLATE.md)
 - [Deterministic question-quality checks](QUESTION_QUALITY.md)
+- [Compact post-Skill evaluation report (Full only)](SKILL_EVAL_REPORT.md)
 - [Token budget / lazy references](TOKEN_BUDGET.md)
 - [Release integrity and reproducibility](RELEASE.md)
 - [Roadmap](ROADMAP.md)

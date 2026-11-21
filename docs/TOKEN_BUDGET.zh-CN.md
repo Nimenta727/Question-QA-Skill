@@ -1,4 +1,4 @@
-# Token预算与结构设计｜v1.2.1
+# Token预算与结构设计｜v1.2.2
 
 ## 主要优化
 
@@ -29,8 +29,8 @@
 
 ~~~bash
 python scripts/build_release.py --all --output dist
-python scripts/build_release.py --verify dist/question-qa-skill-core-1.2.1.zip
-python scripts/build_release.py --verify dist/question-qa-skill-1.2.1.zip
+python scripts/build_release.py --verify dist/question-qa-skill-core-1.2.2.zip
+python scripts/build_release.py --verify dist/question-qa-skill-1.2.2.zip
 python -m unittest discover -s tests -v
 ~~~
 
@@ -39,3 +39,7 @@ python -m unittest discover -s tests -v
 ## 真实仍需测量的性能
 
 **RM-10 尚未执行。** 必须在相同模型、宿主、课件和任务条件下记录实际输入/输出 Token、模型调用次数、中位与P95延迟以及可得的内存数据，不能只用ZIP大小或字符压缩率宣称成本改善。参见 [真实模型测试矩阵](REAL_MODEL_TESTS.zh-CN.md) 和 [验证状态台账](TEST_STATUS.zh-CN.md)。
+
+## v1.2.2 报表与默认Token隔离
+
+报告脚本 `scripts/skill_eval_report.py` **仅在Full中**，在外部完成真实测试后运行或用明确合成的样例演示；不进入Core日常教学上下文，不代表Token实际节省。[评测面板说明](SKILL_EVAL_REPORT.zh-CN.md)。

@@ -1,4 +1,4 @@
-# 文档导航｜当前 v1.2.1
+# 文档导航｜当前 v1.2.2
 
 [首页](../README.zh-CN.md) · [English](INDEX.md)
 
@@ -21,6 +21,7 @@
 - [验证状态台账：工程与实证分开](TEST_STATUS.zh-CN.md)
 - [结果报告空模板](validation/REPORT_TEMPLATE.md)
 - [题目静态质量检查](QUESTION_QUALITY.zh-CN.md)
+- [Skill测试后精简报告与评测参考](SKILL_EVAL_REPORT.zh-CN.md)
 - [Token预算](TOKEN_BUDGET.zh-CN.md)
 - [发行与复现](RELEASE.zh-CN.md)
 - [路线图](ROADMAP.md)

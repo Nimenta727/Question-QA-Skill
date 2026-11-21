@@ -1,4 +1,4 @@
-# Token footprint and progressive disclosure — v1.2.1
+# Token footprint and progressive disclosure — v1.2.2
 
 The default \`SKILL.md\` was reduced from approximately **4,018 to 1,965 characters** (about **51% less prompt text**). The detailed review reference was shortened from roughly 6,127 to 1,306 characters. The **Core** ZIP now contains only eight substantive files plus a SHA256 manifest; the **Full** ZIP retains the entire offline toolkit and history.
 
@@ -20,3 +20,7 @@ Verify both release profiles using \`python scripts/build_release.py --all --out
 ## What must still be measured
 
 Actual billed/model input and output tokens, host reference-loading behavior, model call count and response latency are **not yet measured in the RM-10 protocol**. Compare versions with matched task, model, course source and host. See [real-model test matrix](REAL_MODEL_TESTS.md) and [status ledger](TEST_STATUS.md). ZIP size and character counts are not cost evidence.
+
+## v1.2.2 report isolation
+
+The offline post-Skill report is **Full-only**, run after externally recorded evaluation or with a conspicuous synthetic fixture. It is not loaded into the normal Core tutoring model context and provides no measured Token savings. See [methodology](SKILL_EVAL_REPORT.md).
