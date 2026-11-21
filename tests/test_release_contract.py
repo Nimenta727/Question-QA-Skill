@@ -57,8 +57,8 @@ class ReleaseContractTests(unittest.TestCase):
             self.assertIn("docs/TEST_STATUS", readme)
             self.assertIn("docs/validation/REPORT_TEMPLATE.md", readme)
         self.assertTrue((ROOT / "docs/validation/REPORT_TEMPLATE.md").exists())
-        self.assertFalse(any(p.relative_to(ROOT).as_posix().startswith("docs/")
-                             for p in release.core_files()))
+        self.assertFalse(any(path.startswith("docs/")
+                             for path in release.core_files()))
 
 
 if __name__ == "__main__":
