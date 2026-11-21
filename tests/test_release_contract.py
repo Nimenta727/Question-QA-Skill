@@ -9,11 +9,29 @@ from scripts import build_release as release
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSION = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
-EXPECTED = "1.2.2"
+EXPECTED = "1.2.3"
 CASES = tuple(f"RM-{i:02}" for i in range(1, 13))
 
 
 class ReleaseContractTests(unittest.TestCase):
+    def test_dedicated_evaluation_workspace_is_full_only_and_unrun(self):
+        import json
+        root = ROOT / "docs/evaluations"
+        required = ("README.md", "README.zh-CN.md", "course_quality.md",
+                    "audit_detection.md", "adaptive_baseline.md",
+                    "run_manifest.template.json", "results/README.md")
+        selected = {p.relative_to(ROOT).as_posix() for p in release.selected_files()}
+        for name in required:
+            self.assertTrue((root / name).is_file(), name)
+            self.assertIn("docs/evaluations/" + name, selected)
+        self.assertFalse(any(x.startswith("docs/evaluations/") for x in release.CORE_FILE_MAP))
+        data = json.loads((root / "run_manifest.template.json").read_text(encoding="utf-8"))
+        self.assertEqual("NOT_RUN", data["status"])
+        self.assertIsNone(data["primary_numerator"])
+        self.assertIsNone(data["primary_denominator"])
+        for name in ("course_quality.md", "audit_detection.md", "adaptive_baseline.md"):
+            self.assertIn("NOT RUN", (root / name).read_text(encoding="utf-8"))
+
     def test_version_and_package_roots_agree(self):
         self.assertEqual(EXPECTED, VERSION)
         skill = (ROOT / "SKILL.md").read_text(encoding="utf-8")
@@ -64,7 +82,7 @@ class ReleaseContractTests(unittest.TestCase):
         for forbidden in ("scripts/skill_eval_report.py",
                           "examples/synthetic_skill_eval.json"):
             self.assertNotIn(forbidden, release.CORE_FILE_MAP)
-        notes = (ROOT / "docs/RELEASE_NOTES_v1.2.2.md").read_text(encoding="utf-8")
+        notes = (ROOT / "docs/RELEASE_NOTES_v1.2.3.md").read_text(encoding="utf-8")
         self.assertIn("synthetic", notes.lower())
         report_doc = (ROOT / "docs/SKILL_EVAL_REPORT.md").read_text(encoding="utf-8")
         self.assertIn("NOT RUN", report_doc)
