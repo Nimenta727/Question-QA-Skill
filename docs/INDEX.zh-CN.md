@@ -1,4 +1,4 @@
-# 文档导航｜当前 v1.2.2
+# 文档导航｜当前 v1.2.3
 
 [首页](../README.zh-CN.md) · [English](INDEX.md)
 
@@ -39,3 +39,5 @@
 - [Git 版本历史](https://github.com/Nimenta727/Question-QA-Skill/tags) · [逐次开发记录](routine/)
 
 **特别注意：** CI成功≠教学有效；审核JSON结构正确≠真实独立审题完成。
+
+- [真实评测专门区域：三项待执行研究](evaluations/README.zh-CN.md)
