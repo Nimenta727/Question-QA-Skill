@@ -59,6 +59,10 @@ class CoreDistributionTests(unittest.TestCase):
                 names = z.namelist()
             self.assertTrue(any(x.endswith("/scripts/model_audit.py")
                                 for x in names))
+            self.assertTrue(any(x.endswith("/scripts/skill_eval_report.py")
+                                for x in names))
+            self.assertTrue(any(x.endswith("/examples/synthetic_skill_eval.json")
+                                for x in names))
             self.assertTrue(any("/docs/routine/" in x for x in names))
             self.assertTrue(any("/tests/" in x for x in names))
 

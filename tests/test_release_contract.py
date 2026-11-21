@@ -48,9 +48,26 @@ class ReleaseContractTests(unittest.TestCase):
                          "gh release create",
                          "Branch changed since verification",
                          f"docs/RELEASE_NOTES_v{VERSION}.md",
-                         "Run smoke tests inside a freshly extracted ZIP"):
+                         "Run smoke tests inside a freshly extracted ZIP",
+                         "skill-eval-demo.html"):
             self.assertIn(fragment, release_yaml)
         self.assertTrue((ROOT / f"docs/RELEASE_NOTES_v{VERSION}.md").is_file())
+
+    def test_compact_report_stays_full_only_and_synthetic(self):
+        paths = {p.relative_to(ROOT).as_posix() for p in release.selected_files()}
+        for required in ("scripts/skill_eval_report.py",
+                         "examples/synthetic_skill_eval.json",
+                         "docs/SKILL_EVAL_REPORT.md",
+                         "docs/SKILL_EVAL_REPORT.zh-CN.md"):
+            self.assertIn(required, paths)
+        self.assertIn("scripts/skill_eval_report.py", release.FULL_REQUIRED)
+        for forbidden in ("scripts/skill_eval_report.py",
+                          "examples/synthetic_skill_eval.json"):
+            self.assertNotIn(forbidden, release.CORE_FILE_MAP)
+        notes = (ROOT / "docs/RELEASE_NOTES_v1.2.2.md").read_text(encoding="utf-8")
+        self.assertIn("synthetic", notes.lower())
+        report_doc = (ROOT / "docs/SKILL_EVAL_REPORT.md").read_text(encoding="utf-8")
+        self.assertIn("NOT RUN", report_doc)
 
     def test_empirical_cases_are_explicitly_not_run(self):
         zh = (ROOT / "docs/REAL_MODEL_TESTS.zh-CN.md").read_text(encoding="utf-8")
