@@ -1,30 +1,25 @@
-# Question-QA-Skill — 轻量核心包 / Lightweight Core
+# Question-QA-Skill — Core 轻量版 / Lightweight Core
 
-这是适合直接安装到 Agent Skills 兼容助手的**低上下文开销**版本。默认只需加载 \`SKILL.md\`；根据用户意图才读取 \`references/\` 中的对应文件。目录不含Python、历史研究、CI测试或学生数据。
+适合兼容 Agent Skills 的日常 AI 学习：**默认只读取 `SKILL.md`**，需要具体策略时按需读取 `references/`。Core 无 Python、自动模型API调用、学生状态、历史研发和测试文件。
 
-## 使用
-把这个文件夹注册为你的助手的 Skill，或请它读取 \`SKILL.md\`，然后输入：
+## 中文快速开始
 
-- “根据我提供的课件考考我，一次只问一道题，回答后决定下一问。”
-- “根据课程内容生成五道有深度但公平的题，交卷前不显示答案。”
+1. 解压并注册 Core 文件夹，或让助手读取 `SKILL.md`。
+2. 提供有权使用、能够实际读取的课件，再输入：“根据课件一次只问一道题，检查我的推理，并选择更有区分力的下一问。回答前不显示答案。”
+3. QUICK 追问必要时读 `references/tutoring.md`，DEEP 命题读 `references/authoring.md`，有审题疑点读 `references/model_audit.md`，特殊学科条件读 `references/subjects.md`。
 
-**按需文件**：QUICK 追问阅读 \`references/tutoring.md\`；DEEP 深度命题阅读 \`references/authoring.md\`；具体审题争议才阅读 \`references/model_audit.md\`；不同学科的特殊规则阅读 \`references/subjects.md\`。
+**必须守住的边界：** 新题与追问题先独立求解、找其他正确答案和反例；来源未核对不可冒称老师课件；仅有同模型自审不能说成独立审核；正确一题不能说明长期掌握。正式考试需要合格真人复核。
 
-## 版本区别
-- **Core（本包）**：几份短提示和按需文档，无需Python，不自动调用外部模型API。
-- **Full（完整包）**：另一个 \`question-qa-skill-1.2.0.zip\`，包含离线题库、脚本、自动测试、研究记录、全部文档和开发日志。需要运行 \`scripts/qa.py\`、严格审题JSON门禁或历史功能时使用 Full。
+要运行离线 `scripts/qa.py`、严格审核JSON门禁、测试或研究脚本，请安装单独的 **Full** 发行包 `question-qa-skill-1.2.0.zip`。Full有当前文档、研发记录与研究结果；更早废弃的文档通过 Git 提交历史查看。压缩包大小不代表精确模型Token用量。
 
-严审指令不是“已由独立模型审核”的证明。若只有一个模型，必须明确标为自审。实际课件不可虚构；猜对不等于长期掌握；官方高风险考试仍需专业人员核验。正式使用前需要针对实际课程材料验证出题与诊断效果。
-
-MIT 许可证。此目录仅保留学生学习所必需的核心指令，所有人都可在完整项目中查看历史实现和测试。
-
+**许可证：MIT。** 不上传学生隐私、未经授权的教材或审核凭据。
 
 ---
 
-## English / Quick start
+## English quick start
 
-This is the small **Core Skill** package. Install the extracted folder in an Agent Skills-compatible host or ask the assistant to read \`SKILL.md\`. Start with only that file loaded; consult \`references/tutoring.md\` for adaptive questioning, \`references/authoring.md\` for deep tasks, \`references/model_audit.md\` for difficult audits, and \`references/subjects.md\` only for the current discipline.
+Core is the smallest self-contained Agent Skill for conversational tutoring. Register the folder or ask the assistant to read `SKILL.md`. Do **not** load all references automatically: use `references/tutoring.md` for adaptive QUICK decisions, `references/authoring.md` for DEEP writing, `references/model_audit.md` for difficult reviews and `references/subjects.md` for discipline-specific constraints.
 
-Example: "Ask me one course-grounded question at a time; after each answer, check my reasoning and choose an informative next probe. Withhold the key until I answer."
+Example: “Use the course excerpts I provide. Ask one question at a time, check my reasoning, and select a distinct informative follow-up. Withhold the key until I answer.”
 
-Need local Python assessment, tests, strict JSON review packets, or research tooling? Install the separate **Full** ZIP, \`question-qa-skill-1.2.0.zip\`. Core has no Python code or external model calls. A small archive is not a guarantee of exact billable token counts. Never claim unperformed independent model review or long-term mastery from a single response. MIT licensed.
+Review every newly authored or revised item before showing it. Label missing-course questions as general practice, disclose same-model self-review, and never infer durable mastery from one response. The separate **Full** ZIP (`question-qa-skill-1.2.0.zip`) contains optional Python 3.9+ offline tools and current documentation; superseded instructions remain in Git history. Core itself does not call an LLM or guarantee a fixed billable-token reduction. MIT licensed.

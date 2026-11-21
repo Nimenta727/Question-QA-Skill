@@ -1,48 +1,72 @@
-"""Check high-value user-facing documentation and release links."""
+"""Test current bilingual documentation links and Git-only retirement policy."""
 import re
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-NAVIGATION = (
-    "README.md", "README.zh-CN.md",
+ACTIVE_PAGES = (
+    "README.md", "README.zh-CN.md", "CHANGELOG.md",
     "docs/INDEX.md", "docs/INDEX.zh-CN.md",
     "docs/INSTALL.md", "docs/INSTALL.zh-CN.md",
-    "docs/RELEASE.md",
+    "docs/RELEASE.md", "docs/RELEASE.zh-CN.md",
+    "docs/ARCHITECTURE.md", "docs/ROADMAP.md", "docs/DIAGNOSIS.md",
+    "docs/MODEL_AUDIT.md", "docs/MODEL_AUDIT.zh-CN.md",
+    "docs/QUALITY_VALIDATION.md", "docs/QUALITY_VALIDATION.zh-CN.md",
 )
 LINKS = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
+OBSOLETE_NOTES = (
+    "docs/RELEASE_NOTES_v0.4.0.md",
+    "docs/RELEASE_NOTES_v0.5.0.md",
+    "docs/RELEASE_NOTES_v0.6.0.md",
+    "docs/RELEASE_NOTES_v0.7.0.md",
+    "docs/RELEASE_NOTES_v0.8.0.md",
+    "docs/RELEASE_NOTES_v0.9.0.md",
+    "docs/RELEASE_NOTES_v1.0.0.md",
+    "docs/RELEASE_NOTES_v1.1.0.md",
+)
 
 
 class DocumentationNavigationTests(unittest.TestCase):
-    def test_local_markdown_targets_exist(self):
+    def test_all_current_local_markdown_links_resolve(self):
         missing = []
-        for name in NAVIGATION:
+        for name in ACTIVE_PAGES:
             base = ROOT / name
+            self.assertTrue(base.is_file(), name)
             for url in LINKS.findall(base.read_text(encoding="utf-8")):
                 target = url.split("#", 1)[0].strip()
                 if not target or "://" in target or target.startswith("mailto:"):
                     continue
-                # Only static local documentation paths are part of this test.
                 if not (base.parent / target).exists():
-                    missing.append("%s -> %s" % (name, target))
+                    missing.append(f"{name} -> {target}")
         self.assertEqual([], missing)
 
-    def test_core_and_full_are_unambiguously_described(self):
+    def test_core_and_full_are_explicit(self):
         for name in ("README.md", "README.zh-CN.md",
                      "docs/INSTALL.md", "docs/INSTALL.zh-CN.md"):
             content = (ROOT / name).read_text(encoding="utf-8")
             self.assertIn("question-qa-skill-core-1.2.0.zip", content)
             self.assertIn("question-qa-skill-1.2.0.zip", content)
-        self.assertTrue((ROOT / "docs/archive/RELEASE_PRE_V1_2.md").exists())
 
-    def test_no_unsupported_automatic_independent_audit_claim(self):
-        for name in ("README.md", "README.zh-CN.md"):
+    def test_superseded_guides_are_only_in_git_history(self):
+        self.assertFalse((ROOT / "docs/archive").exists())
+        for old in OBSOLETE_NOTES:
+            self.assertFalse((ROOT / old).exists(), old)
+        self.assertTrue((ROOT / "docs/RELEASE_NOTES_v1.2.0.md").exists())
+        self.assertTrue((ROOT / "docs/routine").is_dir())
+
+    def test_verified_limits_are_explained_in_both_languages(self):
+        for name, marker in (
+            ("README.md", "does not call an LLM"),
+            ("README.zh-CN.md", "不会自行调用大模型"),
+        ):
             content = (ROOT / name).read_text(encoding="utf-8")
             self.assertIn("model_audit.py", content)
-            # Only an actual separate reviewer run can be called independent.
-            self.assertTrue(("不" in content and "独立" in content)
-                            or "not independent review" in content
-                            or "not independent" in content)
+            self.assertIn(marker, content)
+        for name in ("docs/QUALITY_VALIDATION.md",
+                     "docs/QUALITY_VALIDATION.zh-CN.md"):
+            text = (ROOT / name).read_text(encoding="utf-8").lower()
+            self.assertIn("protocol only" if name.endswith("VALIDATION.md")
+                          else "尚未", text)
 
 
 if __name__ == "__main__":

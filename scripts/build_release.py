@@ -2,8 +2,10 @@
 """Create two deterministic, checksum-verified Question-QA-Skill distributions.
 
 core: minimal Agent Skill instructions; no Python, tests, history or learner data.
-full: backwards-compatible offline toolkit, documentation, examples and tests.
-Neither package runs a model or proves the semantic correctness of questions.
+full: backwards-compatible offline toolkit, current documentation, examples
+and tests. Superseded prose is retrieved from immutable Git history/tags.
+Neither package runs a model, proves question semantics, or guarantees lower
+billable model tokens from smaller archive bytes.
 """
 import argparse
 import hashlib

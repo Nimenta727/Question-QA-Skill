@@ -5,6 +5,8 @@ This module DOES NOT call a language model, establish reviewer independence,
 or prove that a model's prose is true. It prepares a blank audit packet which
 a separate reviewing model must fill, and verifies its completeness, binding
 to the actual bank/source, objectively checkable answers and risk decisions.
+Even a passing packet cannot prove that the auditor was independent or that
+its nine written semantic judgments were actually correct.
 """
 import argparse
 import hashlib
