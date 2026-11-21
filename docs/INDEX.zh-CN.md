@@ -7,7 +7,7 @@
 ## 快速入口
 - [安装与验证（Core/Full）](INSTALL.zh-CN.md)
 - [Token预算与按需加载](TOKEN_BUDGET.zh-CN.md)
-- [完整版发行、校验和可重复构建](RELEASE.md)
+- [完整版发行、校验和可重复构建](RELEASE.zh-CN.md)
 - [版本更新记录](../CHANGELOG.md)
 
 ## 教学与质量

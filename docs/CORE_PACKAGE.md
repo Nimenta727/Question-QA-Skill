@@ -17,3 +17,14 @@
 严审指令不是“已由独立模型审核”的证明。若只有一个模型，必须明确标为自审。实际课件不可虚构；猜对不等于长期掌握；官方高风险考试仍需专业人员核验。正式使用前需要针对实际课程材料验证出题与诊断效果。
 
 MIT 许可证。此目录仅保留学生学习所必需的核心指令，所有人都可在完整项目中查看历史实现和测试。
+
+
+---
+
+## English / Quick start
+
+This is the small **Core Skill** package. Install the extracted folder in an Agent Skills-compatible host or ask the assistant to read \`SKILL.md\`. Start with only that file loaded; consult \`references/tutoring.md\` for adaptive questioning, \`references/authoring.md\` for deep tasks, \`references/model_audit.md\` for difficult audits, and \`references/subjects.md\` only for the current discipline.
+
+Example: "Ask me one course-grounded question at a time; after each answer, check my reasoning and choose an informative next probe. Withhold the key until I answer."
+
+Need local Python assessment, tests, strict JSON review packets, or research tooling? Install the separate **Full** ZIP, \`question-qa-skill-1.2.0.zip\`. Core has no Python code or external model calls. A small archive is not a guarantee of exact billable token counts. Never claim unperformed independent model review or long-term mastery from a single response. MIT licensed.
