@@ -9,7 +9,7 @@ from scripts import build_release as release
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSION = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
-EXPECTED = "1.2.1"
+EXPECTED = "1.2.2"
 CASES = tuple(f"RM-{i:02}" for i in range(1, 13))
 
 

@@ -4,7 +4,7 @@ description: 基于真实课程出深度题、逐题快问快答、严格审题�
 license: MIT
 compatibility: Agent Skills; Python 3.9+ offline helpers only in Full package.
 metadata:
-  version: "1.2.1"
+  version: "1.2.2"
   languages: "zh-CN,en"
 ---
 

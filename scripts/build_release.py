@@ -45,7 +45,9 @@ FULL_REQUIRED = {
     "scripts/appeals.py", "scripts/reviewer_trial.py",
     "scripts/reviewer_pilot.py", "scripts/reviewer_credentials.py",
     "scripts/audit_ledger.py", "scripts/tutor_core.py",
-    "scripts/model_audit.py", "references/model_audit.md",
+    "scripts/model_audit.py", "scripts/skill_eval_report.py",
+    "docs/SKILL_EVAL_REPORT.md", "docs/SKILL_EVAL_REPORT.zh-CN.md",
+    "references/model_audit.md",
     "references/tutoring.md", "references/operations.md",
     "docs/MODEL_AUDIT.zh-CN.md", "docs/MODEL_AUDIT.md",
 }
