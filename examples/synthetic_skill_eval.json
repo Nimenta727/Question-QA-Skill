@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "run": {
+    "id": "synthetic-post-skill-001",
+    "mode": "synthetic_demo",
+    "reference": "synthetic_labels",
+    "model": "NO-MODEL-FIXTURE",
+    "commit": "synthetic-only",
+    "dataset": "synthetic-audit-and-tutoring-fixture",
+    "date": "2026-11-21"
+  },
+  "cases": [
+    {
+      "id": "A01",
+      "test_id": "RM-03",
+      "family": "f-a01",
+      "kind": "audit",
+      "truth": "defective",
+      "decision": "block",
+      "defect": "wrong_key"
+    },
+    {
+      "id": "A02",
+      "test_id": "RM-03",
+      "family": "f-a02",
+      "kind": "audit",
+      "truth": "defective",
+      "decision": "accept",
+      "defect": "multiple_answers"
+    },
+    {
+      "id": "A03",
+      "test_id": "RM-05",
+      "family": "f-a03",
+      "kind": "audit",
+      "truth": "defective",
+      "decision": "block",
+      "defect": "source_mismatch"
+    },
+    {
+      "id": "A04",
+      "test_id": "RM-04",
+      "family": "f-a04",
+      "kind": "audit",
+      "truth": "defective",
+      "decision": "uncertain",
+      "defect": "ambiguous"
+    },
+    {
+      "id": "A05",
+      "test_id": "RM-04",
+      "family": "f-a05",
+      "kind": "audit",
+      "truth": "defective",
+      "decision": "block",
+      "defect": "rubric_defect"
+    },
+    {
+      "id": "A06",
+      "test_id": "RM-04",
+      "family": "f-a06",
+      "kind": "audit",
+      "truth": "defective",
+      "decision": "block",
+      "defect": "invalid_distractor"
+    },
+    {
+      "id": "A07",
+      "test_id": "RM-06",
+      "family": "f-a07",
+      "kind": "audit",
+      "truth": "defective",
+      "decision": "block",
+      "defect": "duplicate_family"
+    },
+    {
+      "id": "A08",
+      "test_id": "RM-06",
+      "family": "f-a08",
+      "kind": "audit",
+      "truth": "sound",
+      "decision": "accept"
+    },
+    {
+      "id": "A09",
+      "test_id": "RM-06",
+      "family": "f-a09",
+      "kind": "audit",
+      "truth": "sound",
+      "decision": "block"
+    },
+    {
+      "id": "A10",
+      "test_id": "RM-06",
+      "family": "f-a10",
+      "kind": "audit",
+      "truth": "sound",
+      "decision": "accept"
+    },
+    {
+      "id": "A11",
+      "test_id": "RM-06",
+      "family": "f-a11",
+      "kind": "audit",
+      "truth": "sound",
+      "decision": "accept"
+    },
+    {
+      "id": "A12",
+      "test_id": "RM-06",
+      "family": "f-a12",
+      "kind": "audit",
+      "truth": "sound",
+      "decision": "accept"
+    },
+    {
+      "id": "A13",
+      "test_id": "RM-06",
+      "family": "f-a13",
+      "kind": "audit",
+      "truth": "sound",
+      "decision": "accept"
+    },
+    {
+      "id": "T01",
+      "test_id": "RM-07",
+      "family": "f-t01",
+      "kind": "tutoring",
+      "expected_action": "clarify",
+      "selected_action": "clarify"
+    },
+    {
+      "id": "T02",
+      "test_id": "RM-07",
+      "family": "f-t02",
+      "kind": "tutoring",
+      "expected_action": "recheck",
+      "selected_action": "recheck"
+    },
+    {
+      "id": "T03",
+      "test_id": "RM-07",
+      "family": "f-t03",
+      "kind": "tutoring",
+      "expected_action": "repair",
+      "selected_action": "repair"
+    },
+    {
+      "id": "T04",
+      "test_id": "RM-08",
+      "family": "f-t04",
+      "kind": "tutoring",
+      "expected_action": "transfer",
+      "selected_action": "repair"
+    },
+    {
+      "id": "T05",
+      "test_id": "RM-08",
+      "family": "f-t05",
+      "kind": "tutoring",
+      "expected_action": "stop",
+      "selected_action": "stop"
+    },
+    {
+      "id": "T06",
+      "test_id": "RM-08",
+      "family": "f-t06",
+      "kind": "tutoring",
+      "expected_action": null,
+      "selected_action": "repair"
+    }
+  ]
+}
