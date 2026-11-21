@@ -1,63 +1,50 @@
-# Question-QA-Skill｜深入命题、快问快答与学习漏洞诊断
+# Question-QA-Skill｜深度命题 · 自适应快问快答 · 严格审题
 
-[English](README.md)
+[English](README.md) · [文档导航](docs/INDEX.zh-CN.md) · [更新记录](CHANGELOG.md)
 
-> **一套让 AI 先问好问题，再根据回答追问的轻量 Skill。** 它不是考试管理平台，也不会凭一个数字宣称学生“已经掌握”。
+**一句话：** 让 AI 依据真实课程出有深度但公平的问题，学生每答一题就根据**可观察的理解证据**决定下一问。一次只问一题，默认六轮；不能凭一次正确或错误就判断长期掌握。
 
-## 直接使用：无需先启动脚本
+## 选哪个发行包？
 
-把仓库作为 Agent Skills 兼容的 Skill 安装在 AI 助手中，或者让助手读取 SKILL.md，就可以提出：
+| 发行包 | 内容 | 适合 |
+|---|---|---|
+| **Core 轻量版（推荐）**：\`question-qa-skill-core-1.2.0.zip\` | 一个简短SKILL与4份**按需读取**的教学参考；不含脚本、测试或历史研究 | 平时直接和AI聊天，优先节省Token |
+| **Full 完整版**：\`question-qa-skill-1.2.0.zip\` | Core教学说明 + 离线Python题库工具、严格审题JSON门禁、全部测试、文档与开发记录 | 需要本地题库、学习记录、开发和研究工具 |
 
-- **快问快答**：“根据我这节数据结构课，给我做六轮学习诊断。一次只问一道题，答完再追问。”
-- **针对薄弱点**：“我总是分不清队列和栈，先测一题，然后根据我的回答判断该追问哪一步。”
-- **深度命题**：“根据老师的课件出五道有区分度但不偏不怪的题，交卷前不要展示答案。”
-- **继续练习**：“别重复上一道题，换一种表征验证我是不是真的理解。”
+两个ZIP都有固定SHA256清单；**体积小不等于模型一定只消耗这些Token**。实际成本取决于宿主如何加载Skill及每轮教材/问答长度。安装后通常只需先读 \`SKILL.md\`，详见 [Token与结构优化](docs/TOKEN_BUDGET.zh-CN.md)。
 
-**QUICK** 默认六轮，一次一问；**DEEP** 默认五道，先按课程来源和评分标准设计，避免超纲或死记细节。用户随时可以叫停。
+## 30 秒开始
 
-## 新增：每道题必须严格接受模型审计
+1. 到 [Releases](https://github.com/Nimenta727/Question-QA-Skill/releases) 下载Core或Full并校验 \`SHA256SUMS.txt\`。
+2. 解压，把目录注册为兼容 Agent Skills 的Skill；不支持Skills的助手也可以直接阅读其中 \`SKILL.md\`。
+3. 把课件交给助手，输入：“依据我提供的课程内容考考我，先问一题，答后再追问。不能编造超纲内容或在提问前泄漏答案。”
 
-命题后不能直接向学生发布。**先隐藏标准答案让审题模型独立求解，再公开答案做反向挑战**，逐项检查课程来源、正确性、等价答案、题目条件、三个干扰项或rubric、诊断价值、认知层次、公平性和题族独立性。任何一项无法确认，退回修订或换题。
+其他示例：“根据课件设计五道有区分度的深度题，交卷前不提供答案。”“我不理解C语言指针，请用最多六个问题找出我的推理缺口。”
 
-提供离线审核协议与 fail-closed 门禁： [模型严格审题说明](docs/MODEL_AUDIT.zh-CN.md) · [Agent 审题执行指令](references/model_audit.md)。源码中的Python工具**不会自行调用大模型**；只有真正执行独立审阅，才能生成有意义的模型审计证据。高风险正式考试仍需要专业人士审核。
+## 教学与审题规则
 
-## AI 如何做出下一问
+- **QUICK**：错且原因不明→追问推导；猜对或借助提示→换题族无提示核对；部分正确→追缺失步骤；解释充分→应用与迁移。
+- **DEEP**：先由课程断言建立题目蓝图，核验可解性、答案等价形式、认知层次和公平性。
+- **严格审题**：新题、修改题及追问题展示前先独立求解、找多解与反例、检查实际教材出处及干扰项/rubric。若有无法解决的疑点，修题或更换；只有一个模型时不能冒称独立审阅。
+- **克制诊断**：正确不等于掌握、旧启发式不是校准概率、合成软件测试不是教学效果评估。高风险正式考试需专业人员核验。
 
-| 学生表现 | 正确的教学动作 |
-|---|---|
-| 答错但原因还不确定 | 先要求说明步骤或验证前置知识，**不能臆测误区** |
-| 答对但猜测、借助提示 | 同一知识点换不同题族，无提示再确认 |
-| 答对且有可靠解释 | 问应用、反例、边界条件或迁移 |
-| 只满足部分评分标准 | 只追问关键的缺失环节 |
-| 题库缺题 | 根据课件生成并**重新验收**一个新变式，而不是直接承诺其正确性 |
+详细工作协议通过 \`references/authoring.md\`、\`references/tutoring.md\`、\`references/model_audit.md\` **按需**加载，不应每轮全部读取。
 
-技能入口 [SKILL.md](SKILL.md) 已精简为日常教学合同；详细追问策略在 [references/tutoring.md](references/tutoring.md)，深度命题标准在 [references/authoring.md](references/authoring.md)。
+## Full版：可选本地命令行
 
-## 可选：离线题库、进度与可解释追问
-
-无需额外依赖，Python 3.9+ 即可：
+Python 3.9+，不需要pip依赖，也不会自行调用LLM：
 
 ~~~bash
-python3 scripts/qa.py validate examples/sample_bank.json
-python3 scripts/qa.py next examples/sample_bank.json --state .qa-state.json
-python3 scripts/qa.py answer examples/sample_bank.json --state .qa-state.json --response C
-python3 scripts/qa.py report --state .qa-state.json --bank examples/sample_bank.json
+python scripts/qa.py validate examples/sample_bank.json
+python scripts/qa.py next examples/sample_bank.json --state .qa-state.json
+python scripts/qa.py answer examples/sample_bank.json --state .qa-state.json --response C
+python scripts/qa.py report --state .qa-state.json --bank examples/sample_bank.json
 ~~~
 
-现在 next 输出安全的题面和内部教学意图 tutor_intent；answer 输出得分、依据和 tutor_next_move；report 包含本轮 teaching_summary，指出已测、未测和独立证据不足的内容。上述内部字段不应直接展示给学生；Agent应把它转成简洁反馈和**一道**下一问。
+题库审阅可使用 \`scripts/model_audit.py\`；它检查审核记录、来源和少量客观一致性，不能代替实际模型独立求解或教师审查。参考 [完整安装说明](docs/INSTALL.zh-CN.md) 与 [严格审题说明](docs/MODEL_AUDIT.zh-CN.md)。
 
-它不会自动理解任意文字答案。主观题需使用教师或 AI 审阅的明确 rubric；无法独立核验时应先澄清或标记“待复核”，而不是擅自判零。示例题库为**合成代数题，不是老师真实课件**。
+## 项目状态与研发边界
 
-## 可靠性边界
+核心Skill已有跨平台软件回归，**真实课程命题质量、知识漏洞判断和学习效果尚需独立实测**。仓库另有双开发Agent流程的独立PR，但这属于改进项目的方法，**不是学生每轮必须调用两个模型**；未完成的独立审阅不应写成已审核通过。
 
-- 一题正确 ≠ 已掌握；猜对、提示后正确和同题改数字都不是独立掌握证据。
-- 描述性证据指数不是掌握概率。既有外部真实数据验证未证实旧启发式诊断明显优于简单历史成绩基线；不要夸大。
-- 自动测试可验证软件对答错/猜对等场景选择了正确分支，**不能证明真实 AI 出题质量、学生学习收益或教育测评效度**。人工审题、校验真实课程和独立教学评估依然重要。
-
-[教学质量人工评估协议](docs/TEACHING_EVALUATION.zh-CN.md) · [研究事实与限制](docs/VALIDATION.zh-CN.md) · [版本记录](CHANGELOG.md)
-
-## 已有高级工具，默认不参与教学
-
-此前的双审阅、申诉、安全审计、备份、研究工作流及离线看板均保留。只有确实需要时才按 [references/operations.md](references/operations.md) 找到相应工具和说明。安全与数据管理不应该增加普通六轮答题的复杂度。
-
-代码使用 MIT 许可证；日常 Skill 不依赖网络服务。若处理真实学生记录，务必本地妥善保护数据与必要授权。
+许可证 MIT；不要将真实学生记录、未获授权的课程源文件或审核凭据放进公开仓库。

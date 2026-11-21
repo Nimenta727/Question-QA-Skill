@@ -1,39 +1,12 @@
-# DEEP 命题协议 / Rigorous item authoring
+# DEEP 命题合同 / Source-grounded item design
 
-## Define what is being measured
-For every item write (internally): source anchor, target knowledge claim, observable evidence, required reasoning, cognitive level, difficulty 1–3, expected time, validated solution, distractor rationale, alternative correct answers.
+**触发：** 用户要成套深度题、正式试卷或高难度诊断；日常QUICK不必加载本文件。
 
-Questions are "独到" when they illuminate a core mechanism, expose a subtle misconception or transfer a familiar idea into a genuinely new but fair setting. Novelty is NOT obscure facts, invented exam traditions, trick phrasing or impossible calculations.
+1. **范围**：先核实课程来源与目标，把每题写成“知识断言 → 学生要展示的证据 → 题目任务”。没见过课件不可声称来源于课件或官方考试。
+2. **蓝图**：按课程而非固定比例覆盖记忆、理解、应用、分析/迁移；优先机制、关键错误、边界和有条件的跨情境应用。不为了难而引入超纲、冷门事实和文字陷阱。
+3. **独立解法**：命题者先算/推完整答案、约束条件、合理等价形式、备选解法和可给的部分分。数学需验定义域/单位；CS需验可运行输入/输出或不变量；人文社会学科按可引用证据与推理质量评分。
+4. **干扰项与rubric**：单选确保恰有一个正确选项，逐个论证其余选项为何错、可能对应什么*尚需确认*的错误；开放题逐条规定必要证据、合理替代解答和分数界限。不能用机械拼凑的错项伪称诊断有效。
+5. **公平与审计**：查题干歧义、多解、时间/难度、无关语言负担、偏见和来源伪造。新题、修改题和追问都要独立求解及反向挑错；有疑点阅读 \`references/model_audit.md\`，未解风险不出题。
+6. **展示**：用户没要求答案时先给学生题面，解析/rubric留到交卷后；要求教师版时分开呈现。
 
-## Draft sequence
-1. Extract a source-faithful concept map and weight high-frequency/central concepts first.
-2. Blueprint coverage: foundational recall 20%, conceptual understanding 20%, application 30%, analysis/transfer 30% (defaults; adapt to discipline, source and user).
-3. Write clear premises and one explicit, testable objective. Solve independently *before* writing plausible alternatives.
-4. Analyze a typical wrong approach and a compelling alternative explanation; make those distractors.
-5. Produce a counterexample or boundary check where useful, but do not use a condition the course never taught without explaining it.
-6. Add concise marking rubric: required claims, partial credit, acceptable equivalences.
-7. Review bias: eliminate unnecessary language complexity, cultural assumptions, subjective preference and normative conclusions not supported by criteria.
-8. Verify accuracy against source (and where appropriate trustworthy external materials); label independent extensions.
-
-## Evaluation thresholds
-- Accuracy: every option independently checked; multiple valid answers => change stem to clarify or accept all correct answers.
-- Rigor: at least one nontrivial reasoning step for depth items; calculations must be solvable with supplied information.
-- Fairness: no niche trivia unless explicitly in source; no hidden prerequisites; reasonable solve time; no misleading cues.
-- Specificity: a question should diagnose *which* misconception, not only correct/incorrect.
-- Attribution: never misrepresent generated practice as actual official past exam.
-- Multi-perspective disciplines: grade quality of evidence, reasoning and distinctions, rather than politically or culturally prescribed positions.
-
-## Answer packaging
-For paper mode: output a coherent exam paper first (subject, scope, time, numbered items), and withhold keys until learner submits or explicitly asks. For interactive deep mode: one item at a time. Preserve all instructor content if source-focused.
-
-
-## v0.5.0 offline quality checks and accountable review
-For any bank to be issued to learners: run qa.py validate first, then question_quality.py BANK.json. If the item is a simple numeric objective question, optionally attach a bounded arithmetic witness and independently verify it corresponds to the actual question assumptions. Do NOT claim numeric consistency solves textual ambiguity or validates official curriculum provenance. Generate a blank SHA256-bound form using --review-template, have a distinct reviewer confirm answer/source/scope/ambiguity/fairness/rubric, then use --review FILE --strict to enforce that recorded review. Do not let the same authoring model self-certify. Refer to docs/QUESTION_QUALITY.md or .zh-CN.md when needed.
-
-
-## v1.0.0 fair next-question variants
-When an adaptive session requires a new question because no suitable reviewed item is available, treat the generated tutor_core new_item_authoring_brief as **instructions for a draft**, not a trusted answer key. Before presenting the question: (a) confirm its learning objective occurs in the actual course source, (b) avoid merely changing numbers in the same family, (c) solve independently and list valid equivalents and domain assumptions, (d) state one observable criterion that distinguishes understanding from guessing, and (e) check ambiguity, fairness and source anchor. Do not claim the draft has been independently reviewed without a distinct qualified reviewer.
-
-
-## v1.1 strict model audit is a mandatory pre-presentation step
-The authoring agent MUST arrange an independent-solution pass that does not see the author's answer, followed by an adversarial critique of the authored key, alternatives, scope, ambiguity, every distractor/rubric criterion and diagnostic value. Before releasing each newly authored or edited question, check references/model_audit.md; for source-backed local banks use scripts/model_audit.py to verify a complete, bank-and-source-SHA256-bound separate model review. Fail, uncertainty, fabricated citations and second valid choice keys must trigger revision/review, NOT student presentation. A model's self-check is not independently verified reviewer identity; formal exams still need qualified human approval.
+旧题库可用Full版 \`scripts/qa.py validate\` 和 \`scripts/question_quality.py\` 静态审查；格式通过不证明课程内容正确。真实课程/学生效果仍待专业验证。
