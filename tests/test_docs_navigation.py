@@ -44,14 +44,14 @@ class DocumentationNavigationTests(unittest.TestCase):
         for name in ("README.md", "README.zh-CN.md",
                      "docs/INSTALL.md", "docs/INSTALL.zh-CN.md"):
             content = (ROOT / name).read_text(encoding="utf-8")
-            self.assertIn("question-qa-skill-core-1.2.0.zip", content)
-            self.assertIn("question-qa-skill-1.2.0.zip", content)
+            self.assertIn("question-qa-skill-core-1.2.1.zip", content)
+            self.assertIn("question-qa-skill-1.2.1.zip", content)
 
     def test_superseded_guides_are_only_in_git_history(self):
         self.assertFalse((ROOT / "docs/archive").exists())
         for old in OBSOLETE_NOTES:
             self.assertFalse((ROOT / old).exists(), old)
-        self.assertTrue((ROOT / "docs/RELEASE_NOTES_v1.2.0.md").exists())
+        self.assertTrue((ROOT / "docs/RELEASE_NOTES_v1.2.1.md").exists())
         self.assertTrue((ROOT / "docs/routine").is_dir())
 
     def test_verified_limits_are_explained_in_both_languages(self):

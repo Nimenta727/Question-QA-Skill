@@ -30,6 +30,6 @@ jobs:
       - name: Build verified archive and preview
         run: |
           python scripts/build_release.py --all --output dist
-          python scripts/build_release.py --verify dist/question-qa-skill-1.2.0.zip
-          python scripts/build_release.py --verify dist/question-qa-skill-core-1.2.0.zip
+          python scripts/build_release.py --verify dist/question-qa-skill-1.2.1.zip
+          python scripts/build_release.py --verify dist/question-qa-skill-core-1.2.1.zip
           python scripts/dashboard.py examples/sample_bank.json --state examples/demo_state.json --output dist/preview.html --lang en
