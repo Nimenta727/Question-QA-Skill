@@ -1,18 +1,17 @@
-# 安装与使用｜Question-QA-Skill v1.2.0
+# 安装与校验｜v1.2.0
 
-[返回首页](../README.zh-CN.md) · [完整文档目录](INDEX.zh-CN.md)
+[首页](../README.zh-CN.md) · [文档目录](INDEX.zh-CN.md) · [正式发行](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.0)
 
-## 1. 推荐：直接使用 Core 轻量版
+## Core：日常学习推荐
+1. 在**已发布**的 v1.2.0 Release 中下载 `question-qa-skill-core-1.2.0.zip` 和 `SHA256SUMS.txt`。
+2. 使用系统 SHA256 校验工具核对 ZIP 与清单中的摘要。
+3. 解压并在兼容 Agent Skills 的助手中注册目录，或要求助手读取 `SKILL.md`。
+4. **初始只读取 SKILL**；只有需要追问、深度命题、复杂审题或特殊学科时才分别读取对应 `references/` 文件。
 
-从 GitHub Releases 取得 \`question-qa-skill-core-1.2.0.zip\` 和 \`SHA256SUMS.txt\`，验证下载文件，再解压。将解压目录注册为 Agent Skills 兼容助手的Skill，或让助手读取 \`SKILL.md\`。
+示例：“依据我提供的 C 语言课件，一次问一道理解题，回答后检查我的思路再追问。” 未提供或未核对课件时，只能标注通用练习。
 
-**默认不要一次性读取整个ZIP。** Core目录仅有 SKILL.md、4个按需参考、README、VERSION、LICENSE及校验manifest。一般聊天只读SKILL；QUICK复杂追问才读tutoring.md，DEEP命题读authoring.md，严格审题争议读model_audit.md，跨学科差异读subjects.md。
-
-示例：\`根据我的老师课件，一次问一道C语言指针题，根据答题推理决定下一问，六轮结束时总结已证实和未证实的理解。\`
-
-## 2. Full 完整版：离线题库与验证
-
-下载 \`question-qa-skill-1.2.0.zip\`。Python 3.9+，无需安装第三方依赖。进入解压根目录：
+## Full：可选离线 Python 工具
+下载 `question-qa-skill-1.2.0.zip`。使用 Python 3.9+，无额外 pip 依赖：
 
 ~~~bash
 python scripts/qa.py validate examples/sample_bank.json
@@ -21,12 +20,9 @@ python scripts/qa.py answer examples/sample_bank.json --state .qa-state.json --r
 python scripts/qa.py report --state .qa-state.json --bank examples/sample_bank.json
 ~~~
 
-Windows可用 \`py -3\` 代替 \`python\`。演示题库与记录是合成数据，不是实际教师课件或真人实验。
+Windows 可使用 `py -3`。示例数据是合成的，不是真实学生实验。严格门禁需要外部独立审核者先完成记录；`scripts/model_audit.py` **不调用大模型**，仅校验记录的来源、格式与部分客观一致性。参阅 [模型审核](MODEL_AUDIT.zh-CN.md)。
 
-Full还有 \`scripts/model_audit.py\` 严格模型审核记录的离线门禁，需要实际审核模型先独立作答并填审阅证据，程序本身**不调用LLM**；可参照 [模型审题](MODEL_AUDIT.zh-CN.md)。真实课程来源须核对，无真实资料只能按“通用练习”处理。其他命令按需查 [高级功能目录](INDEX.zh-CN.md)。
+## 完整性、隐私和历史
+ZIP 内 `manifest.json` 按文件记录 SHA256，单独发布的 `SHA256SUMS.txt` 用于核对整个压缩包；构建与自动化测试参阅 [发行指南](RELEASE.zh-CN.md)。禁止把本地学生状态、未经授权的课程内容、审阅者凭据或密钥放进公开仓库。
 
-## 3. 核对发布包与安全边界
-
-每个ZIP内含带SHA256摘要的 \`manifest.json\`，GitHub发行附件的 \`SHA256SUMS.txt\` 又对整个ZIP做SHA256验证；Full和Core都通过压缩包解压测试。
-
-不要将本地学生记录、真实课程源全文、审核者凭据、密钥或申诉文件放入公开项目。正式教育评估与正式考试需专业人工确认。旧版安装及命令开发历史保存在 \`archive/INSTALL_PRE_V1_2.zh-CN.md\`，并不代表v1.2的当前默认步骤。
+旧安装方案通过 [Git Tags](https://github.com/Nimenta727/Question-QA-Skill/tags) 与 [Git 提交历史](https://github.com/Nimenta727/Question-QA-Skill/commits/main/) 查阅，不再与当前安装步骤混放。

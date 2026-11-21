@@ -1,15 +1,15 @@
-# Question-QA-Skill v1.2.0｜正式发行与验证
+# 正式发行与完整性校验｜v1.2.0
 
-[返回首页](../README.zh-CN.md) · [文档索引](INDEX.zh-CN.md) · [发行历史](archive/RELEASE_PRE_V1_2.md)
+[文档导航](INDEX.zh-CN.md) · [正式发行](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.0) · [Token策略](TOKEN_BUDGET.zh-CN.md)
 
-## 发行文件
+**2026 年 11 月 21 日已正式发布。** 首次 Core 解压烟测脚本问题修复后，跨平台测试与不可变发行工作流已成功；GitHub Release 实际包含：
 
-- **Core**：\`question-qa-skill-core-1.2.0.zip\`，仅含短\`SKILL.md\`、4份按需参考、README、VERSION、LICENSE、SHA256 manifest；日常Agent Skill安装推荐。
-- **Full**：\`question-qa-skill-1.2.0.zip\`，保留所有离线Python脚本、评估工具、演示例子、测试、中英文文档、研发日志和历史报告；只在需要复杂工具时使用。
-- **SHA256SUMS.txt**：包含Core、Full和演示看板三个发行附件的SHA256摘要。
-- **demo-dashboard.html**：仅基于合成样例资料的离线演示看板。
+- `question-qa-skill-core-1.2.0.zip`：轻量提示 Skill、4 份按需参考及基本清单。
+- `question-qa-skill-1.2.0.zip`：兼容的 Python 3.9+ 离线题库、审核和研发工具。
+- `SHA256SUMS.txt`：两个 ZIP 和 `demo-dashboard.html` 的外部 SHA256 校验记录。
+- `demo-dashboard.html`：合成示例的离线可视化，**不是已证实的教学有效性报告**。
 
-## 可重复构建
+## 构建与复验
 
 ~~~bash
 python scripts/build_release.py --all --output dist
@@ -18,12 +18,10 @@ python scripts/build_release.py --verify dist/question-qa-skill-1.2.0.zip
 python -m unittest discover -s tests -v
 ~~~
 
-两包均具有固定ZIP时间戳、确定性路径顺序和\`manifest.json\`逐文件SHA256记录。Core严格限制只能有预定8个实质文件，不能夹带测试/源码/隐私文件；Full必须含重要评分、状态、模型审核模块。
+构建器锁定 ZIP 内部条目顺序和时间信息；`manifest.json` 对每个文件做摘要记录。Core 严格限制允许文件，Full 核验重要评分、状态、审计模块；CI 对发行包进行全新解压复验，旧发行 Tag 和附件不会因为文档整理而改变。
 
-正式GitHub Actions在三个系统中运行发行门禁，另在Linux、macOS、Windows × Python3.9/3.12进行全量回归，并且将两个包全新解压再次核验：Full重跑所有测试，Core检查文件结构和主SKILL上下文预算。只有实际测试通过且Git Tag/Release不存在时才创建新版本，不修改旧Tag或附件。
+下载时应以 Release 提供的 `SHA256SUMS.txt` 核对下载 ZIP 的 SHA256。**校验和只能证明文件完整性**，无法证明题目答案准确、模型真正独立审题或学生能力变化。
 
-## Token、审核与隐私
+## 隐私与历史
 
-Core默认仅读取SKILL，参考内容需要时才加载；ZIP文件字节数不是模型可计费Token数。严审包括独立求解、答案与等价性、课件来源和九项教学质量检查，但**离线验证器不调用真实LLM，也不证明模型每条判断都正确**；正式考试需专业人工复核。未经授权的课件原文、学生作答、审核凭据/密钥和私人审稿包不能随发行文件公开。
-
-过去的发行与安装长文档已移到\`docs/archive/\`，不再作为日常加载入口，但历史实现和Git提交保持可追溯。
+禁止在公开发行中包含真实学生信息、未授权的课程原文、审核者凭据/密钥与私人审题包。默认 Core 只加载 `SKILL.md`，不应把全部研发资料塞入普通课堂对话。更早版本的安装与发行方案查阅 [Git Tags](https://github.com/Nimenta727/Question-QA-Skill/tags) 和 [Git 提交历史](https://github.com/Nimenta727/Question-QA-Skill/commits/main/)；本次主分支文档更新**不会修改已发布 v1.2.0 的 ZIP**。

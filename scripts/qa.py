@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Offline evidence tracker for Question-QA-Skill. Stdlib only; formative, not calibrated."""
+"""Offline formative CLI for reviewed question banks and observed responses.
+
+Standard-library only. The program validates and stores local events, applies
+existing grading/routing rules, and can require an externally completed audit
+record. It does not call an LLM, evaluate arbitrary free-text reasoning,
+calibrate mastery probabilities, or establish educational efficacy.
+"""
 import argparse
 import hashlib
 import json

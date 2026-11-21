@@ -1,6 +1,9 @@
 """Evidence-aware formative diagnosis and transparent adaptive item targeting.
 
 This is NOT an empirically calibrated IRT / BKT / FSRS implementation.
+Scores and status gates describe observed history; external comparisons have
+not established that they outperform simple score-history baselines.
+Do not interpret the descriptive rate as P(student mastered the concept).
 """
 from collections import defaultdict
 from datetime import datetime, timezone

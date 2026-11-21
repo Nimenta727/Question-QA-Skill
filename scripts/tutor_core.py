@@ -4,6 +4,8 @@ This module only interprets observed response metadata and existing reviewed
 bank items. It never creates keys, authenticates content, executes learner
 answers or claims calibrated knowledge probabilities. The LLM still needs
 to write/assess source-grounded reasoning probes and request clarifications.
+Follow-up intents are metadata, not automated semantic grading or proof
+that a separate reviewer verified the questions.
 """
 from collections import defaultdict
 

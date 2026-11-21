@@ -1,108 +1,19 @@
-# Changelog / 版本记录
+# Changelog / 当前版本与历史定位
 
-## v1.2.0 — 2026-11-21 — Lean Core + Full reproducible distributions
+本文件描述**当前维护版本**。更早版本的完整设计说明、实现变更和旧发行页，使用 [Git Tags](https://github.com/Nimenta727/Question-QA-Skill/tags)、[Git History](https://github.com/Nimenta727/Question-QA-Skill/commits/main/) 和正式 GitHub Releases 追溯；不再把大段历史方案当作当前文档。
 
-- Shipped two distinct install profiles: compact, prompt-only \`question-qa-skill-core-1.2.0.zip\` for ordinary Agent Skill use, and backward-compatible \`question-qa-skill-1.2.0.zip\` for the entire offline Python, test and historical-document toolkit.
-- Reduced \`SKILL.md\` from approximately 4,018 to 1,965 Unicode characters (about 51% shorter). Condensed authoring, tutoring and adversarial model-audit instructions into separately loaded, focused references while preserving all nine critical audit decisions and uncertainty blocking.
-- The lean core profile is a strict allowlist of eight substantive files: SKILL, four topical references, README, LICENSE and VERSION. It cannot embed private learning state, Python scripts or old research data.
-- Both profiles are reproducible, versioned ZIPs with fixed timestamps and SHA256 file manifests; GitHub Release also publishes checksums for both archives and the dashboard. Core ZIP is built and smoke-tested independently while the entire suite runs inside the freshly extracted Full ZIP.
-- Reorganized bilingual README and installation pages, added documentation indexes and token-budget guidance. Historical release and installation notes have been archived rather than deleted. The default reading path now points only to SKILL.md.
-- Legacy \`scripts/qa.py\`, scoring, model review record validation and previous experimental claims are unchanged. Size and source-character reductions are not measured model-token billing or evidence of learner benefit.
-- The separate project **development** two-agent workflow is a distinct unmerged PR, not part of the learner's ordinary Core skill.
+## v1.2.0 — 2026-11-21
 
+- Core / Full 双配置发行：轻量 Agent Skill 与完整的离线 Python 研发工具分离，四份参考按需加载，降低默认上下文负担。
+- 保留 QUICK 一题一问、DEEP 课件对齐命题、逐题独立求解与九维严格审题、疑点阻断及来源验证。
+- Core 的 `SKILL.md` 文本字符量相对上一发行基线减少约 51%；此数字**不是**精确 Token 节省率。
+- 包构建采用确定性 ZIP、`manifest.json` 逐文件摘要及外部 `SHA256SUMS.txt`；v1.2.0 正式 Release 与跨平台测试于 2026-11-21 成功完成。
+- 离线诊断、答题跟进、严格审题记录门禁、状态管理与研发工具保持原有兼容入口；它们**不自动调用模型**、也不宣称已验证学习效果。
 
+## 2026-11-21 — Main 文档与代码说明整理（发行后）
 
-## v1.1.0 — 2026-11-21 — Strict adversarial model audit before presenting questions
+- README、安装页、文档目录、架构、诊断、审题、发行、路线图和评测计划围绕当前真实能力重写，消除混杂的历史版本叙述。
+- 过时的独立旧发行长文和旧安装档案从当前工作树移除；Git 提交历史和旧版本标签继续提供追溯。
+- 同步代码模块文档字符串与文档导航回归测试；保留所有课程证据与外部验证负面结果，**不虚构实证收益或独立审计结果**。
 
-- A model reviewer now has a first-class two-pass audit contract: solve the student-facing task **without** the author's key, then challenge the answer, alternative keys, domain assumptions, actual curriculum citations, each distractor or rubric criterion, diagnostic distinction, level alignment, fairness and semantic novelty. A single failed or uncertain issue blocks adoption.
-- Added scripts/model_audit.py: an all-unapproved template, independent-review declaration, required item-specific justifications across nine checks, exact bank and course-source SHA256 binding, verifiable source quotes, selected answer agreement, unresolved risk and static warning gates. No raw student response or private course extract is ever included in a public report.
-- qa.py next supports --require-model-audit --model-audit FILE and --audit-source-file / --require-course-audit. In strict mode **no learner-facing question** is returned unless the complete model evidence packet passes; legacy no-audit mode remains but explicitly says not_checked_legacy_mode.
-- A proposed alternative valid short answer which the actual grader would reject, a second single-choice answer key, a course claim without a source and any edited question/source invalidate approval.
-- SKILL.md now makes adversarial question critique compulsory before each QUICK/DEEP prompt. references/model_audit.md and bilingual usage guides explain independent solving, source verification, strict stop conditions and qualified human validation for formal assessments.
-- Added adversarial synthetic tests and an **actual self-critique** of the existing demo bank documenting weak distractors, missing domain assumptions and potentially mismatched cognitive-level labels. That self-critique is not a claimed independent review.
-- The verifier checks evidence **structure and a few objective facts**, and does NOT itself run an LLM or prove semantic truth, fairness, actual independent reviewer identity or improved learner outcomes.
-
-
-## v1.0.0 — 2026-11-21 — Return to evidence-driven AI tutoring
-
-- Replaced the continually growing primary SKILL.md with a compact, course-faithful QUICK and DEEP tutoring contract. Previously implemented security, data lifecycle, audit and research tools remain available only when requested via references/operations.md.
-- Added a bounded, answer-key-free scripts/tutor_core.py pedagogical decision layer. Incorrect and unverified reasoning, guessed/hint-assisted correct answers, rubric-partial credit, transfer requests, missing reviewed question families and session end-of-budget each receive an explicit next teaching intent.
-- Exposed safe tutor_intent on qa.py next, tutor_next_move on answer, and teaching_summary on report and completed session. All historical grading, local storage and v0.2 scientific diagnostic indices remain backward-compatible.
-- New item-authoring briefs contain the scope and independent review checklist, not fictitious question keys; a suggested reviewed bank item is marked for reconsideration when its family/level cannot satisfy the intended probe.
-- Added synthetic teaching-path regression tests (question budget, alternate family, no key leak, partial evidence, novice prerequisite gaps) and independent human-review quality criteria; passing tests do not demonstrate learner outcome gains.
-- Rewrote bilingual README and maintained all advanced optional tooling. Scientific findings on two external real datasets remain negative/inconclusive, with no refitting of held-out test data.
-
-
-## v0.9.0 — 2026-11-20
-
-- Added offline administrator-scoped reviewer credentials, secure local token files, salted PBKDF2 verifiers and revocation; protected score corrections require verified active reviewer token possession rather than legacy self-declaration.
-- Added HMAC-SHA256 appeal audit chain for open/resolve operations, a separate signed policy marker, integrity checking and independently archived keyed checkpoints; does not claim teacher identity verification, cryptographic non-repudiation or absolute immunity to rollback without external trust.
-- Strengthened recovery and secret destination controls, and disallowed protected-mode downgrade through normal legacy correction paths.
-- Added frozen-round independent expert-reference comparison with aggregate-only agreement/absolute errors, common reviewer-reference disagreements and case-bootstrap uncertainty, plus eight wholly synthetic end-to-end cases. No real student/teacher study or independently certified gold-standard accuracy.
-- Additional security/research/privacy regressions; GitHub CI on Ubuntu/Windows/macOS with Python 3.9/3.12, immutable checksummed distribution and full fresh-extraction smoke tests.
-
-
-## v0.9.0 — 2026-11-20
-
-- Added stdlib-only, local credential-based reviewer enrollment, authenticated review, revocation and private token-file handling with salted PBKDF2-HMAC verifiers; actual educator identity, professional qualifications and blind-review independence are not verified by software.
-- Added HMAC-linked appeal audit sequence, external signed policy binding, effective-score consistency checks and optional independently stored rollback-detecting checkpoint receipts. High-trust appeal correction requires reviewer credentials plus audit key, and signed-state rollback/deletion has explicit extra confirmation.
-- Added third-party disputed-criteria finalization for previously frozen A/B reviewer study packets. A synthetic expert-reference comparison tool and samples can assess agreement with a declared reference, not prove expert correctness or demonstrate real human participation.
-- Retained legacy local appeal behavior with explicit unauthenticated label, unchanged formative heuristic diagnostics, private data defaults and existing learning-state backward compatibility.
-- Extended synthetic adversarial tests and Linux/Windows/macOS Python3.9/3.12 CI, immutable release ZIP with SHA256 and fresh-extraction smoke test.
-
-
-## v0.8.0 — 2026-11-20
-
-- Learner grade appeal life cycle, opaque event IDs and lazy legacy-ID migration, reviewer-confirmed corrections with rubric-consistent numeric before/after audit and reports using corrected grade.
-- Rolling five local state snapshots and prior .bak, selected snapshot recovery with explicit confirmation, aggregate-only export by default, doubly confirmed private export, and typed-confirmation deletion of managed local files (not forensic erasure).
-- Separate offline consent-gated reviewer-trial **preparation** utility: pseudonymous and independently randomized A/B assignment packets, frozen-round rubric validation, packet content SHA256 and aggregate agreement/uncertainty. Real authorizations/blinding cannot be verified by software and no real human trial occurred.
-- New security and privacy regression tests; Linux/Windows/macOS × Python 3.9/3.12 verification and immutable checksummed v0.8.0 ZIP. Continues to avoid unvalidated latent-mastery or learning-benefit claims.
-
-
-## v0.7.0 — 2026-11-20
-
-- Opt-in exact rational/limited polynomial equivalence grading for short answers, bounded AST/Fraction evaluator, conservative unverified-response gate, unchanged legacy key behavior.
-- Cross-platform native local file locks for full state transactions, atomic previous-valid snapshot, explicit integrity checks and confirmed rollback. Backups are private and recovery can lose one transaction.
-- Private, aggregate-only two-reviewer study statistics: rubric agreement, weighted Cohen kappa, case-clustered bootstrap interval, adjudication completeness, synthetic example and protocol; no real human study has been completed.
-- More unit, concurrency, privacy and security regression cases; GitHub CI for Linux/Windows/macOS Python3.9/3.12 and a fresh ZIP smoke test.
-- Continues to refrain from BKT/IRT or other models tuned on previously exposed real-data test cohorts.
-
-
-## v0.6.0 — 2026-11-20
-
-- Independent double-reviewer manual-answer assessment, mandatory distinct third adjudicator when scores differ, verifiable exact quotations, missing-adjudication no-score gate, numeric-only private state.
-- New --response-file avoids placing original student answers in command-line arguments; legacy grading interfaces remain compatible.
-- Formative evidence sufficiency, fixed uncalibrated historical score comparison and rule-based adaptive-choice explanations separated into independent modules. Existing v0.2 heuristic remains unchanged for fair historical validation.
-- Cross-platform CI on Ubuntu, Windows and macOS (Python 3.9/3.12). New release process verifies all three OSes, builds reproducibly, checks ZIP and SHA256, and publishes one immutable Git-tagged version without replacing old assets.
-- Updated bilingual guide, synthetic arbitration examples, limitations and protocol. No automatic semantic scoring, verified reviewer independence or proven student outcome advantage is claimed.
-
-
-## v0.5.0 — 2026-11-20
-
-- Added Python standard-library offline question quality auditor with duplicate/near-duplicate and rubric detection, optional exact-rational arithmetic answer witnesses and bank-hash-bound independent review templates. Strict gate refuses missing audits.
-- Added a second licensed-research-data cohort: ASSISTments 2015 real mathematics sequences. Pinned 17.6MB source content hash, de-identified learner-disjoint splits, causal next-response replay, baseline AUC, student-clustered 95% intervals, aggregate-only reports.
-- Held-out ASSIST2015 test: 280 eligible learners, 5,728 forecasts, v0.2 index AUC 0.620 vs smoothed learner history 0.710. Within-concept macro AUC difference uncertainty includes zero. No claim of latent mastery accuracy or causal adaptive learning benefit.
-- Updated bilingual docs, Skill instructions, regression and CI release gates; retains P2 offline dashboard, reviewer-led open-answer feedback, zero-third-party-runtime dependencies.
-- Existing v0.4.0 release remains immutable; this is a new separately versioned release.
-
-
-
-## v0.4.0 — 2026-11-20
-
-- **P2 offline dashboard**: single-file self-contained bilingual HTML, knowledge/prerequisite map, question coverage, evidence flags, cognitive-level response summaries, reviewed misconception labels, rubric criteria, historical trend and review dates.
-- **Student answer assessment**: criterion-by-criterion reviewer-provided evidence, partial scores, strengths, actionable feedback, and explicit short-answer equivalence review. No claims of automatic semantic scoring or verified mastery probabilities.
-- **Official distribution**: deterministic offline ZIP, SHA-256 file manifest, release smoke tests, bilingual installation notes, GitHub Actions package and GitHub Release publishing.
-- **Data protection**: keep raw learner text and review evidence out of persistent state/dashboard/release package; no external resources required.
-- **Research honesty**: retain v0.3 negative/inconclusive FORGET-SE external criterion findings. No BKT/IRT model or learning performance guarantees.
-
-## v0.3.x — 2026-11-20
-
-Independent historical-response evaluation and FORGET-SE external final exam benchmark, with student-disjoint splits, conflicting anonymized ID exclusion, statistical uncertainty, pinned data source and bilingual validation reports.
-
-## v0.2 — 2026-11-20
-
-Conservative independence/retention gates, confidence/hint flags, adaptive question targeting, reviewed misconception labels, session bounds and concept/cognitive-level reports.
-
-## v0.1.0 — 2026-11-20
-
-Initial bilingual Agent Skill, question bank, deterministic objective grading, reviewer-scored manual questions, local learning history, references and Python CI.
+[Current documentation](docs/INDEX.md) · [中文导航](docs/INDEX.zh-CN.md) · [Next-stage evidence gates](docs/QUALITY_VALIDATION.md)

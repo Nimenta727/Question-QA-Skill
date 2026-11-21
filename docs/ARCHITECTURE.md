@@ -1,43 +1,50 @@
-# Architecture overview — current v1.2.0 structure
+# Current architecture — Question-QA-Skill v1.2.0
 
-## A slim Agent interface, not a platform boot sequence
-The normal tutor loads just \`SKILL.md\`. QUICK optionally reads \`references/tutoring.md\`, DEEP reads \`references/authoring.md\`, complicated audit issues read \`references/model_audit.md\`, and subject-specific edge cases consult the corresponding part of \`references/subjects.md\`. These are **progressive disclosures**, not mandatory simultaneous context. A core Skill is fully usable in conversation without any Python or model API infrastructure.
+[Documentation](INDEX.md) · [中文首页](../README.zh-CN.md) · [Validation plan](QUALITY_VALIDATION.md)
 
-## Release profiles
-- **Core:** short prompt, four references, minimal README/LICENSE/VERSION and SHA256 manifest (no scripts, tests, documents, student information).
-- **Full:** exact same prompt/references plus existing offline source, examples, tests, bilingual documentation, archives and dated engineering records; \`qa.py\` grading and \`model_audit.py\` source/checksum evidence verification are optional tool calls, not hidden model capabilities.
-- User-provided course data is read only when needed, never invented or used as instructions. Neither package stores a long chat history or uses model billing APIs on its own.
+## 1. Two layers, not two required learner-facing models
 
-## Verification boundaries
-Software regression demonstrates API stability, reproducible packaging and selected fail-closed review gates, NOT calibrated student mastery, pedagogical effectiveness or independent correctness of model-authored explanations. Research and reviewer-administration features remain available only in Full and do not affect normal student context.
+**Agent Skill (Core):** `SKILL.md` sets the contract for QUICK (one question, observe answer and reasoning, choose one follow-up) and DEEP (source-aligned deeper questions). Four `references/` files are read **only on demand**. A conversational assistant can use Core without Python, a database, a model API client or dedicated hosting.
 
----
-# v0.6.0 modular diagnostic architecture
+**Optional offline toolkit (Full):** Python standard-library modules support a persisted question bank, deterministic grading/record handling, auditable prompt guidance, export/review tools, research scripts and packaging. They do **not** understand arbitrary free-text reasoning, generate new questions, call an LLM, or certify independent semantic review. Project-development builder/reviewer agents are a separate GitHub governance workflow, not a requirement for QUICK.
 
-Three separate concerns are now exposed by the CLI while preserving the previously tested v0.2 algorithm:
+## 2. Live conversational teaching flow
 
-1. scripts/evidence_engine.py reports observed independent families, UTC dates, cognitive levels, error flags, evidence gaps and a legacy descriptive index. It is evidence about observed responses, not a forecast and NOT a mastery probability.
-2. scripts/prediction_engine.py computes a fixed smoothed historical-score baseline with two pseudo-counts at prior 0.5. It is an interpretable comparison signal, not fitted, calibrated or independently validated individual probability.
-3. scripts/adaptive_engine.py continues to use the unchanged diagnosis.select_item policy, adding reason codes for knowledge coverage, uncertain answers, mistake repair and item-family diversity. These reason codes describe broad factors, not exact computed priority contributions or causal learning benefits.
+~~~text
+Course material actually read -> scoped knowledge claim -> draft item
+-> blind solve and adversarial review -> show one safe question
+-> learner response and reasoning -> verify grade or ask clarification
+-> targeted follow-up in an independent family -> cautious summary / stop
+~~~
 
-The qa.py report and answer output keep legacy rate/status fields for compatibility and also return evidence_profile and prediction_baseline. The qa.py next command returns a cached selection explanation for the active pending question, without exposing the correct answer or rubric before submission.
+- **Source scope:** never invent an instructor quote or page. Unavailable course material means general practice, clearly labeled.
+- **Question gate:** derive the answer independently, check equivalent answers, assumptions, second correct choices, all distractors/rubric criteria, cognitive demand, fairness and novelty. Stop/revise if a material risk is unresolved.
+- **Decision:** wrong with unknown cause => request reasoning/prerequisite; uncertain or assisted success => independent recheck; partial score => missing criterion; justified success => boundary or transfer. Do not diagnose a misconception solely from a wrong response.
+- **Completion:** stop when asked, at the selected budget, or when no verified useful item is available. Report observed evidence and untested areas, not lifetime mastery.
 
-FORGET-SE external exam and ASSISTments2015 practice prediction studies did not establish index improvement over simple history baselines. We have not tuned the original model on these two used test sets. Reliable evaluation of strong mastery labels still requires real item identities, independent and delayed recalls, expert-reviewed cognitive annotations, and genuinely unseen target assessments. Adaptive benefits require a separate prospective controlled comparison.
+## 3. Actual Full module responsibilities
 
+| Layer | Files | What is and is not established |
+| --- | --- | --- |
+| CLI / bank / events | `scripts/qa.py` | Validates bank schema and runs deterministic local workflows; no model-generated keys or semantic free-text grading |
+| Pedagogical next move | `scripts/tutor_core.py` | Maps already-recorded evidence to compact follow-up intents; cannot independently assess a student's prose |
+| Descriptive evidence | `scripts/diagnosis.py`, `scripts/evidence_engine.py` | Historical heuristic scores/coverage; not a calibrated probability of knowledge |
+| History baseline / routing | `scripts/prediction_engine.py`, `scripts/adaptive_engine.py` | Comparison baseline and rule-based selection, not validated information gain or causal teaching benefit |
+| Question checks | `scripts/question_quality.py`, `scripts/model_audit.py` | Static checks plus verification of reviewer-produced JSON/source digests; not a running independent reviewer |
+| Corrections / local integrity | `scripts/appeals.py`, `scripts/state_store.py`, `scripts/audit_ledger.py` | Optional evidence changes, transactional state and local audit mechanisms; not institutional identity certification |
+| Evaluation / packages | `scripts/evaluate*.py`, `scripts/build_release.py` | Historical external-data comparisons and deterministic release builds; not live mastery measurement |
 
-## v0.7.0 additions
-math_equivalence.py is a limited deterministic equivalence helper, not an adaptive learner model; old diagnosis weights are unmodified. state_store.py provides native filesystem transactional locks and previous committed backups under CLI, but external file editors and networked filesystems are out of scope. reviewer_study.py is a separate aggregate score-agreement utility, not an automatic semantic grading system; its real participant status is unverified.
+The shipped Skill/CLI API is deliberately **not** rewritten as a new platform. Existing versioned state and score semantics remain as implemented; see [diagnosis details](DIAGNOSIS.md) and the software tests.
 
+## 4. Evidence boundaries
 
-## v0.8.0 revision, retention and study boundaries
-appeals.py stores minimal reason-coded before/after corrections and updates effective response scores for diagnosis, score-history comparison, adaptive questions and the local dashboard. This is not an authenticated teacher approval or cryptographically protected ledger. state_store.py supports at most five valid prior snapshots and ordinary controlled export/deletion; external file copies remain outside its remit. reviewer_trial.py produces randomized pseudonymous tasks for two independent reviewers and freezes first-round aggregate score statistics, but cannot establish real authorization, blindness or educational effectiveness.
+- Passing unit, package and cross-platform CI tests supports code behavior and reproducibility, not whether authored questions are actually correct in every subject.
+- A JSON record passing `model_audit.py` is not proof that an independent reviewer solved the problem or that its explanation is accurate.
+- The legacy descriptive index failed to demonstrate a consistent predictive gain over simple history baselines in the independent datasets already evaluated. [Results](VALIDATION.md)
+- Only a suitably approved independent educator/expert protocol can support strong educational claims or official assessment use. [Preregistered evaluation design](QUALITY_VALIDATION.md)
 
+## 5. Cost and data policy
 
-## v1.0.0 pedagogical orchestration — thin and optional
-scripts/tutor_core.py sits above the existing offline diagnosis, selector, rubric review and privacy-sensitive state layer. It reads only already-recorded response metadata (score, family, concept, level, confidence, hint and source-reviewed item metadata) and emits a compact instructional plan for the AI. It does not call external APIs, read student original text, author unverified answers, retrain a prediction model, override grading or require the audit platform.
+Read `SKILL.md` first, then one relevant `references/` file, and only the necessary source excerpt. Do not stream the Full development history into each tutoring context. Keep private student responses, identities, credentials and unauthorized teaching material outside public commits and release artifacts.
 
-The human-facing pipeline is: course scope → one diagnostic claim/task → student response → justified grade or requested clarification → targeted independent follow-up → cautious session summary. The old v0.2 index and previous validation experiments are preserved unchanged. Security and authentication mechanisms remain independently available via references/operations.md but are not a prerequisite for ordinary tutoring.
-
-
-## v1.1.0 author-review separation before item release
-The Agent must first solve each authored item independently without relying on the proposed key, then use a genuine reviewing model pass to seek counterexamples, source mismatches, alternative answers, misleading distractors/rubric errors and low diagnostic value. scripts/model_audit.py enforces an evidence record with a source/bank digest and fail-closed structure; it does not run the review model. qa.py next can enforce the gate for local banks, while Skill instructions require serious internal model critique even when local CLI is unavailable. Previous offline grading and tutoring evidence functions remain unchanged. For official/high-stakes examinations, external human review remains mandatory.
+For prior implementations and superseded architecture narratives, consult [Git tags](https://github.com/Nimenta727/Question-QA-Skill/tags) rather than treating older design notes as current.

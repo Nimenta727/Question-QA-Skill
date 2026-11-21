@@ -1,15 +1,25 @@
-# v1.1.0 strict model-based audit for questions
+# Strict question review — current v1.2.0
 
-Every question should undergo independent solving, adversarial answer criticism and source/scope verification before presentation. The required nine checks are source_scope, independent_solution, answer_and_equivalents, ambiguity_and_conditions, options_or_rubric, diagnostic_value, cognitive_alignment, fairness_and_accessibility and novelty. A failed, uncertain, missing or unjustified check blocks the item; all three wrong choices (or every rubric criterion) must be assessed separately.
+[Quick authoring rules](../references/authoring.md) · [Review instructions](../references/model_audit.md) · [Evidence validation plan](QUALITY_VALIDATION.md)
 
-The reviewing model must first solve without seeing the author's proposed answer, then compare the key and seek counterexamples, hidden assumptions, multiple correct answers, invalid source claims, misleading distractors and superficial repeated variants.
+Every **new or modified** learner-facing item should undergo independent solving and adversarial criticism **before it is shown**. The protocol also applies to adaptive follow-ups. No result is “independently audited” unless an actual separate reviewing run took place.
 
-Optional offline evidence-packet gate:
+## Two-stage review
 
-    python3 scripts/model_audit.py BANK.json --template audit.json --source-file COURSE.txt --author-id author-agent
-    python3 scripts/model_audit.py BANK.json --review audit.json --source-file COURSE.txt --require-course
-    python3 scripts/qa.py next BANK.json --state .qa-state.json --require-model-audit --model-audit audit.json --audit-source-file COURSE.txt --require-course-audit
+1. **Blind independent solve:** reviewer sees the real prompt, options and permitted course source but **not** the author's answer or rubric. Independently solve; identify equivalent answers, missing restrictions, source mismatches, counterexamples and doubts. Preserve this stage's evidence before revealing the proposed key.
+2. **Adversarial comparison:** compare with the author's key and grade criteria; challenge every option or rubric criterion, verify scope/quotes and document concrete reasons. After any edit, repeat the full review rather than reusing a stale approval.
 
-The first command creates an unapproved template; a real separate model review must fill it. The verifier checks bank/source hashes, quotation presence, evidence completeness, selected objective answer agreement and unresolved issues. The script does not itself invoke an LLM or prove correctness, reviewer identity, or actual independent work. A review can be marked complete for informal practice but not certified for official high-stakes examination without independent qualified human verification.
+All nine checks require specific evidence: `source_scope`, `independent_solution`, `answer_and_equivalents`, `ambiguity_and_conditions`, `options_or_rubric`, `diagnostic_value`, `cognitive_alignment`, `fairness_and_accessibility` and `novelty`. **Fail, uncertain, missing justification, unverified source or unresolved risk => withhold and repair.**
 
-If the course is unavailable, questions may be explicitly labeled as general practice rather than falsely attributed to real lesson material. Read references/model_audit.md for the full two-stage protocol.
+## Full-only offline gate (does not run an LLM)
+
+~~~bash
+python scripts/model_audit.py BANK.json --template audit.json --source-file COURSE.txt --author-id author-agent
+# A genuinely separate reviewer must fill the template after blind solving.
+python scripts/model_audit.py BANK.json --review audit.json --source-file COURSE.txt --require-course
+python scripts/qa.py next BANK.json --state .qa-state.json --require-model-audit --model-audit audit.json --audit-source-file COURSE.txt --require-course-audit
+~~~
+
+`COURSE.txt` is a permitted, actually verified UTF-8 excerpt with traceable source locations. The code binds bank/source SHA256, checks supplied quote presence, expected record completeness, limited objective answer agreement and unresolved issues. A changed bank or source invalidates the existing record. With no accessible course source, label it `general_practice`, not “teacher-aligned.”
+
+**Boundaries:** hashes authenticate bytes, not citations' meaning. Author/reviewer IDs are self-declared and do not certify distinct identities or independent reasoning. A syntactically complete audit JSON can still contain incorrect reasoning. An LLM self-review must be disclosed as self-review; official or high-stakes assessments require qualified independent human review.

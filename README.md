@@ -1,38 +1,29 @@
-# Question-QA-Skill — Rigorous questions and adaptive formative tutoring
+# Question-QA-Skill
 
-[简体中文](README.zh-CN.md) · [Documentation index](docs/INDEX.md) · [Changelog](CHANGELOG.md)
+**Source-grounded question writing · one-question-at-a-time diagnosis · evidence-first tutoring**
 
-**Purpose:** Ask a small number of accurate, source-grounded questions; inspect the learner's observed reasoning; choose one informative follow-up at a time. A correct response is not proof of long-term mastery.
+[简体中文](README.zh-CN.md) · [Documentation](docs/INDEX.md) · [Verified v1.2.0 release](https://github.com/Nimenta727/Question-QA-Skill/releases/tag/v1.2.0) · [Roadmap](docs/ROADMAP.md)
 
-## Choose the package
+Question-QA-Skill helps an assistant ask fewer, better questions: ground each item in material actually supplied, verify its answer and alternatives, observe a learner's reasoning, and choose the next probe based on that evidence. **A correct answer does not establish durable mastery.** It is a reusable Agent Skill, not a hosted education platform or an automatically calibrated diagnostic model.
 
-| Edition | Contents | Recommended for |
-|---|---|---|
-| **Core — lightweight (recommended)** \`question-qa-skill-core-1.2.0.zip\` | Short SKILL.md + four **on-demand** teaching references, no scripts/tests/research history | Everyday AI conversation, lowest default context |
-| **Full** \`question-qa-skill-1.2.0.zip\` | Same pedagogical guidance plus offline Python CLI, source-bound review gate, tests, bilingual docs and history | Local banks, learning records, tooling or development |
+## Choose a distribution
 
-Both archives have SHA256 manifests. Archive byte size is **not** equal to inference token usage; host Skill loading and source/question context determine actual usage. Read only SKILL.md by default, then the relevant reference. See [token budget and design](docs/TOKEN_BUDGET.md).
+| Edition | Intended use | Contents |
+| --- | --- | --- |
+| **Core** (recommended) — `question-qa-skill-core-1.2.0.zip` | Normal AI conversations with minimal initial context | `SKILL.md`, four on-demand references, minimal README, LICENSE, VERSION and manifest |
+| **Full** — `question-qa-skill-1.2.0.zip` | Offline question banks, review evidence and developer workflows | Core guidance plus Python 3.9+ standard-library CLI, examples, tests, bilingual documentation and research records |
 
-## Get started
+Both archives and `SHA256SUMS.txt` are available in the **published v1.2.0 GitHub Release**. Verify the downloaded checksums before extraction. The smallest package is not necessarily the cheapest model invocation: read **only `SKILL.md` by default**, and load a reference only when needed. [Installation](docs/INSTALL.md) · [Token policy](docs/TOKEN_BUDGET.md)
 
-1. Obtain either ZIP and SHA256SUMS.txt from [Releases](https://github.com/Nimenta727/Question-QA-Skill/releases).
-2. Verify the archive checksum, extract and register the folder with an Agent Skills-compatible assistant (or explicitly ask your assistant to read SKILL.md).
-3. Provide the actual course materials and ask: "Test my understanding with one question at a time, then choose each follow-up from my observed reasoning. Do not show the answer before I respond."
+## Use the Skill
 
-Alternative prompts: "Create five rigorous but fair course-aligned questions; withhold keys until submission." / "Use at most six questions to find my C pointer reasoning gaps."
+1. Install the Core directory in an Agent Skills-compatible host, or ask your assistant to read `SKILL.md`.
+2. Supply course material you are allowed to use; specify subject, scope and goals.
+3. Prompt: **“Ask me one course-grounded question at a time. After each answer, inspect my reasoning, give concise feedback and choose one informative follow-up. Withhold the answer until I respond.”**
 
-## Teaching and audit commitments
+**QUICK** defaults to up to six adaptive rounds, with a stop-on-request rule. **DEEP** creates a small set of answer-verified, course-aligned questions, separating learner-facing tasks from later solutions. Without accessible materials, the assistant must label its work **general practice**, not invent course sources. New or revised questions must be independently solved and challenged for ambiguity, alternatives, source mismatch, distractor/rubric defects, fairness and diagnostic value before presentation.
 
-- **QUICK:** wrong but cause unknown → clarify reasoning; guessed or hinted correct → new independent item family; partial credit → one missing criterion; justified success → transfer/boundary probe.
-- **DEEP:** select specific curriculum claims; verify solutions, equivalents, cognitive alignment, fair grading and scope.
-- **Pre-question audit:** independently solve before comparing the draft key; check second answers, counterexamples, source citations, distractors/rubrics and unresolved risks. A failed or uncertain question is revised or withheld. Same-model self-review is not independent review.
-- **Scientific limits:** heuristic indices are not calibrated mastery probabilities; passing synthetic regressions is not evidence of improved learning or actual LLM semantic accuracy. High-stakes exams require qualified human review.
-
-On-demand detailed guides: \`references/tutoring.md\`, \`references/authoring.md\`, \`references/model_audit.md\`.
-
-## Full edition: optional offline CLI
-
-Python 3.9+, no pip dependency and no automatic model API calls:
+## Optional Full edition: offline CLI
 
 ~~~bash
 python scripts/qa.py validate examples/sample_bank.json
@@ -41,10 +32,15 @@ python scripts/qa.py answer examples/sample_bank.json --state .qa-state.json --r
 python scripts/qa.py report --state .qa-state.json --bank examples/sample_bank.json
 ~~~
 
-\`scripts/model_audit.py\` checks the structure, source/hash binding and certain objective answer consistency of **an actual reviewer-produced record**; it does not run an LLM or prove semantic correctness. See [install guide](docs/INSTALL.md) and [model audit](docs/MODEL_AUDIT.md).
+The offline CLI **does not call an LLM**. `scripts/model_audit.py` verifies the structure and provenance of **an already-completed** model-review record; it does not perform or prove independent semantic review. [Review protocol](docs/MODEL_AUDIT.md) · [Architecture](docs/ARCHITECTURE.md)
 
-## Project status
+## Evidence, limitations and development status
 
-The Skill has software regression coverage, but its performance on real curriculum questions, diagnostic accuracy and learner outcomes **still need independent empirical assessment**. A separate project-development two-agent PR does not require two extra models for each learner interaction, and unperformed independent reviews are not claimed.
+- **Verified engineering:** v1.2.0 Core/Full distribution and cross-platform regression workflow completed successfully on November 21, 2026. This is software verification, **not** teaching effectiveness.
+- **Not validated as learning measurement:** published offline tests have not established an advantage of the legacy descriptive index over simple history-based baselines. Do not report heuristic scores as calibrated mastery probabilities or a single correct response as retention. [Research evidence](docs/VALIDATION.md)
+- **Independent item quality still to test:** formal question-authoring accuracy, model-audit miss/false-alarm rates, diagnosis of real reasoning, and adaptive-versus-fixed follow-up benefit remain research priorities. [Evaluation plan](docs/QUALITY_VALIDATION.md)
+- **Separate developer agents:** repository-builder and independent PR-auditor work is distinct from learner interactions; no two-model runtime requirement is implied. Actual reviewer evidence must be recorded before claiming independent review.
 
-MIT licensed. Keep actual learner records, unauthorized lesson excerpts and reviewer secrets out of public repositories.
+See the [documentation index](docs/INDEX.md) for the active guides and [Git history](https://github.com/Nimenta727/Question-QA-Skill/commits/main/) / [tags](https://github.com/Nimenta727/Question-QA-Skill/tags) for superseded designs. Dated changes remain in `docs/routine/`.
+
+**License:** MIT. Do not commit private learner state, unauthorized course text, reviewer credentials or private audit packets. Official high-stakes assessments require qualified human review.
