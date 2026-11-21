@@ -30,7 +30,15 @@ class ReleaseContractTests(unittest.TestCase):
                 self.assertIn(f"question-qa-skill-core-{VERSION}.zip", text, path)
 
     def test_release_workflow_checks_and_links(self):
-        release_yaml = (ROOT / ".github/workflows/release.yml").read_text(encoding="utf-8")
+        # Full archive intentionally excludes .github/workflows/. Its freshly
+        # extracted tests must not require repository-only CI configuration.
+        workflow = ROOT / ".github/workflows/release.yml"
+        self.assertTrue((ROOT / f"docs/RELEASE_NOTES_v{VERSION}.md").is_file())
+        if not workflow.is_file():
+            self.assertTrue((ROOT / "scripts/build_release.py").is_file())
+            self.assertFalse((ROOT / ".github").exists())
+            return
+        release_yaml = workflow.read_text(encoding="utf-8")
         test_yaml = (ROOT / ".github/workflows/tests.yml").read_text(encoding="utf-8")
         for yml in (release_yaml, test_yaml):
             for name in (f"question-qa-skill-{VERSION}.zip",
