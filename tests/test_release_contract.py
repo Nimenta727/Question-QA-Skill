@@ -30,6 +30,10 @@ class ReleaseContractTests(unittest.TestCase):
                 self.assertIn(f"question-qa-skill-core-{VERSION}.zip", text, path)
 
     def test_release_workflow_checks_and_links(self):
+        # Full release ZIP deliberately excludes .github. Inspect workflow YAML only
+        # in a repository checkout; release notes and version are tested separately.
+        if not (ROOT / ".github/workflows/release.yml").exists():
+            self.skipTest("workflow source unavailable in verified Full distribution")
         release_yaml = (ROOT / ".github/workflows/release.yml").read_text(encoding="utf-8")
         test_yaml = (ROOT / ".github/workflows/tests.yml").read_text(encoding="utf-8")
         for yml in (release_yaml, test_yaml):
@@ -42,6 +46,9 @@ class ReleaseContractTests(unittest.TestCase):
                          f"docs/RELEASE_NOTES_v{VERSION}.md",
                          "Run smoke tests inside a freshly extracted ZIP"):
             self.assertIn(fragment, release_yaml)
+        self.assertTrue((ROOT / f"docs/RELEASE_NOTES_v{VERSION}.md").is_file())
+
+    def test_release_notes_are_packaged(self):
         self.assertTrue((ROOT / f"docs/RELEASE_NOTES_v{VERSION}.md").is_file())
 
     def test_empirical_cases_are_explicitly_not_run(self):
